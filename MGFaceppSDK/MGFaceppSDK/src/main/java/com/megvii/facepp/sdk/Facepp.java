@@ -15,28 +15,25 @@ import java.util.ArrayList;
  * 通过 getFaceppConfig 可以获取检测器的配置信息，通过 setFaceppConfig 方法可以修改检测器配置。
  */
 public class Facepp {
-	public final static int FPP_GET_LANDMARK81 = 81;		///< 计算 81 个关键点
-	public final static int FPP_GET_LANDMARK101 = 101;		///< 计算 101 个关键点
-	public final static int FPP_GET_LANDMARK106 = 106;		///< 计算 106 个关键点
+	public final static int FPP_GET_LANDMARK81 = 81;            ///< 计算 81 个关键点
+	public final static int FPP_GET_LANDMARK101 = 101;          ///< 计算 101 个关键点
+	public final static int FPP_GET_LANDMARK106 = 106;          ///< 计算 106 个关键点
 
-	public final static int IMAGEMODE_GRAY = 0;				///< 灰度图像
-	public final static int IMAGEMODE_BGR = 1;				///< BGR图像
-	public final static int IMAGEMODE_NV21 = 2;				///< YUV420（nv21）图像
-	public final static int IMAGEMODE_RGBA = 3;				///< RGBA图像
+	public final static int IMAGEMODE_GRAY = 0;                 ///< 灰度图像
+	public final static int IMAGEMODE_BGR = 1;                  ///< BGR图像
+	public final static int IMAGEMODE_NV21 = 2;                 ///< YUV420（nv21）图像
+	public final static int IMAGEMODE_RGBA = 3;                 ///< RGBA图像
 
 	private long FaceppHandle;
 	private static ArrayList<Ability> abilities;
 	private static long[] algorithmInfo;
 
-	 /**
-     * @brief 初始化人脸检测器
-     *
-     * @param[in] context 环境变量
-     *
-     * @param[in] model 模型数据
-     *
-     * @return 成功则返回 null, 失败返回错误原因
-     */
+	/**
+	 * @return 成功则返回 null, 失败返回错误原因
+	 * @brief 初始化人脸检测器
+	 * @param[in] context 环境变量
+	 * @param[in] model 模型数据
+	 */
 	public String init(Context context, byte[] model) {
 		if (context == null || model == null)
 			return getErrorType(MG_RETCODE_INVALID_ARGUMENT);
@@ -53,12 +50,11 @@ public class Facepp {
 		return errorType;
 	}
 
-	
-	 /**
-     * @brief 获取人脸配置信息
-     *
-     * @return FaceppConfig 包含人脸检测器配置信息
-     */
+
+	/**
+	 * @return FaceppConfig 包含人脸检测器配置信息
+	 * @brief 获取人脸配置信息
+	 */
 	public FaceppConfig getFaceppConfig() {
 		int[] configs = NativeFaceppAPI.nativeGetFaceppConfig(FaceppHandle);
 		FaceppConfig faceppConfig = new FaceppConfig();
@@ -73,31 +69,28 @@ public class Facepp {
 		return faceppConfig;
 	}
 
-	 /**
-     * @brief 设置配置信息
-     *
-     * 设置人脸配置信息
-     *
-     * @param[in] faceppConfig 人脸检测器配置信息
-     */
+	/**
+	 * @brief 设置配置信息
+	 *
+	 * 设置人脸配置信息
+	 * @param[in] faceppConfig 人脸检测器配置信息
+	 */
 	public void setFaceppConfig(FaceppConfig faceppConfig) {
 		NativeFaceppAPI.nativeSetFaceppConfig(FaceppHandle, faceppConfig.minFaceSize, faceppConfig.rotation,
 				faceppConfig.interval, faceppConfig.detectionMode, faceppConfig.roi_left, faceppConfig.roi_top,
 				faceppConfig.roi_right, faceppConfig.roi_bottom);
 	}
 
-	 /**
-     * @brief 检测图片信息
-     *
-     * 检测图片是否有人脸，有几张脸并获取每张脸的信息
-     *
-     * @param[in] imageData 图片数据
-     * @param[in] width 图片的宽
-     * @param[in] height 图片的高
-     * @param[in] imageMode 图片数据的格式
-     *
-     * @return Face[] 人脸信息数组
-     */
+	/**
+	 * @return Face[] 人脸信息数组
+	 * @brief 检测图片信息
+	 *
+	 * 检测图片是否有人脸，有几张脸并获取每张脸的信息
+	 * @param[in] imageData 图片数据
+	 * @param[in] width 图片的宽
+	 * @param[in] height 图片的高
+	 * @param[in] imageMode 图片数据的格式
+	 */
 	public Face[] detect(byte[] imageData, int width, int height, int imageMode) {
 		int faceSize = NativeFaceppAPI.nativeDetect(FaceppHandle, imageData, width, height, imageMode);
 		Face[] faces = new Face[faceSize];
@@ -111,41 +104,34 @@ public class Facepp {
 		return faces;
 	}
 
-	 /**
-     * @brief 获取人脸的Landmark
-     *
-     * 获取指定人脸的Landmark信息，并改变传入的人脸信息
-     *
-     * @param[in, out] face 人脸信息
-     * @param[in] pointNum 需要的人脸关键点点数
-     *
-     */
+	/**
+	 * @brief 获取人脸的Landmark
+	 *
+	 * 获取指定人脸的Landmark信息，并改变传入的人脸信息
+	 * @param[in, out] face 人脸信息
+	 * @param[in] pointNum 需要的人脸关键点点数
+	 */
 	public void getLandmark(Face face, int pointNum) {
 		float[] points = NativeFaceppAPI.nativeLandMark(FaceppHandle, face.index, pointNum);
 		loadFacePointsInfo(face, points, pointNum, 0);
 	}
 
-	 /**
-     * @brief 获取人脸的所有属性
-     *
-     * 获取指定人脸的所有属性信息，并改变传入的人脸信息
-     *
-     * @param[in, out] face 人脸信息
-     *
-     */
+	/**
+	 * @brief 获取人脸的所有属性
+	 *
+	 * 获取指定人脸的所有属性信息，并改变传入的人脸信息
+	 * @param[in, out] face 人脸信息
+	 */
 	public void getAttribute(Face face) {
 		float[] points = NativeFaceppAPI.nativeAttribute(FaceppHandle, face.index);
 		loadFaceAttributeInfo(face, points);
 	}
 
-	 /**
-     * @brief
-     * 获取指定人脸的 3DPose 属性信息，并改变传入的人脸信息
-     *
-     * @param[in, out] face 人脸信息
-     *
-     * @return 调用是否成功 
-     */
+	/**
+	 * @return 调用是否成功
+	 * @brief 获取指定人脸的 3DPose 属性信息，并改变传入的人脸信息
+	 * @param[in, out] face 人脸信息
+	 */
 	public boolean get3DPose(Face face) {
 		if (abilities == null || !abilities.contains(Ability.POSE))
 			return false;
@@ -156,14 +142,11 @@ public class Facepp {
 		return true;
 	}
 
-	 /**
-     * @brief
-     * 获取指定人脸的眼睛属性信息，并改变传入的人脸信息
-     *
-     * @param[in, out] face 人脸信息
-     *
-     * @return 调用是否成功 
-     */
+	/**
+	 * @return 调用是否成功
+	 * @brief 获取指定人脸的眼睛属性信息，并改变传入的人脸信息
+	 * @param[in, out] face 人脸信息
+	 */
 	public boolean getEyeStatus(Face face) {
 		if (abilities == null || !abilities.contains(Ability.EYESTATUS))
 			return false;
@@ -172,14 +155,11 @@ public class Facepp {
 		return true;
 	}
 
-	 /**
-     * @brief
-     * 获取指定人脸的嘴巴属性信息，并改变传入的人脸信息
-     *
-     * @param[in, out] face 人脸信息
-     *
-     * @return 调用是否成功 
-     */
+	/**
+	 * @return 调用是否成功
+	 * @brief 获取指定人脸的嘴巴属性信息，并改变传入的人脸信息
+	 * @param[in, out] face 人脸信息
+	 */
 	public boolean getMouthStatus(Face face) {
 		if (abilities == null || !abilities.contains(Ability.MOUTHSTATUS))
 			return false;
@@ -188,14 +168,11 @@ public class Facepp {
 		return true;
 	}
 
-	 /**
-     * @brief
-     * 获取指定人脸的民族属性信息，并改变传入的人脸信息
-     *
-     * @param[in, out] face 人脸信息
-     *
-     * @return 调用是否成功 
-     */
+	/**
+	 * @return 调用是否成功
+	 * @brief 获取指定人脸的民族属性信息，并改变传入的人脸信息
+	 * @param[in, out] face 人脸信息
+	 */
 	public boolean getMinorityStatus(Face face) {
 		if (abilities == null || !abilities.contains(Ability.MINORITY))
 			return false;
@@ -204,14 +181,11 @@ public class Facepp {
 		return true;
 	}
 
-	 /**
-     * @brief
-     * 获取指定人脸的模糊程度，并改变传入的人脸信息
-     *
-     * @param[in, out] face 人脸信息
-     *
-     * @return 调用是否成功 
-     */
+	/**
+	 * @return 调用是否成功
+	 * @brief 获取指定人脸的模糊程度，并改变传入的人脸信息
+	 * @param[in, out] face 人脸信息
+	 */
 	public boolean getBlurness(Face face) {
 		if (abilities == null || !abilities.contains(Ability.BLURNESS))
 			return false;
@@ -220,14 +194,11 @@ public class Facepp {
 		return true;
 	}
 
-	 /**
-     * @brief 
-     * 获取指定人脸的年龄性别属性信息，并改变传入的人脸信息
-     *
-     * @param[in, out] face 人脸信息
-     *
-     * @return 调用是否成功 
-     */
+	/**
+	 * @return 调用是否成功
+	 * @brief 获取指定人脸的年龄性别属性信息，并改变传入的人脸信息
+	 * @param[in, out] face 人脸信息
+	 */
 	public boolean getAgeGender(Face face) {
 		if (abilities == null || !abilities.contains(Ability.AGEGENDER))
 			return false;
@@ -236,14 +207,11 @@ public class Facepp {
 		return true;
 	}
 
-	 /**
-     * @brief
-     * 获取指定人脸的特征，并改变传入的人脸信息
-     *
-     * @param[in, out] face 人脸信息
-     *
-     * @return 调用是否成功 
-     */
+	/**
+	 * @return 调用是否成功
+	 * @brief 获取指定人脸的特征，并改变传入的人脸信息
+	 * @param[in, out] face 人脸信息
+	 */
 	public boolean getExtractFeature(Face face) {
 		if (abilities == null || !abilities.contains(Ability.SMALLFEATEXT))
 			return false;
@@ -253,40 +221,33 @@ public class Facepp {
 		return true;
 	}
 
-	 /**
-     * @brief 
-     * 比较两个人脸，并返回两张人脸的相似度
-     *
-     * @param[in] face1 人脸1信息
-     * @param[in] face2 人脸2信息
-     *
-     * @return 如果人脸没有抽取过特征返回-1，传入参数正确返回两张人脸的相似度
-     */
+	/**
+	 * @return 如果人脸没有抽取过特征返回-1，传入参数正确返回两张人脸的相似度
+	 * @brief 比较两个人脸，并返回两张人脸的相似度
+	 * @param[in] face1 人脸1信息
+	 * @param[in] face2 人脸2信息
+	 */
 	public double faceCompare(Face face1, Face face2) {
 		if (face1 == null || face2 == null || face1.feature == null || face2.feature == null)
 			return -1;
 		return NativeFaceppAPI.nativeFaceCompare(FaceppHandle, face1.feature, face2.feature, face1.feature.length / 4);
 	}
 
-	 /**
-     * @brief 
-     * 比较两个人脸，并返回两张人脸的相似度
-     *
-     * @param[in] feature1 人脸1特征
-     * @param[in] feature2 人脸2特征
-     *
-     * @return 如果传入人脸特征为 null 返回-1，传入参数正确返回两张人脸的相似度
-     */
+	/**
+	 * @return 如果传入人脸特征为 null 返回-1，传入参数正确返回两张人脸的相似度
+	 * @brief 比较两个人脸，并返回两张人脸的相似度
+	 * @param[in] feature1 人脸1特征
+	 * @param[in] feature2 人脸2特征
+	 */
 	public double faceCompare(byte[] feature1, byte[] feature2) {
 		if (feature1 == null || feature2 == null)
 			return -1;
 		return NativeFaceppAPI.nativeFaceCompare(FaceppHandle, feature1, feature2, feature1.length / 4);
 	}
 
-	 /**
-     * @brief 释放人脸检测器
-     * 
-     */
+	/**
+	 * @brief 释放人脸检测器
+	 */
 	public void release() {
 		if (FaceppHandle == 0)
 			return;
@@ -294,41 +255,48 @@ public class Facepp {
 		FaceppHandle = 0;
 	}
 
-	 /**
-     * @brief 获取人脸检测器过期时间
-     *
-     * @param[in] model 模型数据
-     *
-     * @return 过期时间戳（单位秒）
-     */
-	public static long getApiExpiration(byte[] mode) {
-		if (algorithmInfo == null)
-			algorithmInfo = NativeFaceppAPI.nativeGetAlgorithmInfo(mode);
-
-		return algorithmInfo[0];
+	/**
+	 * @return 过期时间戳（单位毫秒）
+	 * @brief 获取人脸检测器过期时间
+	 * @param[in] context android环境变量
+	 * @param[in] model 模型数据
+	 */
+	public static long getApiExpirationMillis(Context context, byte[] mode) {
+		if (getSDKAuthType(mode) == 1)
+			return getApiExpirationMillis(context);        /// < 联网授权
+		else
+			return getApiExpirationMillis(mode);           /// < 非联网授权
 	}
 
 	/**
-     * @brief 获取人脸检测器授权类型
-     *
-     * @param[in] model 模型数据
-     *
-     * @return 如果是联网授权返回 1，如果是非联网授权返回 2
-     */
+	 * @return 过期时间戳（单位毫秒）
+	 * @brief 获取人脸检测器过期时间
+	 * @param[in] model 模型数据
+	 */
+	private static long getApiExpirationMillis(byte[] mode) {
+		if (algorithmInfo == null)
+			algorithmInfo = NativeFaceppAPI.nativeGetAlgorithmInfo(mode);
+
+		return algorithmInfo[0] * 1000;
+	}
+
+	/**
+	 * @return 如果是联网授权返回 1，如果是非联网授权返回 2
+	 * @brief 获取人脸检测器授权类型
+	 * @param[in] model 模型数据
+	 */
 	public static int getSDKAuthType(byte[] mode) {
 		if (algorithmInfo == null)
 			algorithmInfo = NativeFaceppAPI.nativeGetAlgorithmInfo(mode);
 
-		return (int)algorithmInfo[1];
+		return (int) algorithmInfo[1];
 	}
 
 	/**
-     * @brief 获取人脸检测器能力列表
-     *    
-     * @param[in] model 模型数据
-     *
-     * @return 人脸检测器能力列表
-     */
+	 * @return 人脸检测器能力列表
+	 * @brief 获取人脸检测器能力列表
+	 * @param[in] model 模型数据
+	 */
 	public static ArrayList<Ability> getAbility(byte[] mode) {
 		if (abilities != null)
 			return abilities;
@@ -350,48 +318,42 @@ public class Facepp {
 			abilities.add(Ability.AGEGENDER);
 		if ((ability & MG_FPP_ATTR_EXTRACT_FEATURE) != 0)
 			abilities.add(Ability.SMALLFEATEXT);
-		
+
 		return abilities;
 	}
-	
-	 /**
-     * @brief 获取人脸检测器版本号
-     *
-     * @return 人脸检测器版本号
-     */
+
+	/**
+	 * @return 人脸检测器版本号
+	 * @brief 获取人脸检测器版本号
+	 */
 	public static String getVersion() {
 		return NativeFaceppAPI.nativeGetVersion();
 	}
 
 	/**
-     * @brief 获取 API 标识
-     * 
-     * API 标识用于联网授权
-     *  
-     * @return API 标识
-     */
+	 * @return API 标识
+	 * @brief 获取 API 标识
+	 *
+	 * API 标识用于联网授权
+	 */
 	public static long getApiName() {
 		return NativeFaceppAPI.nativeGetApiName();
 	}
 
-	 /**
-     * @brief 获取人脸检测器过期时间
-     * @deprecated
-     *
-     * @param[in] context 环境变量
-     *
-     * @return 过期时间戳 （单位秒）
-     */
-	public static long getApiExpiration(Context context) {
-		return NativeFaceppAPI.nativeGetApiExpication(context);
+	/**
+	 * @return 过期时间戳 （单位毫秒）
+	 * @brief 获取人脸检测器过期时间
+	 * @param[in] context android环境变量
+	 */
+	private static long getApiExpirationMillis(Context context) {
+		return NativeFaceppAPI.nativeGetApiExpication(context) * 1000;
 	}
 
 	/**
-     * @brief 获取人脸检测器授权类型
-     * @deprecated
-     * 
-     * @return 如果是联网授权返回 1，如果是非联网授权返回 2
-     */
+	 * @return 如果是联网授权返回 1，如果是非联网授权返回 2
+	 * @brief 获取人脸检测器授权类型
+	 * @deprecated
+	 */
 	public static int getSDKAuthType() {
 		return NativeFaceppAPI.nativeGetSDKAuthType();
 	}
@@ -490,12 +452,12 @@ public class Facepp {
 		face.male = faceAgeGender[2];
 	}
 
-	private static final long MG_FPP_ATTR_POSE3D = 0x01; /// < 3dpose 的标识位
-	private static final long MG_FPP_ATTR_EYESTATUS = 0x02; /// < 眼睛状态的标识位
-	private static final long MG_FPP_ATTR_MOUTHSTATUS = 0x04; /// < 嘴巴状态的标识位
-	private static final long MG_FPP_ATTR_MINORITY = 0x08; /// < 少数民族的标识位
-	private static final long MG_FPP_ATTR_BLURNESS = 0x10; /// < 人脸模糊度的标识位
-	private static final long MG_FPP_ATTR_AGE_GENDER = 0x20; /// < 年龄性别的标识位
+	private static final long MG_FPP_ATTR_POSE3D = 0x01;          /// < 3dpose 的标识位
+	private static final long MG_FPP_ATTR_EYESTATUS = 0x02;       /// < 眼睛状态的标识位
+	private static final long MG_FPP_ATTR_MOUTHSTATUS = 0x04;     /// < 嘴巴状态的标识位
+	private static final long MG_FPP_ATTR_MINORITY = 0x08;        /// < 少数民族的标识位
+	private static final long MG_FPP_ATTR_BLURNESS = 0x10;        /// < 人脸模糊度的标识位
+	private static final long MG_FPP_ATTR_AGE_GENDER = 0x20;      /// < 年龄性别的标识位
 	private static final long MG_FPP_ATTR_EXTRACT_FEATURE = 0x40; /// < 人脸比对的标识位
 
 	private static final int MG_RETCODE_FAILED = -1;
@@ -510,96 +472,96 @@ public class Facepp {
 
 	private String getErrorType(int retCode) {
 		switch (retCode) {
-		case MG_RETCODE_FAILED:
-			return "MG_RETCODE_FAILED";
-		case MG_RETCODE_OK:
-			return "MG_RETCODE_OK";
-		case MG_RETCODE_INVALID_ARGUMENT:
-			return "MG_RETCODE_INVALID_ARGUMENT";
-		case MG_RETCODE_INVALID_HANDLE:
-			return "MG_RETCODE_INVALID_HANDLE";
-		case MG_RETCODE_INDEX_OUT_OF_RANGE:
-			return "MG_RETCODE_INDEX_OUT_OF_RANGE";
-		case MG_RETCODE_EXPIRE:
-			return "MG_RETCODE_EXPIRE";
-		case MG_RETCODE_INVALID_BUNDLEID:
-			return "MG_RETCODE_INVALID_BUNDLEID";
-		case MG_RETCODE_INVALID_LICENSE:
-			return "MG_RETCODE_INVALID_LICENSE";
-		case MG_RETCODE_INVALID_MODEL:
-			return "MG_RETCODE_INVALID_MODEL";
+			case MG_RETCODE_FAILED:
+				return "MG_RETCODE_FAILED";
+			case MG_RETCODE_OK:
+				return "MG_RETCODE_OK";
+			case MG_RETCODE_INVALID_ARGUMENT:
+				return "MG_RETCODE_INVALID_ARGUMENT";
+			case MG_RETCODE_INVALID_HANDLE:
+				return "MG_RETCODE_INVALID_HANDLE";
+			case MG_RETCODE_INDEX_OUT_OF_RANGE:
+				return "MG_RETCODE_INDEX_OUT_OF_RANGE";
+			case MG_RETCODE_EXPIRE:
+				return "MG_RETCODE_EXPIRE";
+			case MG_RETCODE_INVALID_BUNDLEID:
+				return "MG_RETCODE_INVALID_BUNDLEID";
+			case MG_RETCODE_INVALID_LICENSE:
+				return "MG_RETCODE_INVALID_LICENSE";
+			case MG_RETCODE_INVALID_MODEL:
+				return "MG_RETCODE_INVALID_MODEL";
 		}
 
 		return null;
 	}
 
 	public enum Ability {
-		POSE,			///< 3dpose 的能力
-		EYESTATUS,		///< 眼睛状态的能力
-		MOUTHSTATUS,	///< 嘴巴状态的能力
-		MINORITY,		///< 少数民族的能力
-		BLURNESS,		///< 人脸模糊度的能力
-		AGEGENDER,		///< 年龄性别的能力
-		SMALLFEATEXT	///< 人脸比对的能力
+		POSE,             ///< 3dpose 的能力
+		EYESTATUS,        ///< 眼睛状态的能力
+		MOUTHSTATUS,      ///< 嘴巴状态的能力
+		MINORITY,         ///< 少数民族的能力
+		BLURNESS,         ///< 人脸模糊度的能力
+		AGEGENDER,        ///< 年龄性别的能力
+		SMALLFEATEXT      ///< 人脸比对的能力
 	}
 
 	public static class Face {
-		public int trackID;				///< 人脸的跟踪标记。
-		public int index;				///< 人脸数组下标
-		public float confidence;		///< 人脸置信度，为一个 0 ~ 1 之间的浮点数。
-		                        		///< 超过 0.5 表示这确实是一个人脸。
+		public int trackID;                ///< 人脸的跟踪标记。
+		public int index;                  ///< 人脸数组下标
+		public float confidence;           ///< 人脸置信度，为一个 0 ~ 1 之间的浮点数。
+		                                   ///< 超过 0.5 表示这确实是一个人脸。
 
-		public float pitch;				///< 一个弧度，表示物体顺时针饶x轴旋转的弧度。
-		public float yaw;				///< 一个弧度，表示物体顺时针饶y轴旋转的弧度。
-		public float roll;				///< 一个弧度，表示物体顺时针饶z轴旋转的弧度。
-		public float[] leftEyestatus;	///< 人左眼状态，每个数值表示概率，总和为 1
-		public float[] rightEyestatus;	///< 人右眼状态，每个数值表示概率，总和为 1
-		public float[] moutstatus;		///< 嘴部状态
-		public float minority;			///< 是否是少数民族（对于汉族而言）
-		public float blurness;			///< 模糊程度，数值越小表示越清晰，0 ~ 1
-		public float age;				///< 年龄，为浮点数
+		public float pitch;                ///< 一个弧度，表示物体顺时针饶x轴旋转的弧度。
+		public float yaw;                  ///< 一个弧度，表示物体顺时针饶y轴旋转的弧度。
+		public float roll;                 ///< 一个弧度，表示物体顺时针饶z轴旋转的弧度。
+		public float[] leftEyestatus;      ///< 人左眼状态，每个数值表示概率，总和为 1
+		public float[] rightEyestatus;     ///< 人右眼状态，每个数值表示概率，总和为 1
+		public float[] moutstatus;         ///< 嘴部状态
+		public float minority;             ///< 是否是少数民族（对于汉族而言）
+		public float blurness;             ///< 模糊程度，数值越小表示越清晰，0 ~ 1
+		public float age;                  ///< 年龄，为浮点数
 
 		/**
 		 * 男女概率之和为 1
 		 */
-		public float female;			///< 是女性人脸的概率
-		public float male;				///< 是男性人脸的概率
+		public float female;               ///< 是女性人脸的概率
+		public float male;                 ///< 是男性人脸的概率
 
-		public Rect rect;				///< 人脸在图像中的位置，以一个矩形框来刻画。
-		public PointF[] points;			///< 人脸关键点信息。
+		public Rect rect;                  ///< 人脸在图像中的位置，以一个矩形框来刻画。
+		public PointF[] points;            ///< 人脸关键点信息。
 
-		public byte[] feature;			///<feature_data 人脸特征数据，务必保证其内存大小不低于 feature_length
+		public byte[] feature;             ///<feature_data 人脸特征数据，务必保证其内存大小不低于 feature_length
 	}
 
 	public static class FaceppConfig {
-		public final static int DETECTION_MODE_NORMAL = 0;				///< 单张图片人脸检测模式
+		public final static int DETECTION_MODE_NORMAL = 0;                 ///< 单张图片人脸检测模式
 
-		public final static int DETECTION_MODE_TRACKING = 1;			///< 视频人脸跟踪模式
+		public final static int DETECTION_MODE_TRACKING = 1;               ///< 视频人脸跟踪模式
 
-		public final static int DETECTION_MODE_TRACKING_SMOOTH = 2;		///< 特殊的视频人脸跟踪模式。
-																		///< 此模式下人脸检测与跟踪会更平均的使用 CPU 计算资源。
+		public final static int DETECTION_MODE_TRACKING_SMOOTH = 2;        ///< 特殊的视频人脸跟踪模式。
+		                                                                   ///< 此模式下人脸检测与跟踪会更平均的使用 CPU 计算资源。
 
-		public int minFaceSize;			///< 最小检测人脸的尺寸（人脸尺寸一般是指人脸脸颊的宽度）。
-										///< 数值越大检测用的耗时越少。
+		public int minFaceSize;              ///< 最小检测人脸的尺寸（人脸尺寸一般是指人脸脸颊的宽度）。
+		                                     ///< 数值越大检测用的耗时越少。
 
-		public int rotation;			///< 输入图像的重力方向，必须是 90 的倍数。
-										///< 表示输入图像顺时针旋转 rotation 度之后为正常的重力方向。
-										///< 推荐使用的数值：0, 90, 180, 270, 360
+		public int rotation;                 ///< 输入图像的重力方向，必须是 90 的倍数。
+		                                     ///< 表示输入图像顺时针旋转 rotation 度之后为正常的重力方向。
+		                                     ///< 推荐使用的数值：0, 90, 180, 270, 360
 
-		public int interval; 			///< 在 MG_FPP_DETECTIONMODE_TRACKING 模式下才有效。
-										///< 表示每隔多少帧进行一次全图的人脸检测。
-										///< 其余时间只对原有人脸进行跟踪。
+		public int interval;                 ///< 在 MG_FPP_DETECTIONMODE_TRACKING 模式下才有效。
+		                                     ///< 表示每隔多少帧进行一次全图的人脸检测。
+		                                     ///< 其余时间只对原有人脸进行跟踪。
 
-		public int detectionMode;		///< 人脸检测模式，可见 MG_FPP_DETECTIONMODE 类型。
+		public int detectionMode;            ///< 人脸检测模式，可见 MG_FPP_DETECTIONMODE 类型。
 
 		/**
 		 * 一个矩形框，表示只对图像中 roi 所表示的区域做人脸检测。
 		 * 在特定场景下，此方法可以提高检测速度。
 		 * 如果人脸在 roi 中被检测到，且移动到了 roi 之外的区域，依然可以被跟踪。
 		 */
-		public int roi_left;			///< roi的left坐标
-		public int roi_top;				///< roi的top坐标
-		public int roi_right;			///< roi的right坐标
-		public int roi_bottom;			///< roi的bottom坐标
+		public int roi_left;               ///< roi的left坐标
+		public int roi_top;                ///< roi的top坐标
+		public int roi_right;              ///< roi的right坐标
+		public int roi_bottom;             ///< roi的bottom坐标
 	}
 }

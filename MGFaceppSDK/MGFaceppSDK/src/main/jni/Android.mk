@@ -16,16 +16,16 @@ LOCAL_C_INCLUDES += thirdparty security
 LOCAL_SHARED_LIBRARIES := fppapi
 LOCAL_LDLIBS += -L$(SYSROOT)/usr/lib -llog
 LOCAL_CPPFLAGS += -std=c++11 -ffunction-sections -fdata-sections -fvisibility=hidden \
-		-Wall -Wextra -fweb
+        -Wall -Wextra -fweb
 LOCAL_LDFLAGS += -Wl,--gc-sections
 
 ifeq ($(TARGET_ARCH_ABI),armeabi-v7a)
-	LOCAL_ARM_NEON := true
-	LOCAL_CPPFLAGS += -mfpu=neon -mfloat-abi=softfp
+    LOCAL_ARM_NEON := true
+    LOCAL_CPPFLAGS += -mfpu=neon -mfloat-abi=softfp
 endif
 
 ifeq ($(TARGET_ARCH_ABI),x86)
-	LOCAL_CPPFLAGS += -msse4.2
+    LOCAL_CPPFLAGS += -msse4.2
 endif
 
 LOCAL_ARM_MODE := arm

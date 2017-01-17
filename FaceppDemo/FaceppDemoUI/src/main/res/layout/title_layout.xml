@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <RelativeLayout
+        android:id="@+id/title_layout_rootRel"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/activity_title_hight"
+        android:gravity="bottom"
+        android:background="#30364C"
+        android:orientation="vertical" >
+
+        <RelativeLayout
+            android:id="@+id/title_layout_returnRel"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="bottom"
+            android:paddingBottom="12dip"
+            android:background="@drawable/bg_return_select"
+            android:clickable="true"
+            android:focusable="true" >
+
+            <ImageView
+                android:id="@+id/title_layout_returnImage"
+                android:layout_width="20dip"
+                android:layout_height="20dip"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="5dip"
+                android:clickable="false"
+                android:focusable="false"
+                android:src="@drawable/retunimage" />
+
+            <TextView
+                android:id="@+id/title_layout_leftText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="5dip"
+                android:layout_marginRight="0dip"
+                android:layout_toRightOf="@+id/title_layout_returnImage"
+                android:singleLine="true"
+                android:text="返回"
+                android:textColor="#FFFFFF"
+                android:textSize="16sp" />
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/title_layout_titleText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="10dip"
+            android:layout_alignParentBottom="true"
+            android:singleLine="true"
+            android:text="title"
+            android:textColor="#FFFFFF"
+            android:textSize="20sp" />
+    </RelativeLayout>
+
+</RelativeLayout>

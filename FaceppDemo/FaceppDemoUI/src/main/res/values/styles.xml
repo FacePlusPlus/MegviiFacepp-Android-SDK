@@ -1,0 +1,9 @@
+<resources>
+
+    <declare-styleable name="AutoRatioImageView">
+        <!-- -ratio 高/宽 -->
+        <attr name="ratio" format="float" />
+        <attr name="prefer" format="integer" />
+    </declare-styleable>
+
+</resources>

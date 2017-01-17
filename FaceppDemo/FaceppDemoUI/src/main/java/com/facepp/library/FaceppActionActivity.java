@@ -1,8 +1,12 @@
 package com.facepp.library;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -16,6 +20,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
 import com.facepp.library.util.ConUtil;
 import com.facepp.library.util.DialogUtil;
 import com.facepp.library.util.ICamera;
@@ -23,6 +28,8 @@ import com.megvii.facepp.sdk.Facepp;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import static android.os.Build.VERSION_CODES.M;
 
 public class FaceppActionActivity extends Activity implements OnClickListener {
 
@@ -38,17 +45,20 @@ public class FaceppActionActivity extends Activity implements OnClickListener {
 	private HashMap<String, Integer> resolutionMap;
 	private DialogUtil mDialogUtil;
 
-	private boolean isStartRecorder, is3DPose, isDebug, isROIDetect, is106Points, isBackCamera, isFaceProperty, isSmooth;
-	private int[] imageItemImages_gray = { R.drawable.record_gray, R.drawable.three_d_gray, R.drawable.debug_gray,
-			R.drawable.area_gray, R.drawable.point81, R.drawable.frontphone, R.drawable.faceproperty_gray, R.drawable.debug_gray };
-	private int[] imageItemImages_blue = { R.drawable.record_blue, R.drawable.three_d_blue, R.drawable.debug_blue,
-			R.drawable.area_blue, R.drawable.point106, R.drawable.backphone, R.drawable.faceproperty_blue, R.drawable.debug_blue };
-	private String[] imageItemTexts = { "录像", "3D模型", "调试信息", "区域选择", "关键点个数", "前置置摄像头", "年龄性别", "SMOOTH" };
-	private String[] editItemStrs = { "最小人脸", "相机分辨率", "检测间隔" };
+	private boolean isStartRecorder, is3DPose, isDebug, isROIDetect, is106Points, isBackCamera, isFaceProperty,
+			isSmooth;
+	private int[] imageItemImages_gray = {R.drawable.record_gray, R.drawable.three_d_gray, R.drawable.debug_gray,
+			R.drawable.area_gray, R.drawable.point81, R.drawable.frontphone, R.drawable.faceproperty_gray, R.drawable
+			.debug_gray};
+	private int[] imageItemImages_blue = {R.drawable.record_blue, R.drawable.three_d_blue, R.drawable.debug_blue,
+			R.drawable.area_blue, R.drawable.point106, R.drawable.backphone, R.drawable.faceproperty_blue, R.drawable
+			.debug_blue};
+	private String[] imageItemTexts = {"录像", "3D模型", "调试信息", "区域选择", "关键点个数", "前置置摄像头", "年龄性别", "SMOOTH"};
+	private String[] editItemStrs = {"最小人脸", "相机分辨率", "检测间隔"};
 	private RelativeLayout[] imageItem_Rels;
 	private RelativeLayout[] textItem_Rels;
 	private TextView[] editItemTexts;
-	private String[] editValues = { min_face_size + "", resolution, detection_interval + "" };
+	private String[] editValues = {min_face_size + "", resolution, detection_interval + ""};
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -61,8 +71,7 @@ public class FaceppActionActivity extends Activity implements OnClickListener {
 		mListView.postDelayed(new Runnable() {
 			@Override
 			public void run() {
-				
-				getCameraSizeList();
+				requestCameraPerm();
 			}
 		}, 500);
 	}
@@ -90,11 +99,11 @@ public class FaceppActionActivity extends Activity implements OnClickListener {
 		RelativeLayout rel5 = (RelativeLayout) findViewById(R.id.landmark_imageitem_5);
 		RelativeLayout rel6 = (RelativeLayout) findViewById(R.id.landmark_imageitem_6);
 		RelativeLayout rel7 = (RelativeLayout) findViewById(R.id.landmark_imageitem_7);
-		imageItem_Rels = new RelativeLayout[] { rel0, rel1, rel2, rel3, rel4, rel5, rel6, rel7 };
+		imageItem_Rels = new RelativeLayout[]{rel0, rel1, rel2, rel3, rel4, rel5, rel6, rel7};
 		RelativeLayout textRel0 = (RelativeLayout) findViewById(R.id.landmark_edititem_0);
 		RelativeLayout textRel1 = (RelativeLayout) findViewById(R.id.landmark_edititem_1);
 		RelativeLayout textRel2 = (RelativeLayout) findViewById(R.id.landmark_edititem_2);
-		textItem_Rels = new RelativeLayout[] { textRel0, textRel1, textRel2 };
+		textItem_Rels = new RelativeLayout[]{textRel0, textRel1, textRel2};
 	}
 
 	private void initData() {
@@ -147,6 +156,31 @@ public class FaceppActionActivity extends Activity implements OnClickListener {
 		}
 	}
 
+	private void requestCameraPerm() {
+		if (android.os.Build.VERSION.SDK_INT >= M) {
+			if (ContextCompat.checkSelfPermission(this,
+					Manifest.permission.CAMERA)
+					!= PackageManager.PERMISSION_GRANTED) {
+				//进行权限请求
+				ActivityCompat.requestPermissions(this,
+						new String[]{Manifest.permission.CAMERA},
+						EXTERNAL_STORAGE_REQ_CAMERA_CODE);
+			} else
+				getCameraSizeList();
+		} else
+			getCameraSizeList();
+	}
+
+	public static final int EXTERNAL_STORAGE_REQ_CAMERA_CODE = 10;
+
+	@Override
+	public void onRequestPermissionsResult(int requestCode,
+										   String permissions[], int[] grantResults) {
+		if (requestCode == EXTERNAL_STORAGE_REQ_CAMERA_CODE)
+			getCameraSizeList();
+	}
+
+
 	private void getCameraSizeList() {
 		new Thread(new Runnable() {
 			@Override
@@ -173,7 +207,7 @@ public class FaceppActionActivity extends Activity implements OnClickListener {
 			mListRel.setVisibility(View.VISIBLE);
 
 	}
-	
+
 	@Override
 	protected void onResume() {
 		super.onResume();
@@ -220,8 +254,8 @@ public class FaceppActionActivity extends Activity implements OnClickListener {
 			onclickImageItem(5, isBackCamera);
 			getCameraSizeList();
 		} else if (ID == R.id.landmark_imageitem_6) {
-			if(!Facepp.getAbility(ConUtil.getFileContent(this, R
-					.raw.megviifacepp_0_4_1_model)).contains(Facepp.Ability.AGEGENDER)){
+			if (!Facepp.getAbility(ConUtil.getFileContent(this, R
+					.raw.megviifacepp_0_4_1_model)).contains(Facepp.Ability.AGEGENDER)) {
 				ConUtil.showToast(this, "本检测器没有此项功能");
 				return;
 			}
@@ -274,7 +308,7 @@ public class FaceppActionActivity extends Activity implements OnClickListener {
 		public int getCount() {
 			if (cameraSize == null)
 				return 0;
-			Log.w("ceshi", "cameraSize.size() === " +  cameraSize.size());
+			Log.w("ceshi", "cameraSize.size() === " + cameraSize.size());
 			return cameraSize.size();
 		}
 

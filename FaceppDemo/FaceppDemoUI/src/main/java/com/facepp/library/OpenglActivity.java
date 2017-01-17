@@ -43,7 +43,7 @@ public class OpenglActivity extends Activity
 	private boolean isStartRecorder, is3DPose, isDebug, isROIDetect, is106Points, isBackCamera, isFaceProperty,
 			isSmooth;
 	private boolean isTiming = true; // 是否是定时去刷新界面;
-	private int printTime = 33;
+	private int printTime = 31;
 	private GLSurfaceView mGlSurfaceView;
 	private ICamera mICamera;
 	private Camera mCamera;

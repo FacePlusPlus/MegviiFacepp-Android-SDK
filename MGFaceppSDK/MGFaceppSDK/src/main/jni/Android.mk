@@ -14,7 +14,7 @@ LOCAL_SRC_FILES := megvii_facepp_jni.cpp
 LOCAL_C_INCLUDES := include
 LOCAL_C_INCLUDES += thirdparty security
 LOCAL_SHARED_LIBRARIES := fppapi
-LOCAL_LDLIBS += -L$(SYSROOT)/usr/lib -llog
+LOCAL_LDLIBS += -L$(SYSROOT)/usr/lib -llog -Wl,-s
 LOCAL_CPPFLAGS += -std=c++11 -ffunction-sections -fdata-sections -fvisibility=hidden \
         -Wall -Wextra -fweb
 LOCAL_LDFLAGS += -Wl,--gc-sections

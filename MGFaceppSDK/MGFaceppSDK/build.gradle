@@ -46,26 +46,28 @@ android {
 }
 
 task releaseAll() {
-    delete '../release'
-    copy {
-        from "build/intermediates/bundles/release/"
-        into "../release/for-eclipse/libs"
-        include "classes.jar"
-        rename ("classes.jar", "${archivesBaseName}-${version}.jar")
-    }
-    copy {
-        from "build/outputs/aar/${archivesBaseName}-${version}.aar"
-        //include "*"
-        into "../release"
-    }
-    copy {
-        from "build/intermediates/ndkBuild/release/obj/local/"
-        exclude "*/objs"
-        into "../release/for-eclipse/libs"
-    }
-    copy {
-        from "src/main/jni/megviifacepp_0_4_1_model"
-        into "../release/raw"
+    doLast {
+        delete '../release'
+        copy {
+            from "build/intermediates/bundles/release/"
+            into "../release/for-eclipse/libs"
+            include "classes.jar"
+            rename("classes.jar", "${archivesBaseName}-${version}.jar")
+        }
+        copy {
+            from "build/outputs/aar/${archivesBaseName}-${version}.aar"
+            //include "*"
+            into "../release"
+        }
+        copy {
+            from "build/intermediates/ndkBuild/release/obj/local/"
+            exclude "*/objs"
+            into "../release/for-eclipse/libs"
+        }
+        copy {
+            from "src/main/jni/megviifacepp_0_4_1_model"
+            into "../release/raw"
+        }
     }
     dependsOn build
 }

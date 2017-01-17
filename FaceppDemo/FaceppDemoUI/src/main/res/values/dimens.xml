@@ -1,0 +1,6 @@
+<resources>
+
+    <dimen name="activity_title_hight">70dp</dimen>
+    <dimen name="editItem_textSzie0">20sp</dimen>
+
+</resources>

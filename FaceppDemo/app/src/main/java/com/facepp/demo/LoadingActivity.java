@@ -49,7 +49,8 @@ public class LoadingActivity extends Activity {
 	}
 
 	private void network() {
-		if (Facepp.getSDKAuthType() == 2) {// 非联网授权
+		if (Facepp.getSDKAuthType(ConUtil.getFileContent(this, R.raw
+				.megviifacepp_0_4_1_model)) == 2) {// 非联网授权
 			authState(true);
 			return;
 		}

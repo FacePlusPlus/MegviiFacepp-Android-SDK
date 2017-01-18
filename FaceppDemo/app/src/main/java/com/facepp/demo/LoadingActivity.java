@@ -8,10 +8,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
 import com.facepp.library.FaceppActionActivity;
 import com.facepp.library.util.ConUtil;
 import com.facepp.library.util.DialogUtil;
 import com.facepp.library.util.Util;
+import com.megvii.awesomedemo.facepp.R;
 import com.megvii.facepp.sdk.Facepp;
 import com.megvii.licensemanager.sdk.LicenseManager;
 

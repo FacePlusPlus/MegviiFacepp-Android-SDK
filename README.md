@@ -1,5 +1,5 @@
 # MegviiFacepp-Android-SDK
-An iOS wrapper of MegviiFacepp SDK (the mobile SDK).
+An android wrapper of MegviiFacepp SDK (the mobile SDK).
 
 版本号： 0.4.1
 （此版本SDK适用于 Megvii-Facepp 0.4.1A）

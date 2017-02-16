@@ -60,8 +60,8 @@ public class NativeFaceppAPI {
      * 这里加载的名称要根据 so 不同的版本号进行修改
      */
     static {
-        System.loadLibrary("MegviiFacepp-0.4.1");
-        System.loadLibrary("MegviiFacepp-jni-0.4.1");
+        System.loadLibrary("MegviiFacepp-0.3.3");
+        System.loadLibrary("MegviiFacepp-jni-0.3.3");
     }
 
 }

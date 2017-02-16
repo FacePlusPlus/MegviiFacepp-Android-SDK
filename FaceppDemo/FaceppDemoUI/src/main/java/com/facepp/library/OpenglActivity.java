@@ -186,7 +186,7 @@ public class OpenglActivity extends Activity
 				bottom = height - top;
 			}
 
-			String errorCode = facepp.init(this, ConUtil.getFileContent(this, R.raw.megviifacepp_0_4_1_model));
+			String errorCode = facepp.init(this, ConUtil.getFileContent(this, R.raw.megviifacepp_0_3_3_model));
 			Facepp.FaceppConfig faceppConfig = facepp.getFaceppConfig();
 			faceppConfig.interval = detection_interval;
 			faceppConfig.minFaceSize = min_face_size;
@@ -278,9 +278,9 @@ public class OpenglActivity extends Activity
 								long time_AgeGender_action = System.currentTimeMillis();
 								facepp.getAgeGender(faces[c]);
 								time_AgeGender_end = System.currentTimeMillis() - time_AgeGender_action;
-								String gender = "man";
+								String gender = "male";
 								if (face.female > face.male)
-									gender = "woman";
+									gender = "female";
 								AttriButeStr = "\nage: " + (int) Math.max(face.age, 1) + "\ngender: " + gender;
 							}
 

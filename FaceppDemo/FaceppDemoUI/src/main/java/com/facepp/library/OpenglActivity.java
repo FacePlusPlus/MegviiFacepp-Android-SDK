@@ -186,7 +186,7 @@ public class OpenglActivity extends Activity
 				bottom = height - top;
 			}
 
-			String errorCode = facepp.init(this, ConUtil.getFileContent(this, R.raw.megviifacepp_0_4_1_model));
+			String errorCode = facepp.init(this, ConUtil.getFileContent(this, R.raw.megviifacepp_0_4_5_model));
 			Facepp.FaceppConfig faceppConfig = facepp.getFaceppConfig();
 			faceppConfig.interval = detection_interval;
 			faceppConfig.minFaceSize = min_face_size;

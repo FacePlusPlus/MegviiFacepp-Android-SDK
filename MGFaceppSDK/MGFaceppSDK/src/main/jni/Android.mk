@@ -1,6 +1,6 @@
 LOCAL_PATH := $(call my-dir)
 
-MEGVII_FACEPP_VERSION := 0.4.1
+MEGVII_FACEPP_VERSION := 0.4.5
 
 include $(CLEAR_VARS)
 LOCAL_MODULE := fppapi

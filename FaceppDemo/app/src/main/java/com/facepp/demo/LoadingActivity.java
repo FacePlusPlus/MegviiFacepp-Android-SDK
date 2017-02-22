@@ -38,7 +38,7 @@ public class LoadingActivity extends Activity {
 		WarrantyBar = (ProgressBar) findViewById(R.id.loading_layout_WarrantyBar);
 		againWarrantyBtn = (Button) findViewById(R.id.loading_layout_againWarrantyBtn);
 		String authTime0 = ConUtil.getFormatterDate(Facepp.getApiExpirationMillis(this, ConUtil.getFileContent(this, R
-				.raw.megviifacepp_0_4_1_model)));
+				.raw.megviifacepp_0_4_5_model)));
 	}
 
 	private void initData() {
@@ -52,7 +52,7 @@ public class LoadingActivity extends Activity {
 
 	private void network() {
 		if (Facepp.getSDKAuthType(ConUtil.getFileContent(this, R.raw
-				.megviifacepp_0_4_1_model)) == 2) {// 非联网授权
+				.megviifacepp_0_4_5_model)) == 2) {// 非联网授权
 			authState(true);
 			return;
 		}
@@ -62,7 +62,7 @@ public class LoadingActivity extends Activity {
 		WarrantyBar.setVisibility(View.VISIBLE);
 		final LicenseManager licenseManager = new LicenseManager(this);
 		licenseManager.setExpirationMillis(Facepp.getApiExpirationMillis(this, ConUtil.getFileContent(this, R.raw
-				.megviifacepp_0_4_1_model)));
+				.megviifacepp_0_4_5_model)));
 
 		String uuid = ConUtil.getUUIDString(LoadingActivity.this);
 		long[] apiName = {Facepp.getApiName()};

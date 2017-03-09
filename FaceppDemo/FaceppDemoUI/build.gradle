@@ -28,6 +28,6 @@ dependencies {
     })
     compile 'com.android.support:appcompat-v7:25.1.0'
     testCompile 'junit:junit:4.12'
-    compile(name:'MGFaceppSDK-0.4.5', ext:'aar')
+    compile(name:'MGFaceppSDK-0.4.6', ext:'aar')
     compile(name:'MGLicenseManagerSDK-0.2.0', ext:'aar')
 }

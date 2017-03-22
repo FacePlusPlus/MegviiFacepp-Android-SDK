@@ -541,6 +541,8 @@ public class Facepp {
 		public final static int DETECTION_MODE_TRACKING_SMOOTH = 2;        ///< 特殊的视频人脸跟踪模式。
 		                                                                   ///< 此模式下人脸检测与跟踪会更平均的使用 CPU 计算资源。
 
+		public final static int DETECTION_MODE_TRACKING_FAST = 3;
+		public final static int DETECTION_MODE_TRACKING_ROBUST= 4;
 		public int minFaceSize;              ///< 最小检测人脸的尺寸（人脸尺寸一般是指人脸脸颊的宽度）。
 		                                     ///< 数值越大检测用的耗时越少。
 

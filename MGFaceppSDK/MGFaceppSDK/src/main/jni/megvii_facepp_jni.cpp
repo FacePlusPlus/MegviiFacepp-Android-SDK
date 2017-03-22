@@ -138,12 +138,14 @@ jint Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeSetFaceppConfig(JNIEnv
     config.min_face_size = minFaceSize;
     config.rotation = rotation;
     config.interval = interval;
-    if (detection_mode == DETECTION_TRACKING) {
-        config.detection_mode = MG_FPP_DETECTIONMODE_TRACKING;
-    } else if (detection_mode == DETECTION_TRACKING_SMOOTH) {
-        config.detection_mode = MG_FPP_DETECTIONMODE_TRACKING_SMOOTH;
-    } else
-        config.detection_mode = MG_FPP_DETECTIONMODE_NORMAL;
+    //if (detection_mode == DETECTION_TRACKING) {
+    //    config.detection_mode = MG_FPP_DETECTIONMODE_TRACKING;
+    //} else if (detection_mode == DETECTION_TRACKING_SMOOTH) {
+    //    config.detection_mode = MG_FPP_DETECTIONMODE_TRACKING_SMOOTH;
+    //} else
+    //    config.detection_mode = MG_FPP_DETECTIONMODE_NORMAL;
+
+    config.detection_mode = (MG_FPP_DETECTIONMODE)(detection_mode);
     MG_RECTANGLE _roi;
     _roi.left = left;
     _roi.top = top;

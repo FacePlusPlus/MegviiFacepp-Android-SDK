@@ -103,7 +103,7 @@ jintArray Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeGetFaceppConfig(
         JNIEnv *env, jobject, jlong handle) {
     ApiHandle *h = reinterpret_cast<ApiHandle *>(handle);
 
-    jintArray retArray = env->NewIntArray(8);
+    jintArray retArray = env->NewIntArray(9);
 
     MG_FPP_APICONFIG config;
     mg_facepp.GetDetectConfig(h->api, &config);
@@ -122,6 +122,7 @@ jintArray Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeGetFaceppConfig(
     env->SetIntArrayRegion(retArray, 5, 1, &(config.roi.top));
     env->SetIntArrayRegion(retArray, 6, 1, &(config.roi.right));
     env->SetIntArrayRegion(retArray, 7, 1, &(config.roi.bottom));
+    env->SetIntArrayRegion(retArray, 8, 1, &(config.one_face_tracking));
 
     return retArray;
 }
@@ -130,7 +131,7 @@ jint Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeSetFaceppConfig(JNIEnv
                                                                           jobject, jlong handle, jint minFaceSize,
                                                                           jint rotation, jint interval,
                                                                           jint detection_mode, jint left, jint top,
-                                                                          jint right, jint bottom) {
+                                                                          jint right, jint bottom, jint one_face_tracking) {
     ApiHandle *h = reinterpret_cast<ApiHandle *>(handle);
     h->orientation = rotation;
     MG_FPP_APICONFIG config;
@@ -138,20 +139,14 @@ jint Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeSetFaceppConfig(JNIEnv
     config.min_face_size = minFaceSize;
     config.rotation = rotation;
     config.interval = interval;
-    //if (detection_mode == DETECTION_TRACKING) {
-    //    config.detection_mode = MG_FPP_DETECTIONMODE_TRACKING;
-    //} else if (detection_mode == DETECTION_TRACKING_SMOOTH) {
-    //    config.detection_mode = MG_FPP_DETECTIONMODE_TRACKING_SMOOTH;
-    //} else
-    //    config.detection_mode = MG_FPP_DETECTIONMODE_NORMAL;
-
-    config.detection_mode = (MG_FPP_DETECTIONMODE)(detection_mode);
+      config.detection_mode = (MG_FPP_DETECTIONMODE)detection_mode;
     MG_RECTANGLE _roi;
     _roi.left = left;
     _roi.top = top;
     _roi.right = right;
     _roi.bottom = bottom;
     config.roi = _roi;
+    config.one_face_tracking = one_face_tracking;
     int retcode = mg_facepp.SetDetectConfig(h->api, &config);
     return retcode;
 }

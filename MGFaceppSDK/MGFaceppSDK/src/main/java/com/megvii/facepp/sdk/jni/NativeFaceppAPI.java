@@ -15,7 +15,7 @@ public class NativeFaceppAPI {
 
     public static native int nativeSetFaceppConfig(long handle, int minFaceSize, int rotation, int interval,
                                                    int detectionMode, int roi_left, int roi_top, int roi_right, int
-                                                           roi_bottom);
+                                                           roi_bottom, int one_face_tracking);
 
     public static native int nativeDetect(long handle, byte[] imageData, int width, int height, int imageMode);
 

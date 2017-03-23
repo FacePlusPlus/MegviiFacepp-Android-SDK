@@ -126,10 +126,8 @@ typedef int MG_BOOL;
  * @判断 SDK 使用平台
  */
 #if __APPLE__
-    #ifndef MGAPI_INTERNAL
-        #include <UIKit/UIKit.h>
-        #define MGAPI_BUILD_ON_IPHONE   1
-    #endif
+    #define MGAPI_BUILD_ON_IPHONE   1
+    
 #elif __ANDROID__
 #define MGAPI_BUILD_ON_ANDROID	1
 #include <jni.h>

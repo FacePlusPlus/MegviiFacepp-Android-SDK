@@ -66,6 +66,7 @@ public class Facepp {
 		faceppConfig.roi_top = configs[5];
 		faceppConfig.roi_right = configs[6];
 		faceppConfig.roi_bottom = configs[7];
+		faceppConfig.one_face_tracking = configs[8];
 		return faceppConfig;
 	}
 
@@ -78,7 +79,7 @@ public class Facepp {
 	public void setFaceppConfig(FaceppConfig faceppConfig) {
 		NativeFaceppAPI.nativeSetFaceppConfig(FaceppHandle, faceppConfig.minFaceSize, faceppConfig.rotation,
 				faceppConfig.interval, faceppConfig.detectionMode, faceppConfig.roi_left, faceppConfig.roi_top,
-				faceppConfig.roi_right, faceppConfig.roi_bottom);
+				faceppConfig.roi_right, faceppConfig.roi_bottom, faceppConfig.one_face_tracking);
 	}
 
 	/**
@@ -539,10 +540,8 @@ public class Facepp {
 		public final static int DETECTION_MODE_TRACKING = 1;               ///< 视频人脸跟踪模式
 
 		public final static int DETECTION_MODE_TRACKING_SMOOTH = 2;        ///< 特殊的视频人脸跟踪模式。
-		                                                                   ///< 此模式下人脸检测与跟踪会更平均的使用 CPU 计算资源。
-
-		public final static int DETECTION_MODE_TRACKING_FAST = 3;
-		public final static int DETECTION_MODE_TRACKING_ROBUST= 4;
+		public final static int DETECTION_MODE_TRACKING_FAST = 3;                                                                   ///< 此模式下人脸检测与跟踪会更平均的使用 CPU 计算资源。
+		public final static int DETECTION_MODE_TRACKING_ROBUST = 4;
 		public int minFaceSize;              ///< 最小检测人脸的尺寸（人脸尺寸一般是指人脸脸颊的宽度）。
 		                                     ///< 数值越大检测用的耗时越少。
 
@@ -565,5 +564,6 @@ public class Facepp {
 		public int roi_top;                ///< roi的top坐标
 		public int roi_right;              ///< roi的right坐标
 		public int roi_bottom;             ///< roi的bottom坐标
+        public int one_face_tracking;
 	}
 }

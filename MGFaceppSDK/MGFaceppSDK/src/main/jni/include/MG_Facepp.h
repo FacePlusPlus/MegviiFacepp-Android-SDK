@@ -82,6 +82,7 @@ typedef struct {
     MG_RECTANGLE roi;                       ///< 一个矩形框，表示只对图像中 roi 所表示的区域做人脸检测。
                                             ///< 在特定场景下，此方法可以提高检测速度。
                                             ///< 如果人脸在 roi 中被检测到，且移动到了 roi 之外的区域，依然可以被跟踪。
+    MG_BOOL one_face_tracking;
 } MG_FPP_APICONFIG;
 
 /**

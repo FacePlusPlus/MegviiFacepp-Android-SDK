@@ -99,7 +99,7 @@ public class Facepp {
 			float[] points = NativeFaceppAPI.nativeFaceInfo(FaceppHandle, i);
 			Face face = new Face();
 			loadFaceBaseInfo(face, points);
-			loadFacePointsInfo(face, points, 81, 7);
+			loadFacePointsInfo(face, points, 81, 10);
 			faces[i] = face;
 		}
 		return faces;
@@ -369,6 +369,9 @@ public class Facepp {
 		rect.top = (int) faceBaseInfo[4];
 		rect.right = (int) faceBaseInfo[5];
 		rect.bottom = (int) faceBaseInfo[6];
+		face.pitch = faceBaseInfo[7];
+		face.yaw = faceBaseInfo[8];
+		face.roll = faceBaseInfo[9];
 	}
 
 	private void loadFacePointsInfo(Face face, float[] facePointsInfo, int facePoints, int offset) {

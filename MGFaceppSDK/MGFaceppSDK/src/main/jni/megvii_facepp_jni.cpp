@@ -217,6 +217,12 @@ jfloatArray Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeFaceInfo(JNIEnv
     env->SetFloatArrayRegion(retArray, 4, 1, &top);
     env->SetFloatArrayRegion(retArray, 5, 1, &right);
     env->SetFloatArrayRegion(retArray, 6, 1, &bottom);
+    float pitch = face.pose.pitch;
+    float yaw = face.pose.yaw;
+    float roll = face.pose.roll;
+    env->SetFloatArrayRegion(retArray, 7, 1, &pitch);
+    env->SetFloatArrayRegion(retArray, 8, 1, &yaw);
+    env->SetFloatArrayRegion(retArray, 9, 1, &roll);
 
     MG_FACELANDMARKS facelandmark = face.points;
     MG_POINT *points = facelandmark.point;
@@ -224,9 +230,10 @@ jfloatArray Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeFaceInfo(JNIEnv
         float point[2];
         point[0] = points[j].x;
         point[1] = points[j].y;
+
         rotate_point_2d(h->w, h->h, point[0], point[1], h->orientation);
 
-        env->SetFloatArrayRegion(retArray, 7 + j * 2, 2, point);
+        env->SetFloatArrayRegion(retArray, 10 + j * 2, 2, point);
     }
 
     return retArray;
@@ -243,7 +250,7 @@ jfloatArray Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeLandMark(JNIEnv
         float point[2];
         point[0] = buff[j].x;
         point[1] = buff[j].y;
-        MG_FPP_ATTR_AGE_GENDER;
+
         rotate_point_2d(h->w, h->h, point[0], point[1], h->orientation);
 
         env->SetFloatArrayRegion(retArray, j * 2, 2, point);

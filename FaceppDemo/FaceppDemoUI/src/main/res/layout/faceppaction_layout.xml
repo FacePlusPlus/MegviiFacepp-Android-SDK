@@ -44,8 +44,8 @@
         android:layout_below="@+id/landmark_logo"
         android:layout_marginBottom="20dip"
         android:layout_marginTop="30dip"
-        android:paddingLeft="35dip"
-        android:paddingRight="35dip"
+        android:paddingLeft="25dip"
+        android:paddingRight="25dip"
         android:scrollbars="none" >
 
         <LinearLayout
@@ -242,28 +242,30 @@
                     <RelativeLayout
                         android:layout_width="0dip"
                         android:layout_height="wrap_content"
+                        android:layout_gravity="bottom"
                         android:layout_weight="1" >
 
                         <include
-                            android:id="@+id/landmark_imageitem_7"
+                            android:id="@+id/landmark_edititem_3"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_centerHorizontal="true"
-                            layout="@layout/image_item" />
+                            layout="@layout/edit_item" />
                     </RelativeLayout>
 
                     <RelativeLayout
                         android:layout_width="0dip"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:visibility="invisible" >
+                        android:layout_gravity="bottom"
+                        android:visibility="visible" >
 
                         <include
-                            android:id="@+id/landmark_imageitem_8"
+                            android:id="@+id/landmark_edititem_4"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_alignParentRight="true"
-                            layout="@layout/image_item" />
+                            layout="@layout/edit_item" />
                     </RelativeLayout>
                 </LinearLayout>
             </LinearLayout>

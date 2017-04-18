@@ -54,20 +54,7 @@ public:
     }
 };
 
-#define DETECTION_TRACKING_SMOOTH 2
-#define DETECTION_TRACKING 1
-#define DETECTION_NORMAL 0
-#define DURATION_30DAYS 30
-#define DURATION_365DAYS 365
-
-#define IMAGEMODE_GRAY 0
-#define IMAGEMODE_BGR 1
-#define IMAGEMODE_NV21 2
-#define IMAGEMODE_RGBA 3
-
 #define LANDMARK_ST_NR 106
-#define ALPHA 0.7
-#define BETA 0.3
 
 struct ApiHandle {
     MG_FPP_APIHANDLE api;
@@ -139,7 +126,7 @@ jint Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeSetFaceppConfig(JNIEnv
     config.min_face_size = minFaceSize;
     config.rotation = rotation;
     config.interval = interval;
-      config.detection_mode = (MG_FPP_DETECTIONMODE)detection_mode;
+    config.detection_mode = (MG_FPP_DETECTIONMODE)detection_mode;
     MG_RECTANGLE _roi;
     _roi.left = left;
     _roi.top = top;
@@ -175,19 +162,7 @@ jint Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeDetect(JNIEnv *env, jo
 
     MG_FPP_IMAGEHANDLE imageHandle = h->imghandle;
     //LOGE("nativeDetect length: %d, imageMode: %d,", 1, imageMode);
-    if (imageMode == IMAGEMODE_GRAY) {
-        mg_facepp.SetImageData(imageHandle, (unsigned char *) img_data,
-                               MG_IMAGEMODE_GRAY);
-    } else if (imageMode == IMAGEMODE_BGR) {
-        mg_facepp.SetImageData(imageHandle, (unsigned char *) img_data,
-                               MG_IMAGEMODE_BGR);
-    } else if (imageMode == IMAGEMODE_NV21) {
-        mg_facepp.SetImageData(imageHandle, (unsigned char *) img_data,
-                               MG_IMAGEMODE_NV21);
-    } else if (imageMode == IMAGEMODE_RGBA) {
-        mg_facepp.SetImageData(imageHandle, (unsigned char *) img_data,
-                               MG_IMAGEMODE_RGBA);
-    }
+    mg_facepp.SetImageData(imageHandle, (unsigned char *) img_data, (MG_IMAGEMODE)imageMode);
     //LOGE("nativeDetect length: %d", 2);
     int faceCount = 0;
     mg_facepp.Detect(h->api, imageHandle, &faceCount);

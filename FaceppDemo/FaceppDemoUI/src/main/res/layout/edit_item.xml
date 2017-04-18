@@ -4,15 +4,17 @@
     android:layout_height="match_parent" >
 
     <LinearLayout
-        android:layout_width="70dip"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
         android:gravity="center"
         android:orientation="vertical" >
 
         <TextView
             android:id="@+id/edit_item_edit"
-            android:layout_width="wrap_content"
+            android:layout_width="90dip"
             android:layout_height="30dip"
+            android:layout_gravity="center_horizontal"
             android:gravity="center"
             android:singleLine="true"
             android:text="1000000000"
@@ -21,14 +23,15 @@
 
         <TextView
             android:id="@+id/edit_item_text"
-            android:layout_width="wrap_content"
+            android:layout_width="90dip"
             android:layout_height="wrap_content"
+            android:gravity="center"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="10dip"
             android:singleLine="true"
             android:text="InBound"
             android:textColor="#30364C"
-            android:textSize="12sp" />
+            android:textSize="10sp" />
     </LinearLayout>
 
 </RelativeLayout>

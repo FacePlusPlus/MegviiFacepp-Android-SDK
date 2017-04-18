@@ -41,7 +41,8 @@ public class OpenglActivity extends Activity
 		implements PreviewCallback, Renderer, SurfaceTexture.OnFrameAvailableListener {
 
 	private boolean isStartRecorder, is3DPose, isDebug, isROIDetect, is106Points, isBackCamera, isFaceProperty,
-			isSmooth;
+			isOneFaceTrackig;
+	private String trackModel;
 	private boolean isTiming = true; // 是否是定时去刷新界面;
 	private int printTime = 31;
 	private GLSurfaceView mGlSurfaceView;
@@ -58,8 +59,6 @@ public class OpenglActivity extends Activity
 	private HashMap<String, Integer> resolutionMap;
 	private SensorEventUtil sensorUtil;
 	private float roi_ratio = 0.8f;
-	private String[] eyeStr = { "无睁", "无闭", "镜睁", "镜闭", "墨镜", "遮挡" };
-	private String[] mouthStr = { "OPEN", "CLOSE", "MASK_OR_RESPIRATOR", "OTHER_OCCLUSION" };
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -87,7 +86,8 @@ public class OpenglActivity extends Activity
 		is106Points = getIntent().getBooleanExtra("is106Points", false);
 		isBackCamera = getIntent().getBooleanExtra("isBackCamera", false);
 		isFaceProperty = getIntent().getBooleanExtra("isFaceProperty", false);
-		isSmooth = getIntent().getBooleanExtra("isSmooth", false);
+		isOneFaceTrackig = getIntent().getBooleanExtra("isOneFaceTrackig", false);
+		trackModel = getIntent().getStringExtra("trackModel");
 
 		min_face_size = getIntent().getIntExtra("faceSize", min_face_size);
 		detection_interval = getIntent().getIntExtra("interval", detection_interval);
@@ -140,7 +140,7 @@ public class OpenglActivity extends Activity
 				if (isRecordSucess)
 					mICamera.actionDetect(this);
 				else
-					mDialogUtil.showDialog("该分辨率不能录制视频");
+					mDialogUtil.showDialog(getResources().getString(R.string.no_record));
 			}
 		}
 	}
@@ -194,13 +194,21 @@ public class OpenglActivity extends Activity
 			faceppConfig.roi_top = top;
 			faceppConfig.roi_right = right;
 			faceppConfig.roi_bottom = bottom;
-			if (isSmooth)
-				faceppConfig.detectionMode = Facepp.FaceppConfig.DETECTION_MODE_TRACKING_SMOOTH;
+			if (isOneFaceTrackig)
+				faceppConfig.one_face_tracking = 1;
 			else
+				faceppConfig.one_face_tracking = 0;
+			String[] array = getResources().getStringArray(R.array.trackig_mode_array);
+			if (trackModel.equals(array[0]))
 				faceppConfig.detectionMode = Facepp.FaceppConfig.DETECTION_MODE_TRACKING;
+			else if (trackModel.equals(array[1]))
+				faceppConfig.detectionMode = Facepp.FaceppConfig.DETECTION_MODE_TRACKING_ROBUST;
+			else if (trackModel.equals(array[2]))
+				faceppConfig.detectionMode = Facepp.FaceppConfig.DETECTION_MODE_TRACKING_FAST;
+
 			facepp.setFaceppConfig(faceppConfig);
 		} else {
-			mDialogUtil.showDialog("打开相机失败");
+			mDialogUtil.showDialog(getResources().getString(R.string.camera_error));
 		}
 	}
 

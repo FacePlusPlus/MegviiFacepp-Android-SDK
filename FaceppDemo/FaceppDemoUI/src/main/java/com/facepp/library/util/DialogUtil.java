@@ -3,11 +3,17 @@ package com.facepp.library.util;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.view.ViewGroup.LayoutParams;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.facepp.library.R;
+import com.megvii.facepp.sdk.Facepp;
 
 public class DialogUtil {
 
@@ -20,7 +26,7 @@ public class DialogUtil {
 	public void showDialog(String message) {
 		AlertDialog alertDialog = new Builder(activity)
 				.setTitle(message)
-				.setNegativeButton("确认", new DialogInterface.OnClickListener() {
+				.setNegativeButton(activity.getResources().getString(R.string.complete), new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
 						activity.finish();
@@ -28,7 +34,48 @@ public class DialogUtil {
 				}).setCancelable(false).create();
 		alertDialog.show();
 	}
-	
+
+	public void showTrackModel(final TextView textView){
+		RadioOnClick OnClick = new RadioOnClick(textView);
+		AlertDialog ad =new AlertDialog.Builder(activity).setTitle(activity.getResources().getString(R.string.trackig_mode))
+				.setSingleChoiceItems(R.array.trackig_mode_array,OnClick.getIndex(),OnClick).create();
+		ListView areaListView=ad.getListView();
+		ad.show();
+	}
+
+
+	class RadioOnClick implements DialogInterface.OnClickListener{
+		private int index;
+		private TextView textView;
+
+		public RadioOnClick(final TextView textView){
+			this.textView = textView;
+			String[] array = activity.getResources().getStringArray(R.array.trackig_mode_array);
+			String trackModel = textView.getText().toString().trim();
+			for (int i = 0; i < array.length; i++){
+				if (trackModel.equals(array[i])) {
+					index = i;
+					break;
+				}
+			}
+		}
+
+		public void setIndex(int index){
+			this.index=index;
+		}
+		public int getIndex(){
+			return index;
+		}
+
+		public void onClick(DialogInterface dialog, int whichButton){
+			setIndex(whichButton);
+			String[] array = activity.getResources().getStringArray(R.array.trackig_mode_array);
+			textView.setText(array[index]);
+			dialog.dismiss();
+			textView = null;
+		}
+	}
+
 	public void showEditText(final TextView text, final int index) {
 		Builder builder = new Builder(activity);
 		builder.setTitle(getTitle(index)); // 设置对话框标题
@@ -45,12 +92,12 @@ public class DialogUtil {
 		imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_NOT_ALWAYS);
 
 		builder.setView(edit);
-		builder.setPositiveButton("确认", new DialogInterface.OnClickListener() {
+		builder.setPositiveButton(activity.getResources().getString(R.string.complete), new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				String str = edit.getText().toString();
 				if (isNum(str)) {
-					ConUtil.showToast(activity, "请输入数字！");
+					ConUtil.showToast(activity, activity.getResources().getString(R.string.number) + "！");
 					return;
 				} else {
 					try {
@@ -58,7 +105,7 @@ public class DialogUtil {
 						setTextSzie(text, value.length());
 						text.setText(value);
 					} catch (Exception e) {
-						ConUtil.showToast(activity, "请输入数字！");
+						ConUtil.showToast(activity, activity.getResources().getString(R.string.number) + "！");
 					}
 				}
 
@@ -66,7 +113,7 @@ public class DialogUtil {
 				imm.hideSoftInputFromWindow(edit.getWindowToken(), 0);
 			}
 		});
-		builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+		builder.setNegativeButton(activity.getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				// 取消重命名时候隐藏软键盘
@@ -96,21 +143,23 @@ public class DialogUtil {
 
 	public String getTitle(int index) {
 		String title = "请输入";
+		String min_vlue = activity.getResources().getString(R.string.min_value);
+		String max_vlue = activity.getResources().getString(R.string.max_value);
 		switch (index) {
 		case 0:
-			title = "最小值是33\n最大值是2147483647";
+			title = min_vlue + " 33\n" + max_vlue + " 2147483647";
 			break;
 		case 1:
-			title = "最小值是1\n最大值是2147483647";
+			title = min_vlue + " 1\n" + max_vlue + " 2147483647";
 			break;
 		case 2:
-			title = "最小值是0\n最大值是1          ";
+			title = min_vlue + " 0\n" + max_vlue + " 1";
 			break;
 		case 3:
-			title = "最小值是0\n最大值是1          ";
+			title = min_vlue + " 0\n" + max_vlue + " 1";
 			break;
 		case 4:
-			title = "最小值是0\n最大值是1          ";
+			title = min_vlue + " 0\n" + max_vlue + " 1";
 			break;
 		}
 		return title;

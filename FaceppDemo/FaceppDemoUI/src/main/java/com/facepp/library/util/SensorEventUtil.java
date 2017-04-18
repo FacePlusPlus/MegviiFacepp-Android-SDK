@@ -26,6 +26,8 @@ public class SensorEventUtil implements SensorEventListener {
 
 	@Override
 	public void onSensorChanged(SensorEvent event) {
+		final double G = 9.81;
+		final double SQRT2 = 1.414213;
 		if (event.sensor == null) {
 			return;
 		}
@@ -34,15 +36,27 @@ public class SensorEventUtil implements SensorEventListener {
 			float x = event.values[0];
 			float y = event.values[1];
 			float z = event.values[2];
-			
-			if(x >= 9)
-				orientation = 1;
-			else if(x <= -9)
-				orientation = 2;
-			else if(y <= -9)
-				orientation = 3;
-			else
-				orientation = 0;
+			if (z >= G / SQRT2) { //screen is more likely lying on the table
+				if (x >= G / 2) {
+					orientation = 1;
+				} else if (x <= -G / 2) {
+					orientation = 2;
+				} else if (y <= -G / 2) {
+					orientation = 3;
+				} else {
+					orientation = 0;
+				}
+			} else {
+				if (x >= G / SQRT2) {
+					orientation = 1;
+				} else if (x <= -G / SQRT2) {
+					orientation = 2;
+				} else if (y <= -G / SQRT2) {
+					orientation = 3;
+				} else {
+					orientation = 0;
+				}
+			}
 		}
 	}
 }

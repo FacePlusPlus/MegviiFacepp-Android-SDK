@@ -42,8 +42,10 @@ typedef enum {
 
     MG_FPP_DETECTIONMODE_TRACKING,          ///< 视频人脸跟踪模式
 
-    MG_FPP_DETECTIONMODE_TRACKING_SMOOTH    ///< 特殊的视频人脸跟踪模式。
+    MG_FPP_DETECTIONMODE_TRACKING_SMOOTH,    ///< 特殊的视频人脸跟踪模式。
                                             ///< 此模式下人脸检测与跟踪会更平均的使用 CPU 计算资源。
+    MG_FPP_DETECTIONMODE_TRACKING_FAST,     ///< 牺牲了人脸关键点的贴合度，提升了人脸跟踪的速度
+    MG_FPP_DETECTIONMODE_TRACKING_ROBUST    ///< 提高了人脸关键点的贴合度，降低了人脸跟踪的速度
 } MG_FPP_DETECTIONMODE;
 
 struct _MG_FPP_API;
@@ -80,6 +82,7 @@ typedef struct {
     MG_RECTANGLE roi;                       ///< 一个矩形框，表示只对图像中 roi 所表示的区域做人脸检测。
                                             ///< 在特定场景下，此方法可以提高检测速度。
                                             ///< 如果人脸在 roi 中被检测到，且移动到了 roi 之外的区域，依然可以被跟踪。
+    MG_BOOL one_face_tracking;
 } MG_FPP_APICONFIG;
 
 /**

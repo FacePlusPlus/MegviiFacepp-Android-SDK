@@ -54,20 +54,7 @@ public:
     }
 };
 
-#define DETECTION_TRACKING_SMOOTH 2
-#define DETECTION_TRACKING 1
-#define DETECTION_NORMAL 0
-#define DURATION_30DAYS 30
-#define DURATION_365DAYS 365
-
-#define IMAGEMODE_GRAY 0
-#define IMAGEMODE_BGR 1
-#define IMAGEMODE_NV21 2
-#define IMAGEMODE_RGBA 3
-
 #define LANDMARK_ST_NR 106
-#define ALPHA 0.7
-#define BETA 0.3
 
 struct ApiHandle {
     MG_FPP_APIHANDLE api;
@@ -103,7 +90,7 @@ jintArray Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeGetFaceppConfig(
         JNIEnv *env, jobject, jlong handle) {
     ApiHandle *h = reinterpret_cast<ApiHandle *>(handle);
 
-    jintArray retArray = env->NewIntArray(8);
+    jintArray retArray = env->NewIntArray(9);
 
     MG_FPP_APICONFIG config;
     mg_facepp.GetDetectConfig(h->api, &config);
@@ -122,6 +109,7 @@ jintArray Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeGetFaceppConfig(
     env->SetIntArrayRegion(retArray, 5, 1, &(config.roi.top));
     env->SetIntArrayRegion(retArray, 6, 1, &(config.roi.right));
     env->SetIntArrayRegion(retArray, 7, 1, &(config.roi.bottom));
+    env->SetIntArrayRegion(retArray, 8, 1, &(config.one_face_tracking));
 
     return retArray;
 }
@@ -130,7 +118,7 @@ jint Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeSetFaceppConfig(JNIEnv
                                                                           jobject, jlong handle, jint minFaceSize,
                                                                           jint rotation, jint interval,
                                                                           jint detection_mode, jint left, jint top,
-                                                                          jint right, jint bottom) {
+                                                                          jint right, jint bottom, jint one_face_tracking) {
     ApiHandle *h = reinterpret_cast<ApiHandle *>(handle);
     h->orientation = rotation;
     MG_FPP_APICONFIG config;
@@ -138,18 +126,14 @@ jint Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeSetFaceppConfig(JNIEnv
     config.min_face_size = minFaceSize;
     config.rotation = rotation;
     config.interval = interval;
-    if (detection_mode == DETECTION_TRACKING) {
-        config.detection_mode = MG_FPP_DETECTIONMODE_TRACKING;
-    } else if (detection_mode == DETECTION_TRACKING_SMOOTH) {
-        config.detection_mode = MG_FPP_DETECTIONMODE_TRACKING_SMOOTH;
-    } else
-        config.detection_mode = MG_FPP_DETECTIONMODE_NORMAL;
+    config.detection_mode = (MG_FPP_DETECTIONMODE)detection_mode;
     MG_RECTANGLE _roi;
     _roi.left = left;
     _roi.top = top;
     _roi.right = right;
     _roi.bottom = bottom;
     config.roi = _roi;
+    config.one_face_tracking = one_face_tracking;
     int retcode = mg_facepp.SetDetectConfig(h->api, &config);
     return retcode;
 }
@@ -178,19 +162,7 @@ jint Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeDetect(JNIEnv *env, jo
 
     MG_FPP_IMAGEHANDLE imageHandle = h->imghandle;
     //LOGE("nativeDetect length: %d, imageMode: %d,", 1, imageMode);
-    if (imageMode == IMAGEMODE_GRAY) {
-        mg_facepp.SetImageData(imageHandle, (unsigned char *) img_data,
-                               MG_IMAGEMODE_GRAY);
-    } else if (imageMode == IMAGEMODE_BGR) {
-        mg_facepp.SetImageData(imageHandle, (unsigned char *) img_data,
-                               MG_IMAGEMODE_BGR);
-    } else if (imageMode == IMAGEMODE_NV21) {
-        mg_facepp.SetImageData(imageHandle, (unsigned char *) img_data,
-                               MG_IMAGEMODE_NV21);
-    } else if (imageMode == IMAGEMODE_RGBA) {
-        mg_facepp.SetImageData(imageHandle, (unsigned char *) img_data,
-                               MG_IMAGEMODE_RGBA);
-    }
+    mg_facepp.SetImageData(imageHandle, (unsigned char *) img_data, (MG_IMAGEMODE)imageMode);
     //LOGE("nativeDetect length: %d", 2);
     int faceCount = 0;
     mg_facepp.Detect(h->api, imageHandle, &faceCount);
@@ -220,6 +192,12 @@ jfloatArray Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeFaceInfo(JNIEnv
     env->SetFloatArrayRegion(retArray, 4, 1, &top);
     env->SetFloatArrayRegion(retArray, 5, 1, &right);
     env->SetFloatArrayRegion(retArray, 6, 1, &bottom);
+    float pitch = face.pose.pitch;
+    float yaw = face.pose.yaw;
+    float roll = face.pose.roll;
+    env->SetFloatArrayRegion(retArray, 7, 1, &pitch);
+    env->SetFloatArrayRegion(retArray, 8, 1, &yaw);
+    env->SetFloatArrayRegion(retArray, 9, 1, &roll);
 
     MG_FACELANDMARKS facelandmark = face.points;
     MG_POINT *points = facelandmark.point;
@@ -227,9 +205,10 @@ jfloatArray Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeFaceInfo(JNIEnv
         float point[2];
         point[0] = points[j].x;
         point[1] = points[j].y;
+
         rotate_point_2d(h->w, h->h, point[0], point[1], h->orientation);
 
-        env->SetFloatArrayRegion(retArray, 7 + j * 2, 2, point);
+        env->SetFloatArrayRegion(retArray, 10 + j * 2, 2, point);
     }
 
     return retArray;
@@ -246,7 +225,7 @@ jfloatArray Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeLandMark(JNIEnv
         float point[2];
         point[0] = buff[j].x;
         point[1] = buff[j].y;
-        MG_FPP_ATTR_AGE_GENDER;
+
         rotate_point_2d(h->w, h->h, point[0], point[1], h->orientation);
 
         env->SetFloatArrayRegion(retArray, j * 2, 2, point);

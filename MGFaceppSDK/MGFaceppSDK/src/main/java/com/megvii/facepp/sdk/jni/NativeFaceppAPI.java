@@ -15,7 +15,7 @@ public class NativeFaceppAPI {
 
     public static native int nativeSetFaceppConfig(long handle, int minFaceSize, int rotation, int interval,
                                                    int detectionMode, int roi_left, int roi_top, int roi_right, int
-                                                           roi_bottom);
+                                                           roi_bottom, int one_face_tracking);
 
     public static native int nativeDetect(long handle, byte[] imageData, int width, int height, int imageMode);
 
@@ -60,8 +60,8 @@ public class NativeFaceppAPI {
      * 这里加载的名称要根据 so 不同的版本号进行修改
      */
     static {
-        System.loadLibrary("MegviiFacepp-0.4.5");
-        System.loadLibrary("MegviiFacepp-jni-0.4.5");
+        System.loadLibrary("MegviiFacepp-0.4.7");
+        System.loadLibrary("MegviiFacepp-jni-0.4.7");
     }
 
 }

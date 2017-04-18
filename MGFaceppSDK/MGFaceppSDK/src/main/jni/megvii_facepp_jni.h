@@ -14,7 +14,7 @@ JNIEXPORT jintArray JNICALL Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativ
 
 JNIEXPORT jint JNICALL Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeSetFaceppConfig(
         JNIEnv *, jobject, jlong, jint, jint, jint, jint, jint, jint, jint,
-        jint);
+        jint, jint);
 
 JNIEXPORT jint JNICALL Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeDetect(
         JNIEnv *, jobject, jlong, jbyteArray, jint, jint, jint);

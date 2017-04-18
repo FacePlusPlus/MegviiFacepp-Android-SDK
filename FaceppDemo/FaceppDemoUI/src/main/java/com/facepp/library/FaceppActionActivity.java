@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -46,19 +47,20 @@ public class FaceppActionActivity extends Activity implements OnClickListener {
 	private DialogUtil mDialogUtil;
 
 	private boolean isStartRecorder, is3DPose, isDebug, isROIDetect, is106Points, isBackCamera, isFaceProperty,
-			isSmooth;
+			isOneFaceTrackig;
 	private int[] imageItemImages_gray = {R.drawable.record_gray, R.drawable.three_d_gray, R.drawable.debug_gray,
 			R.drawable.area_gray, R.drawable.point81, R.drawable.frontphone, R.drawable.faceproperty_gray, R.drawable
 			.debug_gray};
 	private int[] imageItemImages_blue = {R.drawable.record_blue, R.drawable.three_d_blue, R.drawable.debug_blue,
 			R.drawable.area_blue, R.drawable.point106, R.drawable.backphone, R.drawable.faceproperty_blue, R.drawable
 			.debug_blue};
-	private String[] imageItemTexts = {"录像", "3D模型", "调试信息", "区域选择", "关键点个数", "前置置摄像头", "年龄性别", "SMOOTH"};
-	private String[] editItemStrs = {"最小人脸", "相机分辨率", "检测间隔"};
+	private int[] imageItemTexts = {R.string.record, R.string.pose_3d, R.string.debug, R.string.roi, R.string.landmarks, R.string.front, R.string.attributes, R.string.trackig_mode};
+	private int[] editItemStrs = {R.string.min_face, R.string.resolution, R.string.interval, R.string.one_face_trackig, R.string.trackig_mode};
+
 	private RelativeLayout[] imageItem_Rels;
 	private RelativeLayout[] textItem_Rels;
 	private TextView[] editItemTexts;
-	private String[] editValues = {min_face_size + "", resolution, detection_interval + ""};
+	private String[] editValues = {min_face_size + "", resolution, detection_interval + "", "NO", "Normal"};
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -79,9 +81,11 @@ public class FaceppActionActivity extends Activity implements OnClickListener {
 	private void init() {
 		mDialogUtil = new DialogUtil(this);
 		TextView title = (TextView) findViewById(R.id.title_layout_titleText);
-		title.setText("Face++ 功能演示");
+		title.setText(getResources().getString(R.string.title));
 		findViewById(R.id.title_layout_returnRel).setVisibility(View.GONE);
-		findViewById(R.id.landmark_enterBtn).setOnClickListener(this);
+		Button enterBtn = (Button) findViewById(R.id.landmark_enterBtn);
+		enterBtn.setText(getResources().getString(R.string.detect_face));
+		enterBtn.setOnClickListener(this);
 		mInflater = LayoutInflater.from(this);
 		findViewById(R.id.activity_rootRel).setOnClickListener(this);
 		mListRel = (RelativeLayout) findViewById(R.id.landmark_listRel);
@@ -98,12 +102,13 @@ public class FaceppActionActivity extends Activity implements OnClickListener {
 		RelativeLayout rel4 = (RelativeLayout) findViewById(R.id.landmark_imageitem_4);
 		RelativeLayout rel5 = (RelativeLayout) findViewById(R.id.landmark_imageitem_5);
 		RelativeLayout rel6 = (RelativeLayout) findViewById(R.id.landmark_imageitem_6);
-		RelativeLayout rel7 = (RelativeLayout) findViewById(R.id.landmark_imageitem_7);
-		imageItem_Rels = new RelativeLayout[]{rel0, rel1, rel2, rel3, rel4, rel5, rel6, rel7};
+		imageItem_Rels = new RelativeLayout[]{rel0, rel1, rel2, rel3, rel4, rel5, rel6};
 		RelativeLayout textRel0 = (RelativeLayout) findViewById(R.id.landmark_edititem_0);
 		RelativeLayout textRel1 = (RelativeLayout) findViewById(R.id.landmark_edititem_1);
 		RelativeLayout textRel2 = (RelativeLayout) findViewById(R.id.landmark_edititem_2);
-		textItem_Rels = new RelativeLayout[]{textRel0, textRel1, textRel2};
+		RelativeLayout textRel3 = (RelativeLayout) findViewById(R.id.landmark_edititem_3);
+		RelativeLayout textRel4 = (RelativeLayout) findViewById(R.id.landmark_edititem_4);
+		textItem_Rels = new RelativeLayout[]{textRel0, textRel1, textRel2, textRel3, textRel4};
 	}
 
 	private void initData() {
@@ -112,22 +117,22 @@ public class FaceppActionActivity extends Activity implements OnClickListener {
 			ImageView image = (ImageView) imageItem_Rels[i].findViewById(R.id.image_item_image);
 			image.setImageResource(imageItemImages_gray[i]);
 			TextView text = (TextView) imageItem_Rels[i].findViewById(R.id.image_item_text);
-			text.setText(imageItemTexts[i]);
+			text.setText(getResources().getString(imageItemTexts[i]));
 			text.setTextColor(0XFFD0D0D0);
 			if (i == 5) {
 				text.setTextColor(0XFF30364C);
-				text.setText("前置摄像头");
+				text.setText(getResources().getString(R.string.front));
 			} else if (i == 4) {
 				text.setTextColor(0XFF30364C);
-				text.setText("关键点数");
+				text.setText(getResources().getString(R.string.landmarks));
 			}
 		}
 
-		editItemTexts = new TextView[3];
+		editItemTexts = new TextView[5];
 		for (int i = 0; i < textItem_Rels.length; i++) {
 			textItem_Rels[i].setOnClickListener(this);
 			TextView text = (TextView) textItem_Rels[i].findViewById(R.id.edit_item_text);
-			text.setText(editItemStrs[i]);
+			text.setText(getResources().getString(editItemStrs[i]));
 			editItemTexts[i] = (TextView) textItem_Rels[i].findViewById(R.id.edit_item_edit);
 			editItemTexts[i].setText(editValues[i]);
 			mDialogUtil.setTextSzie(editItemTexts[i], editValues[i].length());
@@ -145,14 +150,14 @@ public class FaceppActionActivity extends Activity implements OnClickListener {
 			text.setTextColor(0XFF30364C);
 			image.setImageResource(imageItemImages_blue[index]);
 			if (index == 5)
-				text.setText("后置摄像头");
+				text.setText(getResources().getString(R.string.back));
 		} else {
 			if (index != 5 && index != 4)
 				text.setTextColor(0XFFD0D0D0);
 
 			image.setImageResource(imageItemImages_gray[index]);
 			if (index == 5)
-				text.setText("前置摄像头");
+				text.setText(getResources().getString(R.string.front));
 		}
 	}
 
@@ -230,6 +235,14 @@ public class FaceppActionActivity extends Activity implements OnClickListener {
 			isShowListView();
 		} else if (ID == R.id.landmark_edititem_2) {
 			mDialogUtil.showEditText(editItemTexts[2], 1);
+		} else if (ID == R.id.landmark_edititem_3) {
+			isOneFaceTrackig = !isOneFaceTrackig;
+			if (isOneFaceTrackig)
+				editItemTexts[3].setText(getResources().getString(R.string.one_face_trackig_true));
+			else
+				editItemTexts[3].setText(getResources().getString(R.string.one_face_trackig_false));
+		} else if (ID == R.id.landmark_edititem_4) {
+			mDialogUtil.showTrackModel(editItemTexts[4]);
 		} else if (ID == R.id.landmark_listRel) {
 			isShowListView();
 		} else if (ID == R.id.activity_rootRel) {
@@ -255,15 +268,12 @@ public class FaceppActionActivity extends Activity implements OnClickListener {
 			getCameraSizeList();
 		} else if (ID == R.id.landmark_imageitem_6) {
 			if (!Facepp.getAbility(ConUtil.getFileContent(this, R
-					.raw.megviifacepp_0_4_5_model)).contains(Facepp.Ability.AGEGENDER)) {
-				ConUtil.showToast(this, "本检测器没有此项功能");
+					.raw.megviifacepp_0_4_7_model)).contains(Facepp.Ability.AGEGENDER)) {
+				ConUtil.showToast(this, getResources().getString(R.string.detector));
 				return;
 			}
 			isFaceProperty = !isFaceProperty;
 			onclickImageItem(6, isFaceProperty);
-		} else if (ID == R.id.landmark_imageitem_7) {
-			isSmooth = !isSmooth;
-			onclickImageItem(7, isSmooth);
 		} else if (ID == R.id.landmark_enterBtn) {
 			min_face_size = (int) Long.parseLong(editItemTexts[0].getText().toString());
 			detection_interval = (int) Long.parseLong(editItemTexts[2].getText().toString());
@@ -289,7 +299,8 @@ public class FaceppActionActivity extends Activity implements OnClickListener {
 					.putExtra("is106Points", is106Points).putExtra("isBackCamera", isBackCamera)
 					.putExtra("faceSize", min_face_size).putExtra("interval", detection_interval)
 					.putExtra("resolution", resolutionMap).putExtra("isFaceProperty", isFaceProperty)
-					.putExtra("isSmooth", isSmooth));
+					.putExtra("isOneFaceTrackig", isOneFaceTrackig)
+					.putExtra("trackModel", editItemTexts[4].getText().toString().trim()));
 		}
 	}
 

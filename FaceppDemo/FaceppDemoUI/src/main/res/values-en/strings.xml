@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Face++ Demo</string>
+
+    <string name="record">Record</string>
+    <string name="pose_3d">3D Pose</string>
+    <string name="debug">Debug</string>
+    <string name="roi">ROI</string>
+    <string name="attributes">Attributes</string>
+    <string name="front">Front</string>
+    <string name="back">Back</string>
+    <string name="min_face">Min Face</string>
+    <string name="fps">FPS</string>
+    <string name="interval">Interval</string>
+    <string name="landmarks">Landmarks</string>
+    <string name="resolution">Resolution</string>
+    <string name="one_face_trackig">One Face Tracking</string>
+    <string name="trackig_mode">Tracking Mode</string>
+    <string name="detect_face">Detect Face</string>
+    <string name="fast">Fast</string>
+    <string name="robust">Robust</string>
+    <string name="normal">Normal</string>
+    <string name="cancel">cancel</string>
+    <string name="select">select</string>
+    <string name="title">Face++ Demo</string>
+    <string name="key_secret">API_KEY or API_SECRET is null</string>
+    <string name="auth_progress">Networking authorization...</string>
+    <string name="auth_fail">Network authorization failed</string>
+    <string name="auth_again">again Networking auth</string>
+    <string name="detector">This detector does not have this feature</string>
+    <string name="complete">down</string>
+    <string name="min_value">min</string>
+    <string name="max_value">max</string>
+    <string name="number">number</string>
+    <string name="no_record">can not record!</string>
+    <string name="camera_error">can not open camera</string>
+    <string name="one_face_trackig_true">YES</string>
+    <string name="one_face_trackig_false">NO</string>
+    <string-array name="trackig_mode_array">
+        <item>Normal</item>
+        <item>Robust</item>
+        <item>Fast</item>
+    </string-array>
+
+
+
+</resources>

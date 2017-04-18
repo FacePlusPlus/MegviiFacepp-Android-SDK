@@ -23,6 +23,11 @@ public class Facepp {
 	public final static int IMAGEMODE_BGR = 1;                  ///< BGR图像
 	public final static int IMAGEMODE_NV21 = 2;                 ///< YUV420（nv21）图像
 	public final static int IMAGEMODE_RGBA = 3;                 ///< RGBA图像
+	public final static int IMAGEMODE_RGB = 4;                  ///< RGB图像
+	public final static int IMAGEMODE_COUNT = 5;                ///< 支持图像总数
+
+
+
 
 	private long FaceppHandle;
 	private static ArrayList<Ability> abilities;
@@ -66,6 +71,7 @@ public class Facepp {
 		faceppConfig.roi_top = configs[5];
 		faceppConfig.roi_right = configs[6];
 		faceppConfig.roi_bottom = configs[7];
+		faceppConfig.one_face_tracking = configs[8];
 		return faceppConfig;
 	}
 
@@ -78,7 +84,7 @@ public class Facepp {
 	public void setFaceppConfig(FaceppConfig faceppConfig) {
 		NativeFaceppAPI.nativeSetFaceppConfig(FaceppHandle, faceppConfig.minFaceSize, faceppConfig.rotation,
 				faceppConfig.interval, faceppConfig.detectionMode, faceppConfig.roi_left, faceppConfig.roi_top,
-				faceppConfig.roi_right, faceppConfig.roi_bottom);
+				faceppConfig.roi_right, faceppConfig.roi_bottom, faceppConfig.one_face_tracking);
 	}
 
 	/**
@@ -98,7 +104,7 @@ public class Facepp {
 			float[] points = NativeFaceppAPI.nativeFaceInfo(FaceppHandle, i);
 			Face face = new Face();
 			loadFaceBaseInfo(face, points);
-			loadFacePointsInfo(face, points, 81, 7);
+			loadFacePointsInfo(face, points, 81, 10);
 			faces[i] = face;
 		}
 		return faces;
@@ -368,6 +374,9 @@ public class Facepp {
 		rect.top = (int) faceBaseInfo[4];
 		rect.right = (int) faceBaseInfo[5];
 		rect.bottom = (int) faceBaseInfo[6];
+		face.pitch = faceBaseInfo[7];
+		face.yaw = faceBaseInfo[8];
+		face.roll = faceBaseInfo[9];
 	}
 
 	private void loadFacePointsInfo(Face face, float[] facePointsInfo, int facePoints, int offset) {
@@ -539,7 +548,10 @@ public class Facepp {
 		public final static int DETECTION_MODE_TRACKING = 1;               ///< 视频人脸跟踪模式
 
 		public final static int DETECTION_MODE_TRACKING_SMOOTH = 2;        ///< 特殊的视频人脸跟踪模式。
-		                                                                   ///< 此模式下人脸检测与跟踪会更平均的使用 CPU 计算资源。
+
+		public final static int DETECTION_MODE_TRACKING_FAST = 3;          ///< 牺牲了人脸关键点的贴合度，提升了人脸跟踪的速度                                                   ///< 此模式下人脸检测与跟踪会更平均的使用 CPU 计算资源。
+
+		public final static int DETECTION_MODE_TRACKING_ROBUST = 4;        ///< 提高了人脸关键点的贴合度，降低了人脸跟踪的速度
 
 		public int minFaceSize;              ///< 最小检测人脸的尺寸（人脸尺寸一般是指人脸脸颊的宽度）。
 		                                     ///< 数值越大检测用的耗时越少。
@@ -563,5 +575,7 @@ public class Facepp {
 		public int roi_top;                ///< roi的top坐标
 		public int roi_right;              ///< roi的right坐标
 		public int roi_bottom;             ///< roi的bottom坐标
+
+        public int one_face_tracking;  ///< 是否只识别一张脸 0表示识别多张脸，1表示只识别1张脸
 	}
 }

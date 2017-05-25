@@ -90,7 +90,7 @@ public class LoadingActivity extends Activity {
 				.megviifacepp_0_4_7_model)));
 
 		String uuid = ConUtil.getUUIDString(LoadingActivity.this);
-		long[] apiName = {Facepp.getApiName()};
+		long apiName = Facepp.getApiName();
 
 
 		licenseManager.takeLicenseFromNetwork(uuid, Util.API_KEY, Util.API_SECRET, apiName,

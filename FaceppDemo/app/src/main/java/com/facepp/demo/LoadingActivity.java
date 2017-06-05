@@ -92,6 +92,7 @@ public class LoadingActivity extends Activity {
 		String uuid = ConUtil.getUUIDString(LoadingActivity.this);
 		long apiName = Facepp.getApiName();
 
+		licenseManager.setAuthTimeBufferMillis(0);
 
 		licenseManager.takeLicenseFromNetwork(uuid, Util.API_KEY, Util.API_SECRET, apiName,
 				LicenseManager.DURATION_30DAYS, "Landmark", "1", true, new LicenseManager.TakeLicenseCallback() {

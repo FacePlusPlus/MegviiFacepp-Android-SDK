@@ -6,7 +6,6 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
@@ -20,6 +19,7 @@ import com.facepp.library.util.SharedUtil;
 import com.facepp.library.util.Util;
 import com.megvii.awesomedemo.facepp.R;
 import com.megvii.facepp.sdk.Facepp;
+import com.megvii.licensemanager.sdk.LicenseManager;
 
 import java.util.Locale;
 //import com.megvii.licensemanager.sdk.LicenseManager;
@@ -82,28 +82,30 @@ public class LoadingActivity extends Activity {
 			return;
 		}
 
-//		againWarrantyBtn.setVisibility(View.GONE);
-//		WarrantyText.setText(getResources().getString(R.string.auth_progress));
-//		WarrantyBar.setVisibility(View.VISIBLE);
-//		final LicenseManager licenseManager = new LicenseManager(this);
-//		licenseManager.setExpirationMillis(Facepp.getApiExpirationMillis(this, ConUtil.getFileContent(this, R.raw
-//				.megviifacepp_0_4_7_model)));
-//
-//		String uuid = ConUtil.getUUIDString(LoadingActivity.this);
-//		long[] apiName = {Facepp.getApiName()};
-//
-//		licenseManager.takeLicenseFromNetwork(uuid, Util.API_KEY, Util.API_SECRET, apiName,
-//				LicenseManager.DURATION_30DAYS, new LicenseManager.TakeLicenseCallback() {
-//					@Override
-//					public void onSuccess() {
-//						authState(true);
-//					}
-//
-//					@Override
-//					public void onFailed(int i, byte[] bytes) {
-//						authState(false);
-//					}
-//				});
+		againWarrantyBtn.setVisibility(View.GONE);
+		WarrantyText.setText(getResources().getString(R.string.auth_progress));
+		WarrantyBar.setVisibility(View.VISIBLE);
+		final LicenseManager licenseManager = new LicenseManager(this);
+		licenseManager.setExpirationMillis(Facepp.getApiExpirationMillis(this, ConUtil.getFileContent(this, R.raw
+				.megviifacepp_0_4_7_model)));
+
+		String uuid = ConUtil.getUUIDString(LoadingActivity.this);
+		long apiName = Facepp.getApiName();
+
+		licenseManager.setAuthTimeBufferMillis(0);
+
+		licenseManager.takeLicenseFromNetwork(uuid, Util.API_KEY, Util.API_SECRET, apiName,
+				LicenseManager.DURATION_30DAYS, "Landmark", "1", true, new LicenseManager.TakeLicenseCallback() {
+					@Override
+					public void onSuccess() {
+						authState(true);
+					}
+
+					@Override
+					public void onFailed(int i, byte[] bytes) {
+						authState(false);
+					}
+				});
 	}
 
 	private void freshView(){

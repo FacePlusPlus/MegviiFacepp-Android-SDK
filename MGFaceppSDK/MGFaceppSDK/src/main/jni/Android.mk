@@ -1,10 +1,15 @@
 LOCAL_PATH := $(call my-dir)
 
-MEGVII_FACEPP_VERSION := 0.4.7
+MEGVII_FACEPP_VERSION := 0.5.0
 
 include $(CLEAR_VARS)
 LOCAL_MODULE := fppapi
 LOCAL_SRC_FILES  := $(LOCAL_PATH)/libs/${TARGET_ARCH_ABI}/libMegviiFacepp-${MEGVII_FACEPP_VERSION}.so
+include $(PREBUILT_SHARED_LIBRARY)
+
+include $(CLEAR_VARS)
+LOCAL_MODULE := fppapi-new
+LOCAL_SRC_FILES  := $(LOCAL_PATH)/libs/${TARGET_ARCH_ABI}/libmegface-new.so
 include $(PREBUILT_SHARED_LIBRARY)
 
 
@@ -13,7 +18,7 @@ LOCAL_MODULE    := MegviiFacepp-jni-${MEGVII_FACEPP_VERSION}
 LOCAL_SRC_FILES := megvii_facepp_jni.cpp
 LOCAL_C_INCLUDES := include
 LOCAL_C_INCLUDES += thirdparty security
-LOCAL_SHARED_LIBRARIES := fppapi
+LOCAL_SHARED_LIBRARIES := fppapi fppapi-new
 LOCAL_LDLIBS += -L$(SYSROOT)/usr/lib -llog -Wl,-s
 LOCAL_CPPFLAGS += -std=c++11 -ffunction-sections -fdata-sections -fvisibility=hidden \
         -Wall -Wextra -fweb

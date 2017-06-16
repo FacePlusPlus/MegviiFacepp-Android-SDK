@@ -76,11 +76,12 @@ public class LoadingActivity extends Activity {
 	}
 
 	private void network() {
-		if (Facepp.getSDKAuthType(ConUtil.getFileContent(this, R.raw
-				.megviifacepp_0_4_7_model)) == 2) {// 非联网授权
-			authState(true);
-			return;
-		}
+		authState(true);
+//		if (Facepp.getSDKAuthType(ConUtil.getFileContent(this, R.raw
+//				.megviifacepp_0_4_7_model)) == 2) {// 非联网授权
+//
+//			return;
+//		}
 
 //		againWarrantyBtn.setVisibility(View.GONE);
 //		WarrantyText.setText(getResources().getString(R.string.auth_progress));

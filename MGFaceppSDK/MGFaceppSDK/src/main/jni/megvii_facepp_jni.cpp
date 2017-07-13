@@ -64,17 +64,17 @@ struct ApiHandle {
 };
 
 /*
- * Class: com.megvii.fppapidemo.Api.nativeInit(Context, byte[])
+ * Class: com.megvii.fppapidemo.Api.nativeInit(Context, byte[], int)
  */
 jlong Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeInit(JNIEnv *env, jobject,
-                                                                jobject context, jbyteArray model) {
+                                                                jobject context, jbyteArray model, jint max_face_number) {
 
     jbyte *model_data = env->GetByteArrayElements(model, 0);
     long model_len = env->GetArrayLength(model);
 
     ApiHandle *h = new ApiHandle();
-    int retcode = mg_facepp.CreateApiHandle(env, context,
-                                            reinterpret_cast<const MG_BYTE *>(model_data), model_len, &h->api);
+    int retcode = mg_facepp.CreateApiHandleWithMaxFaceCount(env, context,
+                                            reinterpret_cast<const MG_BYTE *>(model_data), model_len, max_face_number, &h->api);
     env->ReleaseByteArrayElements(model, model_data, 0);
     LOGE("nativeInit retcode: %d", retcode);
     if (retcode != 0) {

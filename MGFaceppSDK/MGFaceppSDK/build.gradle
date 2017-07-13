@@ -65,7 +65,7 @@ task releaseAll() {
             into "../release/for-eclipse/libs"
         }
         copy {
-            from "src/main/jni/megviifacepp_0_4_7_model"
+            from "src/main/jni/megviifacepp_0_5_0_model"
             into "../release/raw"
         }
     }

@@ -38,14 +38,15 @@ public class Facepp {
 	 * @brief 初始化人脸检测器
 	 * @param[in] context 环境变量
 	 * @param[in] model 模型数据
+	 * @param[in] maxFaceNumber 跟踪人脸数量
 	 */
-	public String init(Context context, byte[] model) {
+	public String init(Context context, byte[] model, int maxFaceNumber) {
 		if (context == null || model == null)
 			return getErrorType(MG_RETCODE_INVALID_ARGUMENT);
 
 		getAbility(model);
 
-		long handle = NativeFaceppAPI.nativeInit(context, model);
+		long handle = NativeFaceppAPI.nativeInit(context, model, maxFaceNumber);
 		String errorType = getErrorType((int) handle);
 		if (errorType == null) {
 			FaceppHandle = handle;

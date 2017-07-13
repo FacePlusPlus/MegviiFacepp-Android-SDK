@@ -268,7 +268,7 @@ public class FaceppActionActivity extends Activity implements OnClickListener {
 			getCameraSizeList();
 		} else if (ID == R.id.landmark_imageitem_6) {
 			if (!Facepp.getAbility(ConUtil.getFileContent(this, R
-					.raw.megviifacepp_0_4_7_model)).contains(Facepp.Ability.AGEGENDER)) {
+					.raw.megviifacepp_0_5_0_model)).contains(Facepp.Ability.AGEGENDER)) {
 				ConUtil.showToast(this, getResources().getString(R.string.detector));
 				return;
 			}

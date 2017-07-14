@@ -7,7 +7,7 @@ extern "C" {
 #endif
 
 JNIEXPORT jlong JNICALL Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeInit(
-        JNIEnv *, jobject, jobject, jbyteArray);
+        JNIEnv *, jobject, jobject, jbyteArray, jint);
 
 JNIEXPORT jintArray JNICALL Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeGetFaceppConfig(
         JNIEnv *env, jobject, jlong);

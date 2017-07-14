@@ -9,7 +9,7 @@ import android.content.Context;
  */
 public class NativeFaceppAPI {
 
-    public static native long nativeInit(Context context, byte[] model);
+    public static native long nativeInit(Context context, byte[] model, int maxFaceNumber);
 
     public static native int[] nativeGetFaceppConfig(long handle);
 

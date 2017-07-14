@@ -186,7 +186,12 @@ public class OpenglActivity extends Activity
 				bottom = height - top;
 			}
 
-			String errorCode = facepp.init(this, ConUtil.getFileContent(this, R.raw.megviifacepp_0_4_7_model));
+			if (isOneFaceTrackig) {
+				facepp.init(this, ConUtil.getFileContent(this, R.raw.megviifacepp_0_5_0_model), 1);
+			} else {
+				facepp.init(this, ConUtil.getFileContent(this, R.raw.megviifacepp_0_5_0_model), 0);
+			}
+
 			Facepp.FaceppConfig faceppConfig = facepp.getFaceppConfig();
 			faceppConfig.interval = detection_interval;
 			faceppConfig.minFaceSize = min_face_size;
@@ -194,10 +199,7 @@ public class OpenglActivity extends Activity
 			faceppConfig.roi_top = top;
 			faceppConfig.roi_right = right;
 			faceppConfig.roi_bottom = bottom;
-			if (isOneFaceTrackig)
-				faceppConfig.one_face_tracking = 1;
-			else
-				faceppConfig.one_face_tracking = 0;
+
 			String[] array = getResources().getStringArray(R.array.trackig_mode_array);
 			if (trackModel.equals(array[0]))
 				faceppConfig.detectionMode = Facepp.FaceppConfig.DETECTION_MODE_TRACKING;

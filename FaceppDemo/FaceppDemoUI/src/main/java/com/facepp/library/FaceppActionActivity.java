@@ -59,7 +59,7 @@ public class FaceppActionActivity extends Activity implements OnClickListener {
 	private RelativeLayout[] imageItem_Rels;
 	private RelativeLayout[] textItem_Rels;
 	private TextView[] editItemTexts;
-	private String[] editValues = {min_face_size + "", resolution, detection_interval + "", "NO", "Normal"};
+	private String[] editValues = {min_face_size + "", resolution, detection_interval + "", "NO", "Tracking"};
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {

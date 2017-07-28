@@ -9,7 +9,7 @@ import android.hardware.SensorManager;
 public class SensorEventUtil implements SensorEventListener {
 	private SensorManager mSensorManager;
 	private Sensor mSensor;
-	
+
 	public int orientation = 0;
 
 	public SensorEventUtil(Activity activity) {

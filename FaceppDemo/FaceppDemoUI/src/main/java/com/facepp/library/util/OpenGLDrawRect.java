@@ -13,23 +13,23 @@ public class OpenGLDrawRect {
 	public static void rotatePoint3f(float points[], int offset, float angle/*radis*/, int x_axis, int y_axis) {
 		float x = points[offset + x_axis], y = points[offset + y_axis];
 		float alpha_x = (float)Math.cos(angle), alpha_y = (float)Math.sin(angle);
-		
+
 		points[offset + x_axis] = x * alpha_x - y * alpha_y;
 		points[offset + y_axis] = x * alpha_y + y * alpha_x;
 	}
-	
+
 	public static FloatBuffer drawBottomShowRect(float line, float offsetX, float offsetY, float pitch, float yaw,
-			float roll, int orientation) {
-		
-		double real_roll = roll + Math.PI + (orientation / 180.0f) * Math.PI; 
+												 float roll, int orientation) {
+
+		double real_roll = roll + Math.PI + (orientation / 180.0f) * Math.PI;
 		while (real_roll > 2 * Math.PI)
 			real_roll -= 2 * Math.PI;
 		roll = (float)(real_roll - Math.PI);
 		//pitch = (float)Math.atan(Math.abs(offsetY) / 3);
 		//Log.w("ceshi", "theta = " + (float)Math.atan(Math.abs(offsetY) / 3));
-		
+
 		float a = line / 2.0f;
-		
+
 		//float sin_theta = Math.abs(offsetX) / (float)Math.sqrt(offsetX*offsetX + 3*3);
 		//float cos_theta = 3 / (float)Math.sqrt(offsetX*offsetX + 3*3);
 
@@ -39,14 +39,14 @@ public class OpenGLDrawRect {
 				1, 0, 0,
 				0, -1, 0,
 				0, 0, 1
-			};
+		};
 
 		for (int i = 0; i < all_points.length / 3; ++i) {
-			
+
 			rotatePoint3f(all_points, i * 3, yaw, 2, 0);
 			rotatePoint3f(all_points, i * 3, pitch, 2, 1);
 			rotatePoint3f(all_points, i * 3, roll, 0, 1);
-			
+
 			all_points[i * 3 + 0] = all_points[i * 3 + 0] * a + offsetX;
 			all_points[i * 3 + 1] = all_points[i * 3 + 1] * a + offsetY;
 			all_points[i * 3 + 2] = all_points[i * 3 + 2] * a + offset_z;

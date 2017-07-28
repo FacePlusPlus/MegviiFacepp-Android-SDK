@@ -17,6 +17,7 @@
     <string name="resolution">Resolution</string>
     <string name="one_face_trackig">One Face Tracking</string>
     <string name="trackig_mode">Tracking Mode</string>
+    <string name="face_compare">Face Compare</string>
     <string name="detect_face">Detect Face</string>
     <string name="fast">Fast</string>
     <string name="robust">Robust</string>
@@ -42,6 +43,10 @@
         <item>Robust</item>
         <item>Fast</item>
     </string-array>
+    <string name="modif_name">modif name</string>
+    <string name="modif_name_fail">name is null</string>
+    <string name="face_compare_title">face compare setting</string>
+
 
 
 

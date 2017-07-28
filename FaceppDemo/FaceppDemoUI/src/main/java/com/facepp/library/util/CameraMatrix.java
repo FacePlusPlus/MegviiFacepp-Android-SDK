@@ -36,13 +36,13 @@ public class CameraMatrix {
 //	public ArrayList<ArrayList> points = new ArrayList<ArrayList>();
 
 	private short drawOrder[] = { 0, 1, 2, 0, 2, 3 }; // order to draw vertices
-														// （命令绘制顶点）
+	// （命令绘制顶点）
 
 	// number of coordinates per vertex in this array (顶点坐标数)
 	private static final int COORDS_PER_VERTEX = 2;
 	// 顶点步幅
 	private final int vertexStride = COORDS_PER_VERTEX * 4; // 4 bytes per
-															// vertex
+	// vertex
 	// 直角坐标系
 	static float squareCoords[] = { -1.0f, 1.0f, -1.0f, -1.0f, 1.0f, -1.0f,
 			1.0f, 1.0f, };
@@ -75,13 +75,13 @@ public class CameraMatrix {
 		int fragmentShader = loadShader(GLES20.GL_FRAGMENT_SHADER,
 				fragmentShaderCode);
 		GLES20.glAttachShader(mProgram, fragmentShader); // add the fragment
-															// shader to program
+		// shader to program
 		GLES20.glLinkProgram(mProgram); // creates OpenGL ES program executables
 	}
 
 	/**
 	 * 绘制：
-	 * 
+	 *
 	 * 我们在 onDrawFrame 回调中执行绘制操作，绘制的过程其实就是为 shader 代码变量赋值，并调用绘制命令的过程：
 	 */
 	public void draw(float[] mtx) {

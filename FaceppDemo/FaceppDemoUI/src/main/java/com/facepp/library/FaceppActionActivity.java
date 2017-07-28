@@ -22,6 +22,7 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.facepp.library.bean.FaceActionInfo;
 import com.facepp.library.util.ConUtil;
 import com.facepp.library.util.DialogUtil;
 import com.facepp.library.util.ICamera;
@@ -47,14 +48,12 @@ public class FaceppActionActivity extends Activity implements OnClickListener {
 	private DialogUtil mDialogUtil;
 
 	private boolean isStartRecorder, is3DPose, isDebug, isROIDetect, is106Points, isBackCamera, isFaceProperty,
-			isOneFaceTrackig;
+			isOneFaceTrackig, isFaceCompare;
 	private int[] imageItemImages_gray = {R.drawable.record_gray, R.drawable.three_d_gray, R.drawable.debug_gray,
-			R.drawable.area_gray, R.drawable.point81, R.drawable.frontphone, R.drawable.faceproperty_gray, R.drawable
-			.debug_gray};
+			R.drawable.area_gray, R.drawable.point81, R.drawable.frontphone, R.drawable.faceproperty_gray, R.drawable.facecompare_gray};
 	private int[] imageItemImages_blue = {R.drawable.record_blue, R.drawable.three_d_blue, R.drawable.debug_blue,
-			R.drawable.area_blue, R.drawable.point106, R.drawable.backphone, R.drawable.faceproperty_blue, R.drawable
-			.debug_blue};
-	private int[] imageItemTexts = {R.string.record, R.string.pose_3d, R.string.debug, R.string.roi, R.string.landmarks, R.string.front, R.string.attributes, R.string.trackig_mode};
+			R.drawable.area_blue, R.drawable.point106, R.drawable.backphone, R.drawable.faceproperty_blue, R.drawable.facecompare_blue};
+	private int[] imageItemTexts = {R.string.record, R.string.pose_3d, R.string.debug, R.string.roi, R.string.landmarks, R.string.front, R.string.attributes, R.string.face_compare};
 	private int[] editItemStrs = {R.string.min_face, R.string.resolution, R.string.interval, R.string.one_face_trackig, R.string.trackig_mode};
 
 	private RelativeLayout[] imageItem_Rels;
@@ -76,6 +75,20 @@ public class FaceppActionActivity extends Activity implements OnClickListener {
 				requestCameraPerm();
 			}
 		}, 500);
+
+		String jsonInfo = String.format("{" + "\"minFaceSize\":%d,"
+						+ "\"rotation\":%d,"
+						+ "\"interval\":%d,"
+						+ "\"detectionMode\":%d,"
+						+ "\"roi_left\":%d,"
+						+ "\"roi_top\":%d,"
+						+ "\"roi_right\":%d,"
+						+ "\"roi_bottom\":%d,"
+						+ "\"one_face_tracking\":%d"
+						+ "}", 100, 270, 100,
+				1,  0, 0,
+				1920, 1080,1);
+		Log.d("ceshi", "onCreate:" + jsonInfo);
 	}
 
 	private void init() {
@@ -102,7 +115,8 @@ public class FaceppActionActivity extends Activity implements OnClickListener {
 		RelativeLayout rel4 = (RelativeLayout) findViewById(R.id.landmark_imageitem_4);
 		RelativeLayout rel5 = (RelativeLayout) findViewById(R.id.landmark_imageitem_5);
 		RelativeLayout rel6 = (RelativeLayout) findViewById(R.id.landmark_imageitem_6);
-		imageItem_Rels = new RelativeLayout[]{rel0, rel1, rel2, rel3, rel4, rel5, rel6};
+		RelativeLayout rel7 = (RelativeLayout) findViewById(R.id.landmark_imageitem_7);
+		imageItem_Rels = new RelativeLayout[]{rel0, rel1, rel2, rel3, rel4, rel5, rel6, rel7};
 		RelativeLayout textRel0 = (RelativeLayout) findViewById(R.id.landmark_edititem_0);
 		RelativeLayout textRel1 = (RelativeLayout) findViewById(R.id.landmark_edititem_1);
 		RelativeLayout textRel2 = (RelativeLayout) findViewById(R.id.landmark_edititem_2);
@@ -274,7 +288,18 @@ public class FaceppActionActivity extends Activity implements OnClickListener {
 			}
 			isFaceProperty = !isFaceProperty;
 			onclickImageItem(6, isFaceProperty);
-		} else if (ID == R.id.landmark_enterBtn) {
+		}else if (ID == R.id.landmark_imageitem_7){
+			isFaceCompare = !isFaceCompare;
+			if (isFaceCompare){
+				isFaceProperty = false;
+				onclickImageItem(6, isFaceProperty);
+
+				isDebug = false;
+				onclickImageItem(2, isDebug);
+			}
+			onclickImageItem(7, isFaceCompare);
+		}
+		else if (ID == R.id.landmark_enterBtn) {
 			min_face_size = (int) Long.parseLong(editItemTexts[0].getText().toString());
 			detection_interval = (int) Long.parseLong(editItemTexts[2].getText().toString());
 			Log.w("ceshi", "min_face_size===" + min_face_size + ", " + detection_interval);
@@ -293,14 +318,32 @@ public class FaceppActionActivity extends Activity implements OnClickListener {
 					}
 				}
 
-			startActivity(new Intent(FaceppActionActivity.this, OpenglActivity.class)
-					.putExtra("isStartRecorder", isStartRecorder).putExtra("is3DPose", is3DPose)
-					.putExtra("isdebug", isDebug).putExtra("ROIDetect", isROIDetect)
-					.putExtra("is106Points", is106Points).putExtra("isBackCamera", isBackCamera)
-					.putExtra("faceSize", min_face_size).putExtra("interval", detection_interval)
-					.putExtra("resolution", resolutionMap).putExtra("isFaceProperty", isFaceProperty)
-					.putExtra("isOneFaceTrackig", isOneFaceTrackig)
-					.putExtra("trackModel", editItemTexts[4].getText().toString().trim()));
+//			startActivity(new Intent(FaceppActionActivity.this, OpenglActivity.class)
+//					.putExtra("isStartRecorder", isStartRecorder).putExtra("is3DPose", is3DPose)
+//					.putExtra("isdebug", isDebug).putExtra("ROIDetect", isROIDetect)
+//					.putExtra("is106Points", is106Points).putExtra("isBackCamera", isBackCamera)
+//					.putExtra("faceSize", min_face_size).putExtra("interval", detection_interval)
+//					.putExtra("resolution", resolutionMap).putExtra("isFaceProperty", isFaceProperty)
+//					.putExtra("isOneFaceTrackig", isOneFaceTrackig)
+//					.putExtra("trackModel", editItemTexts[4].getText().toString().trim())
+//					.putExtra("isFaceCompare", isFaceCompare));
+
+			FaceActionInfo faceActionInfo = new FaceActionInfo();
+			faceActionInfo.isStartRecorder = isStartRecorder;
+			faceActionInfo.is3DPose = is3DPose;
+			faceActionInfo.isdebug = isDebug;
+			faceActionInfo.isROIDetect = isROIDetect;
+			faceActionInfo.is106Points = is106Points;
+			faceActionInfo.isBackCamera = isBackCamera;
+			faceActionInfo.faceSize = min_face_size;
+			faceActionInfo.interval = detection_interval;
+			faceActionInfo.resolutionMap = resolutionMap;
+			faceActionInfo.isFaceProperty = isFaceProperty;
+			faceActionInfo.isOneFaceTrackig = isOneFaceTrackig;
+			faceActionInfo.trackModel = editItemTexts[4].getText().toString().trim();
+			faceActionInfo.isFaceCompare = isFaceCompare;
+
+			startActivity(new Intent(FaceppActionActivity.this, OpenglActivity.class).putExtra("FaceAction", faceActionInfo));
 		}
 	}
 

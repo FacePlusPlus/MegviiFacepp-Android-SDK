@@ -17,6 +17,7 @@
     <string name="resolution">相机分辨率</string>
     <string name="one_face_trackig">单脸跟踪</string>
     <string name="trackig_mode">跟踪模式</string>
+    <string name="face_compare">人脸比对</string>
     <string name="detect_face">检测人脸</string>
     <string name="fast">Fast</string>
     <string name="robust">Robust</string>
@@ -42,7 +43,9 @@
         <item>Robust</item>
         <item>Fast</item>
     </string-array>
-
+    <string name="modif_name">修改名称</string>
+    <string name="modif_name_fail">请输入名称</string>
+    <string name="face_compare_title">人脸比对设置</string>
 
 
 </resources>

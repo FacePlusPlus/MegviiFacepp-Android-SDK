@@ -40,8 +40,8 @@ public class PointsMatrix {
 			0.4f, 0.2f, 0.0f }; // top right
 
 	private final short drawOrder[] = { 0, 1, 2, 0, 2, 3 }; // order to draw
-															// vertices
-	
+	// vertices
+
 	private final short drawLineOrder[] = { 0, 1, 0, 2, 0, 3}; // order to draw
 	// vertices
 
@@ -50,14 +50,14 @@ public class PointsMatrix {
 			{ 0, 3 } };
 
 	private final int vertexStride = COORDS_PER_VERTEX * 4; // 4 bytes per
-															// vertex
+	// vertex
 
 	// Set color with red, green, blue and alpha (opacity) values
 	float color[] = { 0.2f, 0.709803922f, 0.898039216f, 1.0f };
 	float color_rect[] = { 0X61 / 255.0f, 0XB3 / 255.0f, 0X4D / 255.0f, 1.0f };
-	float color_megvii[][] = { 
+	float color_megvii[][] = {
 			{ 0f, 0f, 0f, 1.0f },
-			{ 1.0f, 1.0f, 1.0f, 1.0f }, 
+			{ 1.0f, 1.0f, 1.0f, 1.0f },
 			{ 1f, 0f, 0.f, 1.0f }, //red
 			{ 0.0f, 1f, 0.f, 1.0f }, //green
 			{ 0.0f, 0.0f, 1f, 1.0f } }; // blue
@@ -76,13 +76,16 @@ public class PointsMatrix {
 	// vertexBuffer.put(squareCoords);
 	// vertexBuffer.position(0);
 	// }
+	private boolean isFaceCompare;
 
-	public PointsMatrix() {
+	public PointsMatrix(boolean isFaceCompare) {
 		// FloatBuffer fb_0 = floatBufferUtil(squareCoords);
 		// FloatBuffer fb_1 = floatBufferUtil(squareCoords_1);
 		// vertexBuffers.add(fb_0);
 		// vertexBuffers.add(fb_1);
 		// initialize byte buffer for the draw list
+		this.isFaceCompare = isFaceCompare;
+
 		ByteBuffer dlb = ByteBuffer.allocateDirect(
 				// (# of coordinate values * 2 bytes per short)
 				drawOrder.length * 2);
@@ -114,9 +117,9 @@ public class PointsMatrix {
 
 		mProgram = GLES20.glCreateProgram(); // create empty OpenGL Program
 		GLES20.glAttachShader(mProgram, vertexShader); // add the vertex shader
-														// to program
+		// to program
 		GLES20.glAttachShader(mProgram, fragmentShader); // add the fragment
-															// shader to program
+		// shader to program
 		GLES20.glLinkProgram(mProgram); // create OpenGL program executables
 	}
 
@@ -150,7 +153,7 @@ public class PointsMatrix {
 					GLES20.glVertexAttribPointer(mPositionHandle, COORDS_PER_VERTEX, GLES20.GL_FLOAT, false,
 							vertexStride, vertexBuffer);
 					// Draw the square
-					
+
 					GLES20.glDrawElements(GLES20.GL_TRIANGLES, drawOrder.length, GLES20.GL_UNSIGNED_SHORT,
 							drawListBuffer);
 				}
@@ -159,19 +162,22 @@ public class PointsMatrix {
 
 		GLES20.glUniform4fv(mColorHandle, 1, color, 0);
 
-		synchronized (this) {
-			for (int i = 0; i < points.size(); i++) {
-				ArrayList<FloatBuffer> triangleVBList = points.get(i);
-				for (int j = 0; j < triangleVBList.size(); j++) {
-					FloatBuffer fb = triangleVBList.get(j);
-					if (fb != null) {
-						GLES20.glVertexAttribPointer(mPositionHandle, 3, GLES20.GL_FLOAT, false, 0, fb);
-						// Draw the point
-						GLES20.glDrawArrays(GLES20.GL_POINTS, 0, 1);
+		if (!isFaceCompare){
+			synchronized (this) {
+				for (int i = 0; i < points.size(); i++) {
+					ArrayList<FloatBuffer> triangleVBList = points.get(i);
+					for (int j = 0; j < triangleVBList.size(); j++) {
+						FloatBuffer fb = triangleVBList.get(j);
+						if (fb != null) {
+							GLES20.glVertexAttribPointer(mPositionHandle, 3, GLES20.GL_FLOAT, false, 0, fb);
+							// Draw the point
+							GLES20.glDrawArrays(GLES20.GL_POINTS, 0, 1);
+						}
 					}
 				}
 			}
 		}
+
 
 		synchronized (this) {
 			if (bottomVertexBuffer != null) {

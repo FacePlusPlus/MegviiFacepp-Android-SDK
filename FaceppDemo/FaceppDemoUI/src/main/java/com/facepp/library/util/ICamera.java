@@ -39,7 +39,7 @@ public class ICamera {
 	 * 打开相机
 	 */
 	public Camera openCamera(boolean isBackCamera, Activity activity,
-			HashMap<String, Integer> resolutionMap) {
+							 HashMap<String, Integer> resolutionMap) {
 		try {
 			if (isBackCamera)
 				cameraId = 0;
@@ -67,6 +67,7 @@ public class ICamera {
 			params.setPreviewSize(cameraWidth, cameraHeight);
 			Angle = getCameraAngle(activity);
 			Log.w("ceshi", "Angle==" + Angle);
+			Log.d("ceshi", "width = " + cameraWidth + ", height = " + cameraHeight);
 			// mCamera.setDisplayOrientation(Angle);
 			mCamera.setParameters(params);
 			return mCamera;
@@ -162,7 +163,7 @@ public class ICamera {
 	 * 通过传入的宽高算出最接近于宽高值的相机大小
 	 */
 	private Camera.Size calBestPreviewSize(Camera.Parameters camPara,
-			final int width, final int height) {
+										   final int width, final int height) {
 		List<Camera.Size> allSupportedSize = camPara.getSupportedPreviewSizes();
 		ArrayList<Camera.Size> widthLargerSize = new ArrayList<Camera.Size>();
 		for (Camera.Size tmpSize : allSupportedSize) {
@@ -196,6 +197,10 @@ public class ICamera {
 			camera = null;
 		}
 		return camera;
+	}
+
+	public Bitmap getBitMap(byte[] data,  boolean mIsFrontalCamera){
+		return getBitMap(data, mCamera, mIsFrontalCamera);
 	}
 
 	public Bitmap getBitMap(byte[] data, Camera camera, boolean mIsFrontalCamera) {
@@ -245,18 +250,18 @@ public class ICamera {
 				.getRotation();
 		int degrees = 0;
 		switch (rotation) {
-		case Surface.ROTATION_0:
-			degrees = 0;
-			break;
-		case Surface.ROTATION_90:
-			degrees = 90;
-			break;
-		case Surface.ROTATION_180:
-			degrees = 180;
-			break;
-		case Surface.ROTATION_270:
-			degrees = 270;
-			break;
+			case Surface.ROTATION_0:
+				degrees = 0;
+				break;
+			case Surface.ROTATION_90:
+				degrees = 90;
+				break;
+			case Surface.ROTATION_180:
+				degrees = 180;
+				break;
+			case Surface.ROTATION_270:
+				degrees = 270;
+				break;
 		}
 
 		if (info.facing == CameraInfo.CAMERA_FACING_FRONT) {

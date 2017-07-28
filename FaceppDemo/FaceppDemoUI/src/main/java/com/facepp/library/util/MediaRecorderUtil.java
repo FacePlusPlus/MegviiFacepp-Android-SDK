@@ -18,7 +18,7 @@ public class MediaRecorderUtil {
 	private Camera.PreviewCallback mCallback;
 
 	public MediaRecorderUtil(Camera.PreviewCallback mCallback, Camera mCamera,
-			int cameraWidth, int cameraHeight) {
+							 int cameraWidth, int cameraHeight) {
 		this.mCamera = mCamera;
 		this.cameraWidth = cameraWidth;
 		this.cameraHeight = cameraHeight;

@@ -165,12 +165,10 @@ public class OpenglActivity extends Activity
                 synchronized (OpenglActivity.this) {
                     info.feature = newestFeature;
                     Bitmap bitmap = mICamera.getBitMap(carmeraImgData, !isBackCamera);
-                    if (bitmap != null){
+                    if (bitmap != null) {
                         String filePath = ConUtil.saveBitmap(OpenglActivity.this, bitmap);
                         info.imgFilePath = filePath;
                     }
-
-                    ConUtil.saveYUVInfo(OpenglActivity.this, carmeraImgData);
 
                 }
                 FaceCompareManager.instance().addFeature(OpenglActivity.this, info);

@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:background="#EEF3FA"
     android:clickable="true"
-    android:focusable="true" >
+    android:focusable="true">
 
     <include
         android:id="@+id/landmark_title"
@@ -46,23 +46,23 @@
         android:layout_marginTop="30dip"
         android:paddingLeft="25dip"
         android:paddingRight="25dip"
-        android:scrollbars="none" >
+        android:scrollbars="none">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical" >
+            android:orientation="vertical">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:orientation="horizontal" >
+                android:orientation="horizontal">
 
                 <RelativeLayout
                     android:layout_width="0dip"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1" >
+                    android:layout_weight="1">
 
                     <include
                         android:id="@+id/landmark_imageitem_0"
@@ -74,7 +74,7 @@
                 <RelativeLayout
                     android:layout_width="0dip"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1" >
+                    android:layout_weight="1">
 
                     <include
                         android:id="@+id/landmark_imageitem_1"
@@ -87,7 +87,7 @@
                 <RelativeLayout
                     android:layout_width="0dip"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1" >
+                    android:layout_weight="1">
 
                     <include
                         android:id="@+id/landmark_imageitem_2"
@@ -108,18 +108,18 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical" >
+                android:orientation="vertical">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:orientation="horizontal" >
+                    android:orientation="horizontal">
 
                     <RelativeLayout
                         android:layout_width="0dip"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1" >
+                        android:layout_weight="1">
 
                         <include
                             android:id="@+id/landmark_imageitem_3"
@@ -131,7 +131,7 @@
                     <RelativeLayout
                         android:layout_width="0dip"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1" >
+                        android:layout_weight="1">
 
                         <include
                             android:id="@+id/landmark_imageitem_4"
@@ -144,7 +144,7 @@
                     <RelativeLayout
                         android:layout_width="0dip"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1" >
+                        android:layout_weight="1">
 
                         <include
                             android:id="@+id/landmark_imageitem_5"
@@ -166,12 +166,12 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:orientation="horizontal" >
+                    android:orientation="horizontal">
 
                     <RelativeLayout
                         android:layout_width="0dip"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1" >
+                        android:layout_weight="1">
 
                         <include
                             android:id="@+id/landmark_edititem_0"
@@ -185,7 +185,7 @@
                     <RelativeLayout
                         android:layout_width="0dip"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1.2" >
+                        android:layout_weight="1.2">
 
                         <include
                             android:id="@+id/landmark_edititem_1"
@@ -200,7 +200,7 @@
                     <RelativeLayout
                         android:layout_width="0dip"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1" >
+                        android:layout_weight="1">
 
                         <include
                             android:id="@+id/landmark_edititem_2"
@@ -225,12 +225,12 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="15dip"
                     android:layout_weight="1"
-                    android:orientation="horizontal" >
+                    android:orientation="horizontal">
 
                     <RelativeLayout
                         android:layout_width="0dip"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1" >
+                        android:layout_weight="1">
 
                         <include
                             android:id="@+id/landmark_imageitem_6"
@@ -243,7 +243,7 @@
                         android:layout_width="0dip"
                         android:layout_height="wrap_content"
                         android:layout_gravity="bottom"
-                        android:layout_weight="1" >
+                        android:layout_weight="1">
 
                         <include
                             android:id="@+id/landmark_edititem_3"
@@ -258,7 +258,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:layout_gravity="bottom"
-                        android:visibility="visible" >
+                        android:visibility="visible">
 
                         <include
                             android:id="@+id/landmark_edititem_4"
@@ -279,7 +279,7 @@
         android:background="#66000000"
         android:clickable="true"
         android:focusable="true"
-        android:visibility="gone" >
+        android:visibility="gone">
 
         <ListView
             android:id="@+id/landmark_list"
@@ -293,8 +293,7 @@
             android:background="#ffffffff"
             android:cacheColorHint="#00000000"
             android:divider="#aa000000"
-            android:dividerHeight="1px" >
-        </ListView>
+            android:dividerHeight="1px"></ListView>
     </RelativeLayout>
 
     <include

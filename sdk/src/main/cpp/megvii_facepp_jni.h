@@ -51,8 +51,9 @@ JNIEXPORT jbyteArray JNICALL Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nati
 JNIEXPORT jdouble JNICALL Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeFaceCompare(
         JNIEnv *, jobject, jlong, jbyteArray, jbyteArray, jint);
 
-JNIEXPORT void JNICALL Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeRelease(JNIEnv *, jobject,
-                                                                                    jlong);
+JNIEXPORT void JNICALL
+Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeRelease(JNIEnv *, jobject,
+                                                             jlong);
 
 JNIEXPORT jlong JNICALL Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeGetApiExpication(
         JNIEnv *, jobject, jobject);

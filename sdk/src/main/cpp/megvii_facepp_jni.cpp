@@ -74,7 +74,8 @@ jlong Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeInit(JNIEnv *env, job
 
     ApiHandle *h = new ApiHandle();
     int retcode = mg_facepp.CreateApiHandle(env, context,
-                                            reinterpret_cast<const MG_BYTE *>(model_data), model_len, &h->api);
+                                            reinterpret_cast<const MG_BYTE *>(model_data),
+                                            model_len, &h->api);
     env->ReleaseByteArrayElements(model, model_data, 0);
     LOGE("nativeInit retcode: %d", retcode);
     if (retcode != 0) {
@@ -115,10 +116,14 @@ jintArray Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeGetFaceppConfig(
 }
 
 jint Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeSetFaceppConfig(JNIEnv *,
-                                                                          jobject, jlong handle, jint minFaceSize,
-                                                                          jint rotation, jint interval,
-                                                                          jint detection_mode, jint left, jint top,
-                                                                          jint right, jint bottom, jint one_face_tracking) {
+                                                                          jobject, jlong handle,
+                                                                          jint minFaceSize,
+                                                                          jint rotation,
+                                                                          jint interval,
+                                                                          jint detection_mode,
+                                                                          jint left, jint top,
+                                                                          jint right, jint bottom,
+                                                                          jint one_face_tracking) {
     ApiHandle *h = reinterpret_cast<ApiHandle *>(handle);
     h->orientation = rotation;
     MG_FPP_APICONFIG config;
@@ -126,7 +131,7 @@ jint Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeSetFaceppConfig(JNIEnv
     config.min_face_size = minFaceSize;
     config.rotation = rotation;
     config.interval = interval;
-    config.detection_mode = (MG_FPP_DETECTIONMODE)detection_mode;
+    config.detection_mode = (MG_FPP_DETECTIONMODE) detection_mode;
     MG_RECTANGLE _roi;
     _roi.left = left;
     _roi.top = top;
@@ -143,7 +148,8 @@ jint Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeSetFaceppConfig(JNIEnv
  * Return: [[left, top, right, bottom], [(x,y) x 81]] * face_nr
  */
 jint Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeDetect(JNIEnv *env, jobject,
-                                                                 jlong handle, jbyteArray img, jint width, jint height,
+                                                                 jlong handle, jbyteArray img,
+                                                                 jint width, jint height,
                                                                  jint imageMode) {
 
     ApiHandle *h = reinterpret_cast<ApiHandle *>(handle);
@@ -162,7 +168,7 @@ jint Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeDetect(JNIEnv *env, jo
 
     MG_FPP_IMAGEHANDLE imageHandle = h->imghandle;
     //LOGE("nativeDetect length: %d, imageMode: %d,", 1, imageMode);
-    mg_facepp.SetImageData(imageHandle, (unsigned char *) img_data, (MG_IMAGEMODE)imageMode);
+    mg_facepp.SetImageData(imageHandle, (unsigned char *) img_data, (MG_IMAGEMODE) imageMode);
     //LOGE("nativeDetect length: %d", 2);
     int faceCount = 0;
     mg_facepp.Detect(h->api, imageHandle, &faceCount);
@@ -171,7 +177,8 @@ jint Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeDetect(JNIEnv *env, jo
 }
 
 jfloatArray Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeFaceInfo(JNIEnv *env,
-                                                                          jobject, jlong handle, jint index) {
+                                                                          jobject, jlong handle,
+                                                                          jint index) {
     ApiHandle *h = reinterpret_cast<ApiHandle *>(handle);
     jfloatArray retArray = env->NewFloatArray(MG_LANDMARK_NR * 2 + 10);
     MG_FACE face;
@@ -215,7 +222,8 @@ jfloatArray Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeFaceInfo(JNIEnv
 }
 
 jfloatArray Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeLandMark(JNIEnv *env,
-                                                                          jobject, jlong handle, jint index,
+                                                                          jobject, jlong handle,
+                                                                          jint index,
                                                                           jint point_nr) {
     ApiHandle *h = reinterpret_cast<ApiHandle *>(handle);
     jfloatArray retArray = env->NewFloatArray(LANDMARK_ST_NR * 2);
@@ -235,7 +243,8 @@ jfloatArray Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeLandMark(JNIEnv
 }
 
 jfloatArray Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeAttribute(JNIEnv *env,
-                                                                           jobject, jlong handle, jint index) {
+                                                                           jobject, jlong handle,
+                                                                           jint index) {
     ApiHandle *h = reinterpret_cast<ApiHandle *>(handle);
     jfloatArray retArray = env->NewFloatArray(LANDMARK_ST_NR * 2);
     MG_FACE mgFace;
@@ -285,7 +294,8 @@ jfloatArray Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeAttribute(JNIEn
 }
 
 jfloatArray Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativePose3D(JNIEnv *env,
-                                                                        jobject, jlong handle, jint index) {
+                                                                        jobject, jlong handle,
+                                                                        jint index) {
     ApiHandle *h = reinterpret_cast<ApiHandle *>(handle);
     jfloatArray retArray = env->NewFloatArray(3);
     MG_FACE mgFace;
@@ -302,7 +312,8 @@ jfloatArray Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativePose3D(JNIEnv *
 }
 
 jfloatArray Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeEyeStatus(JNIEnv *env,
-                                                                           jobject, jlong handle, jint index) {
+                                                                           jobject, jlong handle,
+                                                                           jint index) {
     ApiHandle *h = reinterpret_cast<ApiHandle *>(handle);
     jfloatArray retArray = env->NewFloatArray(LANDMARK_ST_NR * 2);
     MG_FACE mgFace;
@@ -336,7 +347,8 @@ jfloatArray Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeMouthStatus(
 }
 
 jfloatArray Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeMinority(JNIEnv *env,
-                                                                          jobject, jlong handle, jint index) {
+                                                                          jobject, jlong handle,
+                                                                          jint index) {
     ApiHandle *h = reinterpret_cast<ApiHandle *>(handle);
     jfloatArray retArray = env->NewFloatArray(1);
     MG_FACE mgFace;
@@ -349,7 +361,8 @@ jfloatArray Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeMinority(JNIEnv
 }
 
 jfloatArray Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeBlurness(JNIEnv *env,
-                                                                          jobject, jlong handle, jint index) {
+                                                                          jobject, jlong handle,
+                                                                          jint index) {
     ApiHandle *h = reinterpret_cast<ApiHandle *>(handle);
     jfloatArray retArray = env->NewFloatArray(1);
     MG_FACE mgFace;
@@ -362,7 +375,8 @@ jfloatArray Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeBlurness(JNIEnv
 }
 
 jfloatArray Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeAgeGender(JNIEnv *env,
-                                                                           jobject, jlong handle, jint index) {
+                                                                           jobject, jlong handle,
+                                                                           jint index) {
     ApiHandle *h = reinterpret_cast<ApiHandle *>(handle);
     jfloatArray retArray = env->NewFloatArray(3);
     MG_FACE mgFace;
@@ -385,7 +399,8 @@ jlongArray Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeGetAlgorithmInfo
     long model_len = env->GetArrayLength(model);
 
     MG_ALGORITHMINFO algorithm_info;
-    mg_facepp.GetAlgorithmInfo(reinterpret_cast<const MG_BYTE *>(model_data), model_len, &algorithm_info);
+    mg_facepp.GetAlgorithmInfo(reinterpret_cast<const MG_BYTE *>(model_data), model_len,
+                               &algorithm_info);
     env->ReleaseByteArrayElements(model, model_data, 0);
 
     jlong expire_time = algorithm_info.expire_time;
@@ -400,7 +415,8 @@ jlongArray Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeGetAlgorithmInfo
 }
 
 jint Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeExtractFeature(JNIEnv *,
-                                                                         jobject, jlong handle, jint index) {
+                                                                         jobject, jlong handle,
+                                                                         jint index) {
     ApiHandle *h = reinterpret_cast<ApiHandle *>(handle);
     MG_INT32 feature_length;
     mg_facepp.ExtractFeature(h->api, h->imghandle, index, &feature_length);
@@ -431,7 +447,8 @@ jbyteArray Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeGetFeatureData(
 }
 
 jdouble Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeFaceCompare(JNIEnv *env,
-                                                                         jobject, jlong handle, jbyteArray featureData1,
+                                                                         jobject, jlong handle,
+                                                                         jbyteArray featureData1,
                                                                          jbyteArray featureData2,
                                                                          jint featureLength) {
     ApiHandle *h = reinterpret_cast<ApiHandle *>(handle);

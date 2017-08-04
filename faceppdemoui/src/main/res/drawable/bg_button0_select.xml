@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item android:state_pressed="true"><shape>
+    <item android:state_pressed="true">
+        <shape>
             <gradient android:angle="90" android:endColor="#0357BF" android:startColor="#0357BF" />
 
             <stroke android:width="0sp" android:color="#ffffff" />
@@ -9,8 +10,10 @@
             <corners android:radius="0dp" />
 
             <padding android:bottom="10dp" android:left="10dp" android:right="10dp" android:top="10dp" />
-        </shape></item>
-    <item><shape>
+        </shape>
+    </item>
+    <item>
+        <shape>
             <gradient android:angle="90" android:endColor="#0073C8" android:startColor="#0073C8" />
 
             <stroke android:width="0sp" android:color="#ffffff" />
@@ -18,10 +21,10 @@
             <corners android:radius="0dp" />
 
             <padding android:bottom="10dp" android:left="10dp" android:right="10dp" android:top="10dp" />
-        </shape></item>
+        </shape>
+    </item>
 
-</selector>
-<!-- <selector xmlns:android="http://schemas.android.com/apk/res/android">
+</selector><!-- <selector xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item android:state_pressed="true"><shape>
             <gradient android:angle="90" android:endColor="#0099BE" android:startColor="#0099BE" />

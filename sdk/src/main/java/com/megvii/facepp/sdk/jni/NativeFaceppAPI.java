@@ -4,7 +4,7 @@ import android.content.Context;
 
 /**
  * @brief jni 接口类
- *
+ * <p>
  * 该类加载了 jni 库
  */
 public class NativeFaceppAPI {

@@ -9,10 +9,11 @@ android {
         versionCode 1
         versionName "0.4.7"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-        ndk {
-            // Specifies the ABI configurations of your native
-            // libraries Gradle should build and package with your APK.
-            abiFilters 'arm64-v8a', 'armeabi-v7a'
+        externalNativeBuild {
+            cmake {
+                abiFilters 'armeabi-v7a', 'arm64-v8a'
+                arguments "-DANDROID_ARM_NEON=TRUE", "-DANDROID_STL=c++_static"
+            }
         }
         project.archivesBaseName = "MGFaceppSDK"
         project.version = android.defaultConfig.versionName
@@ -23,16 +24,17 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-    externalNativeBuild {
-        ndkBuild {
-            path 'src/main/jni/Android.mk'
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ['src/main/jniLibs']
         }
     }
 
-//    sourceSets.main {
-////        jniLibs.srcDirs = ['src/main/libs']     //获取libs的存放位置
-//        jni.srcDirs = ['src/main/jni'] //disable automatic ndk-build call
-//    }
+    externalNativeBuild {
+        cmake {
+            path "src/main/cpp/CMakeLists.txt"
+        }
+    }
 
     libraryVariants.all { variant ->
         variant.outputs.each { output ->
@@ -45,32 +47,6 @@ android {
     }
 }
 
-task releaseAll() {
-    doLast {
-        delete '../release'
-        copy {
-            from "build/intermediates/bundles/release/"
-            into "../release/for-eclipse/libs"
-            include "classes.jar"
-            rename("classes.jar", "${archivesBaseName}-${version}.jar")
-        }
-        copy {
-            from "build/outputs/aar/${archivesBaseName}-${version}.aar"
-            //include "*"
-            into "../release"
-        }
-        copy {
-            from "build/intermediates/ndkBuild/release/obj/local/"
-            exclude "*/objs"
-            into "../release/for-eclipse/libs"
-        }
-        copy {
-            from "src/main/jni/megviifacepp_0_4_7_model"
-            into "../release/raw"
-        }
-    }
-    dependsOn build
-}
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])

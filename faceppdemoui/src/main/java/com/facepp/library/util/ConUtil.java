@@ -17,6 +17,7 @@ import android.util.Base64;
 import android.view.Gravity;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;

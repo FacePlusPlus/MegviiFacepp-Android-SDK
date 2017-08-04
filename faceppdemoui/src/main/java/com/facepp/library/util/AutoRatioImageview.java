@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.widget.ImageView;
+
 import com.facepp.library.R;
 
 public class AutoRatioImageview extends ImageView {

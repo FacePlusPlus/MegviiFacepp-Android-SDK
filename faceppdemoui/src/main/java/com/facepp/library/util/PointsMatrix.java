@@ -1,13 +1,13 @@
 package com.facepp.library.util;
 
+import android.opengl.GLES20;
+import android.util.Log;
+
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
 import java.util.ArrayList;
-
-import android.opengl.GLES20;
-import android.util.Log;
 
 public class PointsMatrix {
 	private final String vertexShaderCode =

@@ -3,17 +3,14 @@ package com.facepp.library.util;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
-import android.app.Dialog;
 import android.content.DialogInterface;
 import android.view.ViewGroup.LayoutParams;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.facepp.library.R;
-import com.megvii.facepp.sdk.Facepp;
 
 public class DialogUtil {
 

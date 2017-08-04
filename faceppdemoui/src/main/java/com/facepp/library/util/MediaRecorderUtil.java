@@ -1,13 +1,13 @@
 package com.facepp.library.util;
 
-import java.io.File;
-import java.io.IOException;
-
 import android.hardware.Camera;
 import android.media.CamcorderProfile;
 import android.media.MediaRecorder;
 import android.os.Environment;
 import android.util.Log;
+
+import java.io.File;
+import java.io.IOException;
 
 public class MediaRecorderUtil {
 

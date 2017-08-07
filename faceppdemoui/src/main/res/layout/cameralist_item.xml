@@ -1,0 +1,19 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/cameralist_item_nameText"
+        android:layout_width="match_parent"
+        android:layout_height="55dip"
+        android:layout_centerVertical="true"
+        android:ellipsize="end"
+        android:paddingLeft="5dip"
+        android:gravity="center"
+        android:singleLine="true"
+        android:text="name"
+        android:textColor="#aa000000"
+        android:textSize="18sp" />
+
+</RelativeLayout>

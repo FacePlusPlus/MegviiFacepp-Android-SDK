@@ -1,6 +1,9 @@
 package com.facepp.library;
 
 import android.app.Activity;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.PointF;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.hardware.Camera.Parameters;
@@ -13,11 +16,18 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Message;
+import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.facepp.library.bean.FaceActionInfo;
+import com.facepp.library.bean.FeatureInfo;
+import com.facepp.library.facecompare.FaceCompareManager;
 import com.facepp.library.util.CameraMatrix;
 import com.facepp.library.util.ConUtil;
 import com.facepp.library.util.DialogUtil;
@@ -41,7 +51,7 @@ public class OpenglActivity extends Activity
         implements PreviewCallback, Renderer, SurfaceTexture.OnFrameAvailableListener {
 
     private boolean isStartRecorder, is3DPose, isDebug, isROIDetect, is106Points, isBackCamera, isFaceProperty,
-            isOneFaceTrackig;
+            isOneFaceTrackig, isFaceCompare;
     private String trackModel;
     private boolean isTiming = true; // 是否是定时去刷新界面;
     private int printTime = 31;
@@ -50,6 +60,8 @@ public class OpenglActivity extends Activity
     private Camera mCamera;
     private DialogUtil mDialogUtil;
     private TextView debugInfoText, debugPrinttext, AttriButetext;
+    private TextView featureTargetText;
+    private ImageButton btnAddFeature;
     private HandlerThread mHandlerThread = new HandlerThread("facepp");
     private Handler mHandler;
     private Facepp facepp;
@@ -59,6 +71,15 @@ public class OpenglActivity extends Activity
     private HashMap<String, Integer> resolutionMap;
     private SensorEventUtil sensorUtil;
     private float roi_ratio = 0.8f;
+    private byte[] newestFeature;
+    private byte[] carmeraImgData;
+
+    private int screenWidth;
+    private int screenHeight;
+    private boolean isSurfaceCreated;
+
+    private FaceActionInfo faceActionInfo;
+    private ImageView imgIcon;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,25 +94,36 @@ public class OpenglActivity extends Activity
                 startRecorder();
             }
         }, 2000);
+
+        FaceCompareManager.instance().loadFeature(this);
+
+        DisplayMetrics outMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(outMetrics);
+        screenWidth = outMetrics.widthPixels;
+        screenHeight = outMetrics.heightPixels;
+
     }
 
     private void init() {
         if (android.os.Build.MODEL.equals("PLK-AL10"))
             printTime = 50;
 
-        isStartRecorder = getIntent().getBooleanExtra("isStartRecorder", false);
-        is3DPose = getIntent().getBooleanExtra("is3DPose", false);
-        isDebug = getIntent().getBooleanExtra("isdebug", false);
-        isROIDetect = getIntent().getBooleanExtra("ROIDetect", false);
-        is106Points = getIntent().getBooleanExtra("is106Points", false);
-        isBackCamera = getIntent().getBooleanExtra("isBackCamera", false);
-        isFaceProperty = getIntent().getBooleanExtra("isFaceProperty", false);
-        isOneFaceTrackig = getIntent().getBooleanExtra("isOneFaceTrackig", false);
-        trackModel = getIntent().getStringExtra("trackModel");
+        faceActionInfo = (FaceActionInfo) getIntent().getSerializableExtra("FaceAction");
 
-        min_face_size = getIntent().getIntExtra("faceSize", min_face_size);
-        detection_interval = getIntent().getIntExtra("interval", detection_interval);
-        resolutionMap = (HashMap<String, Integer>) getIntent().getSerializableExtra("resolution");
+        isStartRecorder = faceActionInfo.isStartRecorder;
+        is3DPose = faceActionInfo.is3DPose;
+        isDebug = faceActionInfo.isdebug;
+        isROIDetect = faceActionInfo.isROIDetect;
+        is106Points = faceActionInfo.is106Points;
+        isBackCamera = faceActionInfo.isBackCamera;
+        isFaceProperty = faceActionInfo.isFaceProperty;
+        isOneFaceTrackig = faceActionInfo.isOneFaceTrackig;
+        isFaceCompare = faceActionInfo.isFaceCompare;
+        trackModel = faceActionInfo.trackModel;
+
+        min_face_size = faceActionInfo.faceSize;
+        detection_interval = faceActionInfo.interval;
+        resolutionMap = faceActionInfo.resolutionMap;
 
         facepp = new Facepp();
 
@@ -123,6 +155,38 @@ public class OpenglActivity extends Activity
             debugInfoText.setVisibility(View.VISIBLE);
         else
             debugInfoText.setVisibility(View.INVISIBLE);
+
+        btnAddFeature = (ImageButton) findViewById(R.id.opengl_layout_addFaceInfo);
+        btnAddFeature.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // 保存feature数据
+                FeatureInfo info = new FeatureInfo();
+                synchronized (OpenglActivity.this) {
+                    info.feature = newestFeature;
+                    Bitmap bitmap = mICamera.getBitMap(carmeraImgData, !isBackCamera);
+                    if (bitmap != null) {
+                        String filePath = ConUtil.saveBitmap(OpenglActivity.this, bitmap);
+                        info.imgFilePath = filePath;
+                    }
+
+                }
+                FaceCompareManager.instance().addFeature(OpenglActivity.this, info);
+
+                Intent intent = new Intent(OpenglActivity.this, FeatureInfoSettingActivity.class);
+                intent.putExtra("FaceAction", faceActionInfo);
+                startActivity(intent);
+            }
+        });
+
+        featureTargetText = (TextView) findViewById(R.id.opengl_layout_targetFaceName);
+        if (isFaceCompare){
+            btnAddFeature.setVisibility(View.VISIBLE);
+        }else {
+            btnAddFeature.setVisibility(View.GONE);
+        }
+
+        imgIcon = (ImageView) findViewById(R.id.opengl_layout_icon);
     }
 
     /**
@@ -186,7 +250,7 @@ public class OpenglActivity extends Activity
                 bottom = height - top;
             }
 
-            String errorCode = facepp.init(this, ConUtil.getFileContent(this, R.raw.megviifacepp_0_4_7_model));
+            String errorCode = facepp.init(this, ConUtil.getFileContent(this, R.raw.megviifacepp_0_5_0_model));
             Facepp.FaceppConfig faceppConfig = facepp.getFaceppConfig();
             faceppConfig.interval = detection_interval;
             faceppConfig.minFaceSize = min_face_size;
@@ -207,6 +271,9 @@ public class OpenglActivity extends Activity
                 faceppConfig.detectionMode = Facepp.FaceppConfig.DETECTION_MODE_TRACKING_FAST;
 
             facepp.setFaceppConfig(faceppConfig);
+
+            String version = facepp.getVersion();
+            Log.d("ceshi", "onResume:version:" + version);
         } else {
             mDialogUtil.showDialog(getResources().getString(R.string.camera_error));
         }
@@ -240,6 +307,7 @@ public class OpenglActivity extends Activity
     public void onPreviewFrame(final byte[] imgData, final Camera camera) {
         if (isSuccess)
             return;
+
         isSuccess = true;
 
         mHandler.post(new Runnable() {
@@ -301,6 +369,12 @@ public class OpenglActivity extends Activity
                                 width = mICamera.cameraHeight;
                                 height = mICamera.cameraWidth;
                             }
+
+                            final PointF point19 = face.points[19];
+                            final PointF point26 = face.points[26];
+                            final PointF point37 = face.points[37];
+                            final PointF point38 = face.points[38];
+
                             ArrayList<FloatBuffer> triangleVBList = new ArrayList<FloatBuffer>();
                             for (int i = 0; i < faces[c].points.length; i++) {
                                 float x = (faces[c].points[i].x / height) * 2 - 1;
@@ -317,21 +391,91 @@ public class OpenglActivity extends Activity
 
                                 FloatBuffer fb = mCameraMatrix.floatBufferUtil(pointf);
                                 triangleVBList.add(fb);
+
+                                if (is106Points) {
+                                    if (i == 37){
+                                        point37.x = pointf[0];
+                                        point37.y = pointf[1];
+                                    }else if (i == 38){
+                                        point38.x = pointf[0];
+                                        point38.y = pointf[1];
+                                    }
+                                } else {
+                                    if (i == 19) {
+                                        point19.x = pointf[0];
+                                        point19.y = pointf[1];
+                                    } else if (i == 26) {
+                                        point26.x = pointf[0];
+                                        point26.y = pointf[1];
+                                    }
+                                }
+
                             }
 
                             pointsOpengl.add(triangleVBList);
+
+                            // 添加人脸比对
+                            if (isFaceCompare) {
+                                long actionFeatureTime = System.currentTimeMillis();
+                                if (facepp.getExtractFeature(face)) {
+                                    synchronized (OpenglActivity.this) {
+                                        newestFeature = face.feature;
+                                        carmeraImgData = imgData;
+                                    }
+
+                                    final FeatureInfo featureInfo = FaceCompareManager.instance().compare(facepp, face.feature);
+
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            if (featureInfo != null){
+                                                featureTargetText.setVisibility(View.VISIBLE);
+                                                featureTargetText.setText(featureInfo.title);
+                                                RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) featureTargetText.getLayoutParams();
+
+                                                int imageW = mGlSurfaceView.getWidth();
+                                                int imageH = mGlSurfaceView.getHeight();
+                                                float left1, left2, top;
+                                                if (is106Points){
+                                                    left1 = ((imageW / 2) * (1 - point37.x) / imageW) * screenWidth;
+                                                    left2 = ((imageW / 2) * (1 - point38.x) / imageW) * screenWidth;
+                                                    top = ((imageH / 2) * (1 - point37.y) / imageH) * screenHeight - ((screenHeight - imageH) / 2) - 100;
+                                                }else {
+                                                    left1 = ((imageW / 2) * (1 - point19.x) / imageW) * screenWidth;
+                                                    left2 = ((imageW / 2) * (1 - point26.x) / imageW) * screenWidth;
+                                                    top = ((imageH / 2) * (1 - point19.y) / imageH) * screenHeight - ((screenHeight - imageH) / 2) - 100;
+                                                }
+
+                                                int txtWidth = featureTargetText.getWidth();
+                                                int txtHeight = featureTargetText.getHeight();
+
+                                                params.leftMargin = (int) ((left1 + left2) / 2) - txtWidth / 2;
+                                                params.topMargin = (int) (top) - txtHeight / 2;
+                                                featureTargetText.setLayoutParams(params);
+                                            }else {
+                                                featureTargetText.setVisibility(View.INVISIBLE);
+                                            }
+
+                                        }
+                                    });
+
+                                }
+                                final long featureTime = System.currentTimeMillis() - actionFeatureTime;
+
+                            }
                         }
                     } else {
                         pitch = 0.0f;
                         yaw = 0.0f;
                         roll = 0.0f;
                     }
-                    if (faces.length > 0 && is3DPose)
-                        mPointsMatrix.bottomVertexBuffer = OpenGLDrawRect.drawBottomShowRect(0.15f, 0, -0.7f, pitch,
-                                -yaw, roll, rotation);
-                    else
-                        mPointsMatrix.bottomVertexBuffer = null;
+
                     synchronized (mPointsMatrix) {
+                        if (faces.length > 0 && is3DPose)
+                            mPointsMatrix.bottomVertexBuffer = OpenGLDrawRect.drawBottomShowRect(0.15f, 0, -0.7f, pitch,
+                                    -yaw, roll, rotation);
+                        else
+                            mPointsMatrix.bottomVertexBuffer = null;
                         mPointsMatrix.points = pointsOpengl;
                     }
 
@@ -387,20 +531,23 @@ public class OpenglActivity extends Activity
     @Override
     public void onFrameAvailable(SurfaceTexture surfaceTexture) {
         // TODO Auto-generated method stub
-
+//		Log.d("ceshi", "onFrameAvailable");
     }
 
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
         // 黑色背景
         GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        surfaceInit();
+    }
 
+    private void surfaceInit(){
         mTextureID = OpenGLUtil.createTextureID();
         mSurface = new SurfaceTexture(mTextureID);
         // 这个接口就干了这么一件事，当有数据上来后会进到onFrameAvailable方法
         mSurface.setOnFrameAvailableListener(this);// 设置照相机有数据时进入
         mCameraMatrix = new CameraMatrix(mTextureID);
-        mPointsMatrix = new PointsMatrix();
+        mPointsMatrix = new PointsMatrix(isFaceCompare);
         mICamera.startPreview(mSurface);// 设置预览容器
         mICamera.actionDetect(this);
         if (isTiming) {
@@ -432,7 +579,7 @@ public class OpenglActivity extends Activity
     @Override
     public void onDrawFrame(GL10 gl) {
         final long actionTime = System.currentTimeMillis();
-        // Log.w("ceshi", "onDrawFrame===");
+//		Log.w("ceshi", "onDrawFrame===");
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);// 清除屏幕和深度缓存
         float[] mtx = new float[16];
         mSurface.getTransformMatrix(mtx);

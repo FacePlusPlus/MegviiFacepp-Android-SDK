@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent" >
 
     <RelativeLayout
         android:id="@+id/title_layout_rootRel"
@@ -9,7 +9,7 @@
         android:layout_height="@dimen/activity_title_hight"
         android:gravity="bottom"
         android:background="#30364C"
-        android:orientation="vertical">
+        android:orientation="vertical" >
 
         <RelativeLayout
             android:id="@+id/title_layout_returnRel"
@@ -19,7 +19,7 @@
             android:paddingBottom="12dip"
             android:background="@drawable/bg_return_select"
             android:clickable="true"
-            android:focusable="true">
+            android:focusable="true" >
 
             <ImageView
                 android:id="@+id/title_layout_returnImage"

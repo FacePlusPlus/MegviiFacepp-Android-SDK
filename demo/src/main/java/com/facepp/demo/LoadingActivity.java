@@ -19,7 +19,7 @@ import com.facepp.library.util.SharedUtil;
 import com.facepp.library.util.Util;
 import com.megvii.awesomedemo.facepp.R;
 import com.megvii.facepp.sdk.Facepp;
-import com.megvii.licensemanager.sdk.LicenseManager;
+//import com.megvii.licensemanager.sdk.LicenseManager;
 
 import java.util.Locale;
 //import com.megvii.licensemanager.sdk.LicenseManager;
@@ -36,6 +36,7 @@ public class LoadingActivity extends Activity {
         setContentView(R.layout.activity_loading);
 
 
+
         init();
     }
 
@@ -45,7 +46,7 @@ public class LoadingActivity extends Activity {
         WarrantyBar = (ProgressBar) findViewById(R.id.loading_layout_WarrantyBar);
         againWarrantyBtn = (Button) findViewById(R.id.loading_layout_againWarrantyBtn);
         String authTime0 = ConUtil.getFormatterDate(Facepp.getApiExpirationMillis(this, ConUtil.getFileContent(this, R
-                .raw.megviifacepp_0_4_7_model)));
+                .raw.megviifacepp_0_5_0_model)));
     }
 
     @Override
@@ -54,7 +55,7 @@ public class LoadingActivity extends Activity {
         String language_save = mSharedUtil.getStringValueByKey("language");
         Locale locale = getResources().getConfiguration().locale;
         String language = locale.getLanguage();
-        if (!language.equals(language_save))
+        if(!language.equals(language_save))
             showLanguage(language);
 
 
@@ -75,39 +76,41 @@ public class LoadingActivity extends Activity {
     }
 
     private void network() {
-        if (Facepp.getSDKAuthType(ConUtil.getFileContent(this, R.raw
-                .megviifacepp_0_4_7_model)) == 2) {// 非联网授权
-            authState(true);
-            return;
-        }
+        int type = Facepp.getSDKAuthType(ConUtil.getFileContent(this, R.raw.megviifacepp_0_5_0_model));
+//		if ( type == 2) {// 非联网授权
+//			authState(true);
+//			return;
+//		}
 
-        againWarrantyBtn.setVisibility(View.GONE);
-        WarrantyText.setText(getResources().getString(R.string.auth_progress));
-        WarrantyBar.setVisibility(View.VISIBLE);
-        final LicenseManager licenseManager = new LicenseManager(this);
-        licenseManager.setExpirationMillis(Facepp.getApiExpirationMillis(this, ConUtil.getFileContent(this, R.raw
-                .megviifacepp_0_4_7_model)));
+        authState(true);
 
-        String uuid = ConUtil.getUUIDString(LoadingActivity.this);
-        long apiName = Facepp.getApiName();
-
-        licenseManager.setAuthTimeBufferMillis(0);
-
-        licenseManager.takeLicenseFromNetwork(uuid, Util.API_KEY, Util.API_SECRET, apiName,
-                LicenseManager.DURATION_30DAYS, "Landmark", "1", true, new LicenseManager.TakeLicenseCallback() {
-                    @Override
-                    public void onSuccess() {
-                        authState(true);
-                    }
-
-                    @Override
-                    public void onFailed(int i, byte[] bytes) {
-                        authState(false);
-                    }
-                });
+//		againWarrantyBtn.setVisibility(View.GONE);
+//		WarrantyText.setText(getResources().getString(R.string.auth_progress));
+//		WarrantyBar.setVisibility(View.VISIBLE);
+//		final LicenseManager licenseManager = new LicenseManager(this);
+//		licenseManager.setExpirationMillis(Facepp.getApiExpirationMillis(this, ConUtil.getFileContent(this, R.raw
+//				.megviifacepp_0_4_7_model)));
+//
+//		String uuid = ConUtil.getUUIDString(LoadingActivity.this);
+//		long apiName = Facepp.getApiName();
+//
+//		licenseManager.setAuthTimeBufferMillis(0);
+//
+//		licenseManager.takeLicenseFromNetwork(uuid, Util.API_KEY, Util.API_SECRET, apiName,
+//				LicenseManager.DURATION_30DAYS, "Landmark", "1", true, new LicenseManager.TakeLicenseCallback() {
+//					@Override
+//					public void onSuccess() {
+//						authState(true);
+//					}
+//
+//					@Override
+//					public void onFailed(int i, byte[] bytes) {
+//						authState(false);
+//					}
+//				});
     }
 
-    private void freshView() {
+    private void freshView(){
         Intent intent = new Intent(this, LoadingActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);

@@ -1,1 +1,1 @@
-include ':demo', ':faceppdemoui'
+include ':demo', ':faceppdemoui', ':sdk'

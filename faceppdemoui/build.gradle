@@ -29,6 +29,6 @@ dependencies {
     compile 'com.android.support:appcompat-v7:25.3.1'
     testCompile 'junit:junit:4.12'
     compile 'com.github.FacePlusPlus:MegviiLicMgr-Android-SDK:0.3.0'
-    compile 'com.github.FacePlusPlus:MegviiFacepp-Android-SDK:0.4.7-gitpack'
-//    compile project(':sdk')
+//    compile 'com.github.FacePlusPlus:MegviiFacepp-Android-SDK:0.4.7'
+    compile project(':sdk')
 }

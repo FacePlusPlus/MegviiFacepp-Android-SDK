@@ -15,9 +15,16 @@ allprojects {
 
 ```
 dependencies {
-        compile 'com.github.FacePlusPlus:MegviiFacepp-Android-SDK:0.4.7-gitpack'
+        compile 'com.github.FacePlusPlus:MegviiFacepp-Android-SDK:0.4.7'
 }
 ```
+
+3. Go to the [official website](https://www.faceplusplus.com.cn/) register an account
+4. Apply key and secret from [here](https://console.faceplusplus.com.cn/app/apikey/list), create a file named "key" in assets directory, paste key and secret in format like key;secret
+5. Bund your bundle id from [here](https://console.faceplusplus.com.cn/app/bundle/list)
+6. Download sdk from [here](https://console.faceplusplus.com.cn/service/face/intro), find the model 
+that named with megviifacepp_0_4_7_model and put it in raw directory
+7. Run demo or your app.
 
 
 版本号： 0.4.7

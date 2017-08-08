@@ -9,7 +9,7 @@ android {
         minSdkVersion 14
         targetSdkVersion 25
         versionCode 1
-        versionName "0.4.7"
+        versionName "0.5.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         externalNativeBuild {
             cmake {
@@ -36,6 +36,32 @@ android {
         cmake {
             path "src/main/cpp/CMakeLists.txt"
         }
+    }
+
+    libraryVariants.all { variant ->
+        variant.outputs.each { output ->
+            def outputFile = output.outputFile
+            if (outputFile != null && outputFile.name.endsWith('.aar')) {
+                def fileName = "${archivesBaseName}-${version}.aar"
+                output.outputFile = new File(outputFile.parent, fileName)
+            }
+        }
+    }
+
+}
+
+
+task buildAAR(dependsOn: build) {
+    doLast {
+        delete '../release'
+
+        copy {
+            from "build/outputs/aar/${archivesBaseName}-${version}.aar"
+            //include "*"
+            into "../release"
+        }
+
+        println "build arr successful"
     }
 
 }

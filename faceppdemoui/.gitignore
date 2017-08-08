@@ -11,9 +11,6 @@ local.properties
 .gradle/
 obj/
 .externalNativeBuild
-FaceppDemoUI/libs/*.aar
-src/main/res/raw/*_model
-app/src/main/assets/key
 release/
 build/
 .idea

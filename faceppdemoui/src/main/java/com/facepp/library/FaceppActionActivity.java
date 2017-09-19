@@ -35,8 +35,8 @@ import static android.os.Build.VERSION_CODES.M;
 
 public class FaceppActionActivity extends Activity implements OnClickListener {
 
-	private int min_face_size = 200;
-	private int detection_interval = 100;
+	private int min_face_size = 40;  // 200
+	private int detection_interval = 30; // 100
 	private String resolution = "640*480";
 	private ArrayList<HashMap<String, Integer>> cameraSize;
 	private RelativeLayout mListRel;
@@ -59,7 +59,7 @@ public class FaceppActionActivity extends Activity implements OnClickListener {
 	private RelativeLayout[] imageItem_Rels;
 	private RelativeLayout[] textItem_Rels;
 	private TextView[] editItemTexts;
-	private String[] editValues = {min_face_size + "", resolution, detection_interval + "", "NO", "Tracking"};
+	private String[] editValues = {min_face_size + "", resolution, detection_interval + "", "NO", "Fast"};
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -75,20 +75,6 @@ public class FaceppActionActivity extends Activity implements OnClickListener {
 				requestCameraPerm();
 			}
 		}, 500);
-
-		String jsonInfo = String.format("{" + "\"minFaceSize\":%d,"
-						+ "\"rotation\":%d,"
-						+ "\"interval\":%d,"
-						+ "\"detectionMode\":%d,"
-						+ "\"roi_left\":%d,"
-						+ "\"roi_top\":%d,"
-						+ "\"roi_right\":%d,"
-						+ "\"roi_bottom\":%d,"
-						+ "\"one_face_tracking\":%d"
-						+ "}", 100, 270, 100,
-				1,  0, 0,
-				1920, 1080,1);
-		Log.d("ceshi", "onCreate:" + jsonInfo);
 	}
 
 	private void init() {
@@ -317,16 +303,6 @@ public class FaceppActionActivity extends Activity implements OnClickListener {
 							resolutionMap = null;
 					}
 				}
-
-//			startActivity(new Intent(FaceppActionActivity.this, OpenglActivity.class)
-//					.putExtra("isStartRecorder", isStartRecorder).putExtra("is3DPose", is3DPose)
-//					.putExtra("isdebug", isDebug).putExtra("ROIDetect", isROIDetect)
-//					.putExtra("is106Points", is106Points).putExtra("isBackCamera", isBackCamera)
-//					.putExtra("faceSize", min_face_size).putExtra("interval", detection_interval)
-//					.putExtra("resolution", resolutionMap).putExtra("isFaceProperty", isFaceProperty)
-//					.putExtra("isOneFaceTrackig", isOneFaceTrackig)
-//					.putExtra("trackModel", editItemTexts[4].getText().toString().trim())
-//					.putExtra("isFaceCompare", isFaceCompare));
 
 			FaceActionInfo faceActionInfo = new FaceActionInfo();
 			faceActionInfo.isStartRecorder = isStartRecorder;

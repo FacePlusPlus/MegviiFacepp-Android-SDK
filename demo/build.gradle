@@ -4,6 +4,15 @@ android {
     compileSdkVersion 25
     buildToolsVersion "25.0.3"
 
+    signingConfigs {
+        release {
+            keyAlias 'facepp'
+            keyPassword 'xfdq1016'
+            storeFile file(project.rootDir.absolutePath + '/facepp.keystore')
+            storePassword 'xfdq1016'
+        }
+    }
+
     defaultConfig {
         applicationId "com.megvii.awesomedemo.facepp"
         minSdkVersion 15
@@ -18,6 +27,7 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
 

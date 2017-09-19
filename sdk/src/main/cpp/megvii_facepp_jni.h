@@ -25,6 +25,9 @@ JNIEXPORT jfloatArray JNICALL Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nat
 JNIEXPORT jfloatArray JNICALL Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeLandMark(
         JNIEnv *, jobject, jlong, jint, jint);
 
+JNIEXPORT jfloatArray JNICALL Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeRect(
+        JNIEnv *, jobject, jlong, jint);
+
 JNIEXPORT jfloatArray JNICALL Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeAttribute(
         JNIEnv *, jobject, jlong, jint);
 

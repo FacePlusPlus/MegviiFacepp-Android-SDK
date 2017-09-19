@@ -23,6 +23,8 @@ public class NativeFaceppAPI {
 
     public static native float[] nativeLandMark(long handle, int index, int pointNum);
 
+    public static native float[] nativeRect(long handle, int index);
+
     public static native float[] nativeAttribute(long handle, int index);
 
     public static native float[] nativePose3D(long handle, int index);

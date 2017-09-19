@@ -8,6 +8,8 @@
 #include <string>
 #include <chrono>
 #include <cmath>
+#include <include/MG_Facepp.h>
+#include <include/MG_Common.h>
 
 #define  LOGE(...)  __android_log_print(ANDROID_LOG_ERROR,"mgf-c",__VA_ARGS__)
 
@@ -68,7 +70,6 @@ struct ApiHandle {
  */
 jlong Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeInit(JNIEnv *env, jobject,
                                                                 jobject context, jbyteArray model, jint max_face_number) {
-
     jbyte *model_data = env->GetByteArrayElements(model, 0);
     long model_len = env->GetArrayLength(model);
 
@@ -237,6 +238,28 @@ jfloatArray Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeLandMark(JNIEnv
 
         env->SetFloatArrayRegion(retArray, j * 2, 2, point);
     }
+
+    return retArray;
+}
+
+jfloatArray Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeRect(
+        JNIEnv *env, jobject, jlong handle, jint index){
+    ApiHandle *h = reinterpret_cast<ApiHandle *>(handle);
+    jfloatArray  retArray = env->NewFloatArray(4);
+
+    MG_RECTANGLE rectangle;
+//    mg_facepp.GetRect(h->api, index, true, &rectangle);
+    mg_facepp.FPP_GetRect(h->api, index, true, &rectangle);
+
+    float left = rectangle.left;
+    float top = rectangle.top;
+    float right = rectangle.right;
+    float bottom = rectangle.bottom;
+
+    env->SetFloatArrayRegion(retArray, 0, 1, &left);
+    env->SetFloatArrayRegion(retArray, 1, 1, &top);
+    env->SetFloatArrayRegion(retArray, 2, 1, &right);
+    env->SetFloatArrayRegion(retArray, 3, 1, &bottom);
 
     return retArray;
 }

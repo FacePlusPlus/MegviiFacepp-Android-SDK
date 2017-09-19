@@ -404,6 +404,8 @@ typedef struct {
         const void* feature_data2,
         MG_INT32 feature_length,
         MG_DOUBLE _OUT *score_ptr);
+    
+    MG_RETCODE (*FPP_GetRect)(MG_FPP_APIHANDLE api_handle, MG_INT32 idx, MG_BOOL is_smooth, MG_RECTANGLE *rect);
 
 } MG_FACEPP_API_FUNCTIONS_TYPE;
 

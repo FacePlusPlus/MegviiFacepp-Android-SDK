@@ -131,6 +131,15 @@ public class Facepp {
         loadFacePointsInfo(face, points, pointNum, 0);
     }
 
+    public void getRect(Face face){
+        float[] rectArray = NativeFaceppAPI.nativeRect(FaceppHandle, face.index);
+
+        face.rect.left = (int)rectArray[0];
+        face.rect.top = (int)rectArray[1];
+        face.rect.right = (int)rectArray[2];
+        face.rect.bottom = (int)rectArray[3];
+    }
+
     /**
      * @brief 获取人脸的所有属性
      * <p>

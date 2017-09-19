@@ -66,8 +66,8 @@ public class ICamera {
 			cameraHeight = bestPreviewSize.height;
 			params.setPreviewSize(cameraWidth, cameraHeight);
 			Angle = getCameraAngle(activity);
-			Log.w("ceshi", "Angle==" + Angle);
-			Log.d("ceshi", "width = " + cameraWidth + ", height = " + cameraHeight);
+//			Log.w("ceshi", "Angle==" + Angle);
+//			Log.d("ceshi", "width = " + cameraWidth + ", height = " + cameraHeight);
 			// mCamera.setDisplayOrientation(Angle);
 			mCamera.setParameters(params);
 			return mCamera;
@@ -167,8 +167,6 @@ public class ICamera {
 		List<Camera.Size> allSupportedSize = camPara.getSupportedPreviewSizes();
 		ArrayList<Camera.Size> widthLargerSize = new ArrayList<Camera.Size>();
 		for (Camera.Size tmpSize : allSupportedSize) {
-			Log.w("ceshi", "tmpSize.width===" + tmpSize.width
-					+ ", tmpSize.height===" + tmpSize.height);
 			if (tmpSize.width > tmpSize.height) {
 				widthLargerSize.add(tmpSize);
 			}

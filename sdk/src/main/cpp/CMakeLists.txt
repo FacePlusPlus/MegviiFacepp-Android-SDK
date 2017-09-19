@@ -18,9 +18,15 @@ add_library(facepp SHARED IMPORTED )
 set_target_properties(facepp PROPERTIES
     IMPORTED_LOCATION "${jnilibs}/${ANDROID_ABI}/libMegviiFacepp-${MEGVII_FACEPP_VERSION}.so")
 
+#add_library(face_new SHARED IMPORTED )
+#set_target_properties(face_new PROPERTIES
+#    IMPORTED_LOCATION "${jnilibs}/${ANDROID_ABI}/libmegface-new.so")
+
 add_library(face_new SHARED IMPORTED )
 set_target_properties(face_new PROPERTIES
-    IMPORTED_LOCATION "${jnilibs}/${ANDROID_ABI}/libmegface-new.so")
+    IMPORTED_LOCATION "${jnilibs}/${ANDROID_ABI}/libmegface.so")
+
+
 
 find_library( # Sets the name of the path variable.
               log-lib

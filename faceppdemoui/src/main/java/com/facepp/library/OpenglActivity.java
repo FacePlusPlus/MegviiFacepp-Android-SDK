@@ -256,7 +256,7 @@ public class OpenglActivity extends Activity
                 bottom = height - top;
             }
 
-            String errorCode = facepp.init(this, ConUtil.getFileContent(this, R.raw.megviifacepp_0_5_0_model), 2);
+            String errorCode = facepp.init(this, ConUtil.getFileContent(this, R.raw.megviifacepp_0_5_0_model));
             Facepp.FaceppConfig faceppConfig = facepp.getFaceppConfig();
             faceppConfig.interval = detection_interval;
             faceppConfig.minFaceSize = min_face_size;
@@ -278,9 +278,13 @@ public class OpenglActivity extends Activity
 
             Log.d("ceshi", "onResume: trackModel=" + faceppConfig.detectionMode);
             facepp.setFaceppConfig(faceppConfig);
-
             String version = facepp.getVersion();
-            Log.d("ceshi", "onResume:version:" + version);
+//            Log.d("ceshi", "version:" + Facepp.getVersion());
+//            Log.d("ceshi", "bundid:" + Facepp.getPackageName());
+//            Log.d("ceshi", "JenkinsNumbe:" + Facepp.getJenkinsNumber());
+//            Log.d("ceshi", "ApiExpication:" + Facepp.getApiExpirationMillis(this, null));
+//            // nativeGetSDKAuthType
+//            Log.d("ceshi", "auth:" + Facepp.getSDKAuthType(ConUtil.getFileContent(this, R.raw.megviifacepp_0_5_0_model)));
         } else {
             mDialogUtil.showDialog(getResources().getString(R.string.camera_error));
         }
@@ -335,7 +339,7 @@ public class OpenglActivity extends Activity
                     rotation = 360 - Angle;
 
                 setConfig(rotation);
-                Log.d("ceshi", "rotation = " + rotation + ", " + mICamera.getCameraAngle(OpenglActivity.this));
+//                Log.d("ceshi", "rotation = " + rotation + ", " + mICamera.getCameraAngle(OpenglActivity.this));
                 final Facepp.Face[] faces = facepp.detect(imgData, width, height, Facepp.IMAGEMODE_NV21);
                 final long algorithmTime = System.currentTimeMillis() - faceDetectTime_action;
                 Log.d("ceshi",  "" + algorithmTime);
@@ -368,13 +372,15 @@ public class OpenglActivity extends Activity
                                 AttriButeStr = "\nage: " + (int) Math.max(face.age, 1) + "\ngender: " + gender;
                             }
 
+                            Log.d("ceshi", "" + face.rect);
+
                             pitch = faces[c].pitch;
                             yaw = faces[c].yaw;
                             roll = faces[c].roll;
                             confidence = faces[c].confidence;
 
-//                            FloatBuffer buffer = calRectPostion(faces[c].rect, mICamera.cameraWidth, mICamera.cameraHeight);
-//                            rectsOpengl.add(buffer);
+                            FloatBuffer buffer = calRectPostion(faces[c].rect, mICamera.cameraWidth, mICamera.cameraHeight);
+                            rectsOpengl.add(buffer);
 
                             if (orientation == 1 || orientation == 2) {
                                 width = mICamera.cameraHeight;

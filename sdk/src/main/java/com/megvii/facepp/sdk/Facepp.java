@@ -29,7 +29,7 @@ public class Facepp {
 
     private long FaceppHandle;
     private static ArrayList<Ability> abilities;
-    private static long[] algorithmInfo;
+//    private static long[] algorithmInfo;
 
     /**
      * @return 成功则返回 null, 失败返回错误原因
@@ -131,14 +131,14 @@ public class Facepp {
         loadFacePointsInfo(face, points, pointNum, 0);
     }
 
-    public void getRect(Face face){
-        float[] rectArray = NativeFaceppAPI.nativeRect(FaceppHandle, face.index);
-
-        face.rect.left = (int)rectArray[0];
-        face.rect.top = (int)rectArray[1];
-        face.rect.right = (int)rectArray[2];
-        face.rect.bottom = (int)rectArray[3];
-    }
+//    public void getRect(Face face){
+//        float[] rectArray = NativeFaceppAPI.nativeRect(FaceppHandle, face.index);
+//
+//        face.rect.left = (int)rectArray[0];
+//        face.rect.top = (int)rectArray[1];
+//        face.rect.right = (int)rectArray[2];
+//        face.rect.bottom = (int)rectArray[3];
+//    }
 
     /**
      * @brief 获取人脸的所有属性
@@ -286,23 +286,35 @@ public class Facepp {
      * @param[in] model 模型数据
      */
     public static long getApiExpirationMillis(Context context, byte[] mode) {
-        if (getSDKAuthType(mode) == 1)
+        if (getSDKAuthType(mode) == 1) {
             return getApiExpirationMillis(context);        /// < 联网授权
-        else
-            return getApiExpirationMillis(mode);           /// < 非联网授权
+        }
+        else {
+//            return getApiExpirationMillis(mode);           /// < 非联网授权
+            return getApiExpirationMillis(context);
+        }
     }
 
     /**
-     * @return 过期时间戳（单位毫秒）
+     * @return 过期时间戳 （单位毫秒）
      * @brief 获取人脸检测器过期时间
-     * @param[in] model 模型数据
+     * @param[in] context android环境变量
      */
-    private static long getApiExpirationMillis(byte[] mode) {
-        if (algorithmInfo == null)
-            algorithmInfo = NativeFaceppAPI.nativeGetAlgorithmInfo(mode);
-
-        return algorithmInfo[0] * 1000;
+    private static long getApiExpirationMillis(Context context) {
+        return NativeFaceppAPI.nativeGetApiExpication(context) * 1000;
     }
+
+//    /**
+//     * @return 过期时间戳（单位毫秒）
+//     * @brief 获取人脸检测器过期时间
+//     * @param[in] model 模型数据
+//     */
+//    private static long getApiExpirationMillis(byte[] mode) {
+//        if (algorithmInfo == null)
+//            algorithmInfo = NativeFaceppAPI.nativeGetAlgorithmInfo(mode);
+//
+//        return algorithmInfo[0] * 1000;
+//    }
 
     /**
      * @return 如果是联网授权返回 1，如果是非联网授权返回 2
@@ -310,10 +322,11 @@ public class Facepp {
      * @param[in] model 模型数据
      */
     public static int getSDKAuthType(byte[] mode) {
-        if (algorithmInfo == null)
-            algorithmInfo = NativeFaceppAPI.nativeGetAlgorithmInfo(mode);
-
-        return (int) algorithmInfo[1];
+//        if (algorithmInfo == null)
+//            algorithmInfo = NativeFaceppAPI.nativeGetAlgorithmInfo(mode);
+//
+//        return (int) algorithmInfo[1];
+        return NativeFaceppAPI.nativeGetSDKAuthType();
     }
 
     /**
@@ -325,9 +338,12 @@ public class Facepp {
         if (abilities != null)
             return abilities;
         abilities = new ArrayList<Ability>();
-        if (algorithmInfo == null)
-            algorithmInfo = NativeFaceppAPI.nativeGetAlgorithmInfo(mode);
-        long ability = algorithmInfo[2];
+//        if (algorithmInfo == null) {
+//            algorithmInfo = NativeFaceppAPI.nativeGetAlgorithmInfo(mode);
+//        }
+
+//        long ability = algorithmInfo[2];
+        long ability = NativeFaceppAPI.nativeGetAbility(mode);
         if ((ability & MG_FPP_ATTR_POSE3D) != 0)
             abilities.add(Ability.POSE);
         if ((ability & MG_FPP_ATTR_EYESTATUS) != 0)
@@ -355,23 +371,33 @@ public class Facepp {
     }
 
     /**
-     * @return API 标识
-     * @brief 获取 API 标识
-     * <p>
-     * API 标识用于联网授权
+     * @return 人脸检测器Jenkins版本号
+     * @brief 获取人脸检测器Jenkins版本号
      */
-    public static long getApiName() {
-        return NativeFaceppAPI.nativeGetApiName();
+    public static String getJenkinsNumber() {
+        return NativeFaceppAPI.nativeGetJenkinsNumber();
     }
 
     /**
-     * @return 过期时间戳 （单位毫秒）
-     * @brief 获取人脸检测器过期时间
-     * @param[in] context android环境变量
+     * @return 人脸检测器限定的包名
+     * @brief 获取人脸检测器限定的包名
      */
-    private static long getApiExpirationMillis(Context context) {
-        return NativeFaceppAPI.nativeGetApiExpication(context) * 1000;
+    public static String getPackageName() {
+        return NativeFaceppAPI.nativeGetPackageName();
     }
+
+
+//    /**
+//     * @return API 标识
+//     * @brief 获取 API 标识
+//     * <p>
+//     * API 标识用于联网授权
+//     */
+//    public static long getApiName() {
+//        return NativeFaceppAPI.nativeGetApiName();
+//    }
+
+
 
     /**
      * @return 如果是联网授权返回 1，如果是非联网授权返回 2

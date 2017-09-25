@@ -242,27 +242,27 @@ jfloatArray Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeLandMark(JNIEnv
     return retArray;
 }
 
-jfloatArray Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeRect(
-        JNIEnv *env, jobject, jlong handle, jint index){
-    ApiHandle *h = reinterpret_cast<ApiHandle *>(handle);
-    jfloatArray  retArray = env->NewFloatArray(4);
-
-    MG_RECTANGLE rectangle;
-//    mg_facepp.GetRect(h->api, index, true, &rectangle);
-    mg_facepp.FPP_GetRect(h->api, index, true, &rectangle);
-
-    float left = rectangle.left;
-    float top = rectangle.top;
-    float right = rectangle.right;
-    float bottom = rectangle.bottom;
-
-    env->SetFloatArrayRegion(retArray, 0, 1, &left);
-    env->SetFloatArrayRegion(retArray, 1, 1, &top);
-    env->SetFloatArrayRegion(retArray, 2, 1, &right);
-    env->SetFloatArrayRegion(retArray, 3, 1, &bottom);
-
-    return retArray;
-}
+//jfloatArray Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeRect(
+//        JNIEnv *env, jobject, jlong handle, jint index){
+//    ApiHandle *h = reinterpret_cast<ApiHandle *>(handle);
+//    jfloatArray  retArray = env->NewFloatArray(4);
+//
+//    MG_RECTANGLE rectangle;
+////    mg_facepp.GetRect(h->api, index, true, &rectangle);
+//    mg_facepp.FPP_GetRect(h->api, index, true, &rectangle);
+//
+//    float left = rectangle.left;
+//    float top = rectangle.top;
+//    float right = rectangle.right;
+//    float bottom = rectangle.bottom;
+//
+//    env->SetFloatArrayRegion(retArray, 0, 1, &left);
+//    env->SetFloatArrayRegion(retArray, 1, 1, &top);
+//    env->SetFloatArrayRegion(retArray, 2, 1, &right);
+//    env->SetFloatArrayRegion(retArray, 3, 1, &bottom);
+//
+//    return retArray;
+//}
 
 jfloatArray Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeAttribute(JNIEnv *env,
                                                                            jobject, jlong handle,
@@ -415,6 +415,17 @@ jfloatArray Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeAgeGender(JNIEn
     return retArray;
 }
 
+jlong Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeGetAbility(JNIEnv *env, jobject, jbyteArray model) {
+    jbyte *model_data = env->GetByteArrayElements(model, 0);
+    long model_len = env->GetArrayLength(model);
+    MG_ABILITY ability = {0};
+    mg_facepp.GetAbility(reinterpret_cast<const MG_BYTE *>(model_data), model_len, &ability);
+
+    return (jlong)ability.ability;
+}
+
+
+/*
 jlongArray Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeGetAlgorithmInfo(
         JNIEnv *env, jobject, jbyteArray model) {
     jbyte *model_data = env->GetByteArrayElements(model, 0);
@@ -435,6 +446,7 @@ jlongArray Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeGetAlgorithmInfo
 
     return retArray;
 }
+ */
 
 jint Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeExtractFeature(JNIEnv *,
                                                                          jobject, jlong handle,
@@ -506,14 +518,23 @@ jlong Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeGetApiExpication(JNIE
 
 jstring Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeGetVersion(JNIEnv *env,
                                                                         jobject) {
-    const char *version = mg_facepp.GetApiVersion();
+    const char *version = mg_facepp.GetAPIVersion();
     return env->NewStringUTF(version);
 }
 
-jlong Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeGetApiName(JNIEnv *,
-                                                                      jobject) {
-    return (jlong) (mg_facepp.GetApiVersion);
+
+jstring Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeGetJenkinsNumber(JNIEnv *env,
+                                                                              jobject) {
+    const char *number = mg_facepp.GetJenkinsNumber();
+    return env->NewStringUTF(number);
 }
+
+jstring Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeGetPackageName(JNIEnv *env,
+                                                                              jobject) {
+    const char *package_name = mg_facepp.getSDKBundleId();
+    return env->NewStringUTF(package_name);
+}
+
 
 jint Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeGetSDKAuthType(JNIEnv *,
                                                                          jobject) {

@@ -44,8 +44,10 @@ JNIEXPORT jfloatArray JNICALL Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nat
 JNIEXPORT jfloatArray JNICALL Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeAgeGender(
         JNIEnv *, jobject, jlong, jint);
 
-JNIEXPORT jlongArray JNICALL Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeGetAlgorithmInfo(
-        JNIEnv *, jobject, jbyteArray);
+//JNIEXPORT jlongArray JNICALL Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeGetAlgorithmInfo(
+//        JNIEnv *, jobject, jbyteArray);
+
+JNIEXPORT jlong Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeGetAbility(JNIEnv *env, jobject, jbyteArray model);
 
 JNIEXPORT jint JNICALL Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeExtractFeature(
         JNIEnv *, jobject, jlong, jint);
@@ -67,11 +69,21 @@ JNIEXPORT jlong JNICALL Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeGet
 JNIEXPORT jstring JNICALL Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeGetVersion(
         JNIEnv *, jobject);
 
-JNIEXPORT jlong JNICALL Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeGetApiName(
-        JNIEnv *, jobject);
+
+JNIEXPORT jstring Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeGetJenkinsNumber(JNIEnv *env,
+                                                                              jobject);
+
+
+JNIEXPORT jstring Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeGetPackageName(JNIEnv *env,
+                                                                            jobject);
+
+//JNIEXPORT jlong JNICALL Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeGetApiName(
+//        JNIEnv *, jobject);
 
 JNIEXPORT jint JNICALL Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeGetSDKAuthType(
         JNIEnv *, jobject);
+
+
 
 
 #ifdef __cplusplus

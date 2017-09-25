@@ -23,7 +23,7 @@ public class NativeFaceppAPI {
 
     public static native float[] nativeLandMark(long handle, int index, int pointNum);
 
-    public static native float[] nativeRect(long handle, int index);
+//    public static native float[] nativeRect(long handle, int index);
 
     public static native float[] nativeAttribute(long handle, int index);
 
@@ -39,7 +39,9 @@ public class NativeFaceppAPI {
 
     public static native float[] nativeAgeGender(long handle, int index);
 
-    public static native long[] nativeGetAlgorithmInfo(byte[] mode);
+    //public static native long[] nativeGetAlgorithmInfo(byte[] mode);
+    public static native long nativeGetAbility(byte[] mode);
+
 
     public static native int nativeExtractFeature(long handle, int index);
 
@@ -48,15 +50,16 @@ public class NativeFaceppAPI {
     public static native double nativeFaceCompare(long handle, byte[] featureData1, byte[] featureData2, int
             featureLength);
 
-    public static native long nativeGetApiExpication(Context context);
 
-    public static native void nativeRelease(long handle);
-
+    public static native String nativeGetJenkinsNumber();
     public static native String nativeGetVersion();
-
-    public static native long nativeGetApiName();
+    public static native long nativeGetApiExpication(Context context);
+    public static native String nativeGetPackageName();
 
     public static native int nativeGetSDKAuthType();
+    public static native void nativeRelease(long handle);
+
+
 
     /**
      * 这里加载的名称要根据 so 不同的版本号进行修改

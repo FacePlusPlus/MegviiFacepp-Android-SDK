@@ -20,6 +20,7 @@ extern "C"{
 #define MG_FPP_GET_LANDMARK106 106      ///< 计算 106 个关键点
 #define MG_FPP_GET_LANDMARK101 101      ///< 计算 101 个关键点
 #define MG_FPP_GET_LANDMARK81 81        ///< 计算 81 个关键点
+#define MG_FPP_GET_LANDMARK84 84        ///< 计算 84 个关键点
 
 #define MG_FPP_ATTR_POSE3D 0x01             ///< 3dpose 的标识位
 #define MG_FPP_ATTR_EYESTATUS 0x02          ///< 眼睛状态的标识位
@@ -145,13 +146,17 @@ typedef struct {
      *
      * @return 返回一个字符串，表示算法版本号及相关信息
      */
-    const char* (*GetApiVersion)();
+    const char* (*GetJenkinsNumber)();
+    
+    /**
+     * @brief 获取算法版本信息
+     *
+     * @return 返回一个字符串，表示 SDK 使用的jenkins号
+     */
+    const char* (*GetAPIVersion)();
 
     /**
      * @brief 查看算法授权的过期时间
-     *
-     * @warning 此接口已经废弃，可以用 GetAlgorithmInfo 函数代替。
-     * 在初次使用 SDK 时，需要先调用 CreateApiHandle 方法才能正确返回过期时间。
      *
      * @param[in] env               Android jni 的环境变量，仅在 Android SDK 中使用
      * @param[in] jobj              Android 调用的上下文，仅在 Android SDK 中使用
@@ -164,6 +169,14 @@ typedef struct {
         jobject jobj
 #endif
     );
+    
+    
+    /**
+     获取SDK限制的包名
+
+     @return SDK限制的包名
+     */
+    const char * (*getSDKBundleId)();
 
     /**
      * @brief 获取当前算法的配置信息
@@ -193,7 +206,18 @@ typedef struct {
     MG_RETCODE (*SetDetectConfig) (
         MG_FPP_APIHANDLE api_handle,
         const MG_FPP_APICONFIG *config);
-
+    
+    
+    /**
+     * @brief 清除当前track模式下的缓存信息
+     *
+     * @param[in] api_handle 算法句柄
+     *
+     * @return 成功则返回 MG_RETCODE_OK
+     */
+    MG_RETCODE (*Reset_track) (MG_FPP_APIHANDLE api_handle);
+    
+    
     /**
      * @brief 检测图像中的人脸
      * 
@@ -320,8 +344,6 @@ typedef struct {
     /**
      * @brief 获取 SDK 的授权类型
      *
-     * @warning 此接口已经废弃，可以用 GetAlgorithmInfo 函数代替。
-     *
      * @return 只有联网授权和非联网授权两种类型
      */
     MG_SDKAUTHTYPE (*GetSDKAuthType)();
@@ -338,10 +360,10 @@ typedef struct {
      *
      * @return 成功则返回 MG_RETCODE_OK
      */
-    MG_RETCODE (*GetAlgorithmInfo)(
+    MG_RETCODE (*GetAbility)(
         const MG_BYTE* model_data,
         MG_INT32 model_length,
-        MG_ALGORITHMINFO *algorithm_info);
+        MG_ABILITY *ability_info);
 
     /**
      * @brief 抽取人脸特征
@@ -404,8 +426,6 @@ typedef struct {
         const void* feature_data2,
         MG_INT32 feature_length,
         MG_DOUBLE _OUT *score_ptr);
-    
-    MG_RETCODE (*FPP_GetRect)(MG_FPP_APIHANDLE api_handle, MG_INT32 idx, MG_BOOL is_smooth, MG_RECTANGLE *rect);
 
 } MG_FACEPP_API_FUNCTIONS_TYPE;
 

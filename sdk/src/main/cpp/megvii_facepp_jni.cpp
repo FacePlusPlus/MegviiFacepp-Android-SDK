@@ -478,7 +478,7 @@ void Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeRelease(JNIEnv *, jobj
 jlong Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeGetApiExpication(JNIEnv *env,
                                                                             jobject, jobject ctx) {
 
-    return (long) mg_facepp.GetApiExpiration(env, ctx);
+    return (long) mg_facepp.GetApiExpiration();
 }
 
 jstring Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeGetVersion(JNIEnv *env,

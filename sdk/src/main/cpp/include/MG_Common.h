@@ -273,6 +273,10 @@ typedef enum{
 #define MG_CONTOUR_RIGHT7 78
 #define MG_CONTOUR_RIGHT8 79
 #define MG_CONTOUR_RIGHT9 80
+    
+#define MG_MOUTH_MIDDLE    81
+#define MG_LEFTEYE_CENTER  82
+#define MG_RIGHTEYE_CENTER 83
 
 #define MG_LANDMARK_NR 81                       ///< 默认的人脸关键点总数
 /**
@@ -391,16 +395,13 @@ typedef struct {
  * 记录了算法相关信息的类型
  */
 typedef struct {
-    MG_UINT64 expire_time;                          ///< 一个时间戳，表示过期时间
-
-    MG_SDKAUTHTYPE auth_type;                       ///< SDK 的授权类型（联网授权或者非联网授权）
-
     MG_UINT64 ability;                              ///< 提供人脸算法的能力
                                                     ///< 这是一些属性值的 bit 值的或和，
                                                     ///< 可以参考以 MG_FPP_ATTR_ 开头的宏定义名。
 
-} MG_ALGORITHMINFO;
-
+} MG_ABILITY;
+    
+    
 typedef enum {
     MG_ROTATION_0 = 0,                              ///< 不旋转
     
@@ -410,6 +411,20 @@ typedef enum {
     
     MG_ROTATION_270 = 270,                          ///< 图像右时针旋转 270 度
 } MG_ROTATION;
+    
+    
+// 已废弃
+typedef struct {
+    MG_UINT64 expire_time;                          ///< 一个时间戳，表示过期时间
+    
+    MG_SDKAUTHTYPE auth_type;                       ///< SDK 的授权类型（联网授权或者非联网授权）
+    
+    MG_UINT64 ability;                              ///< 提供人脸算法的能力
+    ///< 这是一些属性值的 bit 值的或和，
+    ///< 可以参考以 MG_FPP_ATTR_ 开头的宏定义名。
+    
+} MG_ALGORITHMINFO;
+
     
 #ifdef __cplusplus
 }

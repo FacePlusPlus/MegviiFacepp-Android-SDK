@@ -496,3 +496,69 @@ jint Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeGetSDKAuthType(JNIEnv 
                                                                          jobject) {
     return (jint) mg_facepp.GetSDKAuthType();
 }
+
+JNIEXPORT jint JNICALL
+Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeResetTrack(JNIEnv *env, jclass type,
+                                                                jlong handle) {
+
+    ApiHandle *h = reinterpret_cast<ApiHandle *>(handle);
+    return mg_facepp.ResetTrack(h->api);
+
+}
+
+JNIEXPORT jfloat JNICALL
+Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeGetFaceConfidenceFilter(JNIEnv *env,
+                                                                             jclass type,
+                                                                             jlong handle) {
+    jfloat  confidence;
+    ApiHandle *h = reinterpret_cast<ApiHandle *>(handle);
+    mg_facepp.GetFaceConfidenceFilter(h->api,&confidence);
+    return confidence;
+
+}
+
+
+JNIEXPORT jint JNICALL
+Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeSetFaceConfidenceFilter(JNIEnv *env,
+                                                                             jclass type,
+                                                                             jlong handle,
+                                                                             jfloat filter) {
+    ApiHandle *h = reinterpret_cast<ApiHandle *>(handle);
+    return mg_facepp.SetFaceConfidenceFilter(h->api,filter);
+
+}
+
+JNIEXPORT jstring JNICALL
+Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeGetJenkinsNumber(JNIEnv *env, jclass type
+                                                                      ) {
+    const char *jkn = mg_facepp.GetJenkinsNumber();
+    return env->NewStringUTF(jkn);
+}
+
+JNIEXPORT jstring JNICALL
+Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeGetSDKBundleId(JNIEnv *env, jclass type
+                                                                    ) {
+
+    const char *sdkBundleId = mg_facepp.GetSDKBundleId();
+    return env->NewStringUTF(sdkBundleId);
+}
+
+JNIEXPORT jint JNICALL
+Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeShutDown(JNIEnv *env, jclass type
+                                                              ) {
+
+
+    return mg_facepp.ShutDown();
+
+}
+
+JNIEXPORT jlong JNICALL
+Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeGetAbility(JNIEnv *env, jclass type,
+                                                                jbyteArray model_) {
+    jbyte *model = env->GetByteArrayElements(model_, NULL);
+    long model_len = env->GetArrayLength(model_);
+    jlong  ability;
+    mg_facepp.GetAbility((const MG_BYTE *) model, model_len, (MG_ABILITY *) &ability);
+    env->ReleaseByteArrayElements(model_, model, 0);
+    return ability;
+}

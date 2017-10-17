@@ -190,6 +190,20 @@ public class OpenglActivity extends Activity
     }
 
     /**
+     * 用于测试一些api
+     */
+    private void newMethodCall(){
+        Log.d("xie", "newMethodCall: "+facepp.GetFaceConfidenceFilter()+facepp.getSDKBundleId());
+        imgIcon.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Log.d("xie", "newMethodCall: "+facepp.resetTrack()+facepp.GetFaceConfidenceFilter()+facepp.getSDKBundleId());
+            }
+        },5000);
+
+    }
+
+    /**
      * 开始录制
      */
     private void startRecorder() {
@@ -277,6 +291,8 @@ public class OpenglActivity extends Activity
         } else {
             mDialogUtil.showDialog(getResources().getString(R.string.camera_error));
         }
+
+//        newMethodCall();
     }
 
     private void setConfig(int rotation) {

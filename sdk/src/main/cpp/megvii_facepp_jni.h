@@ -70,6 +70,38 @@ JNIEXPORT jlong JNICALL Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeGet
 JNIEXPORT jint JNICALL Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeGetSDKAuthType(
         JNIEnv *, jobject);
 
+JNIEXPORT jint JNICALL
+Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeResetTrack(JNIEnv *env, jclass type,
+                                                                jlong handle) ;
+
+JNIEXPORT jfloat JNICALL
+Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeGetFaceConfidenceFilter(JNIEnv *env,
+                                                                             jclass type,
+                                                                             jlong handle) ;
+
+
+JNIEXPORT jint JNICALL
+Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeSetFaceConfidenceFilter(JNIEnv *env,
+                                                                             jclass type,
+                                                                             jlong handle,
+                                                                             jfloat filter) ;
+
+JNIEXPORT jstring JNICALL
+Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeGetJenkinsNumber(JNIEnv *env, jclass type
+                                                                      ) ;
+
+JNIEXPORT jstring JNICALL
+Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeGetSDKBundleId(JNIEnv *env, jclass type
+                                                                    ) ;
+
+JNIEXPORT jint JNICALL
+Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeShutDown(JNIEnv *env, jclass type
+                                                              ) ;
+
+JNIEXPORT jlong JNICALL
+Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeGetAbility(JNIEnv *env, jclass type,
+                                                                jbyteArray model_);
+
 
 #ifdef __cplusplus
 }

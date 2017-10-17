@@ -373,6 +373,72 @@ public class Facepp {
         return NativeFaceppAPI.nativeGetSDKAuthType();
     }
 
+    /**
+     * @return 调用是否成功
+     * @brief  切换摄像头调用 出现关键点后调用
+     */
+    public  int resetTrack() {
+        return NativeFaceppAPI.nativeResetTrack(FaceppHandle);
+    }
+
+    /**
+     * @return 置信度
+     * @brief  获取置信度
+     */
+    public  float GetFaceConfidenceFilter() {
+        return NativeFaceppAPI.nativeGetFaceConfidenceFilter(FaceppHandle);
+    }
+
+    /**
+     * @return 调用是否成功
+     * @brief  设置置信度
+     * @param[in] confidence 置信度
+     */
+    public  int setFaceConfidenceFilter(float confidence) {
+        return NativeFaceppAPI.nativeSetFaceConfidenceFilter(FaceppHandle,confidence);
+    }
+
+    /**
+     * @return jenkins nummber
+     * @brief  获取打包版本
+     */
+    public static String getJenkinsNumber() {
+        return NativeFaceppAPI.nativeGetJenkinsNumber();
+    }
+
+    /**
+     * @return bundleid
+     * @brief  获取BundleId
+     */
+    public static String getSDKBundleId() {
+        return NativeFaceppAPI.nativeGetSDKBundleId();
+    }
+
+    /**
+     * @return sdk 授权类型
+     * @brief  新的sdk授权类型
+     */
+    public static int getSDKAuthTypeNew() {
+        return NativeFaceppAPI.nativeGetSDKAuthType();
+    }
+
+    /**
+     * @return sdk 能力
+     * @brief  新的获取sdk能力
+     * @param[in] model 模型
+     */
+    public static long getAbilityNew(byte[] model) {
+        return NativeFaceppAPI.nativeGetAbility(model);
+    }
+
+    /**
+     * @return 调用是否成功
+     * @brief  清理资源，release后调用
+     */
+    public static int shutDown() {
+        return NativeFaceppAPI.nativeShutDown();
+    }
+
     private void loadFaceBaseInfo(Face face, float[] faceBaseInfo) {
         face.trackID = (int) faceBaseInfo[0];
         face.index = (int) faceBaseInfo[1];

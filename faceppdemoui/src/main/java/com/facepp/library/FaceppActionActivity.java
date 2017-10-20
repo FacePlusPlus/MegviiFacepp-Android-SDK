@@ -46,6 +46,7 @@ public class FaceppActionActivity extends Activity implements OnClickListener {
 	private boolean isShowListView;
 	private HashMap<String, Integer> resolutionMap;
 	private DialogUtil mDialogUtil;
+	
 
 	private boolean isStartRecorder, is3DPose, isDebug, isROIDetect, is106Points, isBackCamera, isFaceProperty,
 			isOneFaceTrackig, isFaceCompare;

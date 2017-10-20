@@ -39,15 +39,12 @@ extern "C"{
  * 支持对单张图片做人脸检测，也支持对视频流做人脸检测。
  */
 typedef enum {
-    MG_FPP_DETECTIONMODE_NORMAL = 0,        ///< 单张图片人脸检测模式
-
-    MG_FPP_DETECTIONMODE_TRACKING,          ///< 视频人脸跟踪模式
-
-    MG_FPP_DETECTIONMODE_TRACKING_SMOOTH,    ///< 特殊的视频人脸跟踪模式。
-                                            ///< 此模式下人脸检测与跟踪会更平均的使用 CPU 计算资源。
-    MG_FPP_DETECTIONMODE_TRACKING_FAST,     ///< 牺牲了人脸关键点的贴合度，提升了人脸跟踪的速度
-    MG_FPP_DETECTIONMODE_TRACKING_ROBUST    ///< 提高了人脸关键点的贴合度，降低了人脸跟踪的速度
-} MG_FPP_DETECTIONMODE;						///< 检测人脸时只跟踪单张人脸
+    MG_FPP_DETECTIONMODE_NORMAL = 0,             ///< 单张图片人脸检测模式
+    MG_FPP_DETECTIONMODE_TRACKING = 1,           ///< 视频人脸跟踪模式
+    MG_FPP_DETECTIONMODE_TRACKING_FAST = 3,      ///< 牺牲了人脸关键点的贴合度，提升了人脸跟踪的速度
+    MG_FPP_DETECTIONMODE_TRACKING_ROBUST =4,     ///< 提高了人脸关键点的贴合度，降低了人脸跟踪的速度
+    MG_FPP_DETECTIONMODE_DETECT_RECT = 5,        ///< 只检测人脸框，并不检测landmark
+} MG_FPP_DETECTIONMODE;
 
 struct _MG_FPP_API;
 /**
@@ -285,6 +282,28 @@ typedef struct {
         MG_BOOL is_smooth,
         MG_INT32 nr,
         MG_POINT _OUT *points);
+    
+    /**
+     * @brief 获取人脸关键点信息
+     *
+     * 可以通过参数控制，获取不同个数的关键点，也可以获取平滑过的关键点。
+     *
+     * @param[in] api_handle 算法句柄
+     * @param[in] idx 人脸编号（人脸以0~face_nr-1编号）
+     * @param[in] is_smooth 是否需要进行平滑处理。选择平滑处理可以让前后帧关键点相对比较稳定。
+     * @param[in] nr 获取的关键点个数，目前只有3种数值是合理的，分别是81点、101点和106点。
+     *
+     * @param[out] points 获取的人脸关键点
+     *
+     * @return 成功则返回 MG_RETCODE_OK
+     */
+    MG_RETCODE (*GetRect) (
+           MG_FPP_APIHANDLE api_handle,
+           MG_INT32 idx,
+           MG_BOOL is_smooth,
+           MG_DETECT_RECT _OUT *rect);
+    
+    
 
     /**
      * @brief 计算一张人脸的属性
@@ -469,6 +488,29 @@ typedef struct {
         const MG_BYTE* model_data,
         MG_INT32 model_length,
         MG_ALGORITHMINFO *algorithm_info);
+    MG_RETCODE (*GetAlgorithmInf)(
+                                   const MG_BYTE* model_data,
+                                   MG_INT32 model_length,
+                                   MG_ALGORITHMINFO *algorithm_info);
+    
+//    /**
+//     * @brief 获取人脸框信息
+//     *
+//     * 可以通过参数控制，获取平滑过的关键点。
+//     *
+//     * @param[in] api_handle 算法句柄
+//     * @param[in] idx 人脸编号（人脸以0~face_nr-1编号）
+//     * @param[in] is_smooth 是否需要进行平滑处理。选择平滑处理可以让前后帧关键点相对比较稳定。
+//     *
+//     * @param[out] points 获取的人脸框
+//     *
+//     * @return 成功则返回 MG_RETCODE_OK
+//     */
+//    MG_RETCODE (*GetRect) (
+//                           MG_FPP_APIHANDLE api_handle,
+//                           MG_INT32 idx,
+//                           MG_BOOL is_smooth,
+//                           MG_POINT _OUT *rect);
 
 } MG_FACEPP_API_FUNCTIONS_TYPE;
 

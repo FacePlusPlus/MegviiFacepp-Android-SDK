@@ -222,6 +222,16 @@ public class Facepp {
         return true;
     }
 
+    public void getRect(Face face){
+        float[] rectArray = NativeFaceppAPI.nativeRect(FaceppHandle, face.index);
+
+        face.rect.left = (int)rectArray[0];
+        face.rect.top = (int)rectArray[1];
+        face.rect.right = (int)rectArray[2];
+        face.rect.bottom = (int)rectArray[3];
+    }
+
+
     /**
      * @return 调用是否成功
      * @brief 获取指定人脸的特征，并改变传入的人脸信息
@@ -439,6 +449,9 @@ public class Facepp {
         return NativeFaceppAPI.nativeShutDown();
     }
 
+
+
+
     private void loadFaceBaseInfo(Face face, float[] faceBaseInfo) {
         face.trackID = (int) faceBaseInfo[0];
         face.index = (int) faceBaseInfo[1];
@@ -617,16 +630,21 @@ public class Facepp {
         public byte[] feature;             ///<feature_data 人脸特征数据，务必保证其内存大小不低于 feature_length
     }
 
+
     public static class FaceppConfig {
         public final static int DETECTION_MODE_NORMAL = 0;                 ///< 单张图片人脸检测模式
 
-        public final static int DETECTION_MODE_TRACKING = 1;               ///< 视频人脸跟踪模式
-
-        public final static int DETECTION_MODE_TRACKING_SMOOTH = 2;        ///< 特殊的视频人脸跟踪模式。
+        public final static int DETECTION_MODE_TRACKING = 1;         ///< 视频人脸跟踪模式
 
         public final static int DETECTION_MODE_TRACKING_FAST = 3;          ///< 牺牲了人脸关键点的贴合度，提升了人脸跟踪的速度                                                   ///< 此模式下人脸检测与跟踪会更平均的使用 CPU 计算资源。
 
         public final static int DETECTION_MODE_TRACKING_ROBUST = 4;        ///< 提高了人脸关键点的贴合度，降低了人脸跟踪的速度
+
+        public final static int DETECTION_MODE_TRACKING_RECT = 5;                   ///< 只检测人脸框，并不检测landmark
+
+
+
+
 
         public int minFaceSize;              ///< 最小检测人脸的尺寸（人脸尺寸一般是指人脸脸颊的宽度）。
         ///< 数值越大检测用的耗时越少。

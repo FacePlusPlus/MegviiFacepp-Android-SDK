@@ -39,9 +39,9 @@
     <string name="one_face_trackig_true">YES</string>
     <string name="one_face_trackig_false">NO</string>
     <string-array name="trackig_mode_array">
-        <item>Tracking</item>
-        <item>Robust</item>
         <item>Fast</item>
+        <item>Robust</item>
+        <item>Tracking_Rect</item>
     </string-array>
     <string name="modif_name">修改名称</string>
     <string name="modif_name_fail">请输入名称</string>

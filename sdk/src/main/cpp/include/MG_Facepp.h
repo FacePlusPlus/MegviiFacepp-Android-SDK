@@ -20,6 +20,7 @@ extern "C"{
 #define MG_FPP_GET_LANDMARK106 106      ///< 计算 106 个关键点
 #define MG_FPP_GET_LANDMARK101 101      ///< 计算 101 个关键点
 #define MG_FPP_GET_LANDMARK81 81        ///< 计算 81 个关键点
+#define MG_FPP_GET_LANDMARK84 84        ///< 计算 84 个关键点
 
 #define MG_FPP_ATTR_POSE3D 0x01             ///< 3dpose 的标识位
 #define MG_FPP_ATTR_EYESTATUS 0x02          ///< 眼睛状态的标识位
@@ -38,15 +39,12 @@ extern "C"{
  * 支持对单张图片做人脸检测，也支持对视频流做人脸检测。
  */
 typedef enum {
-    MG_FPP_DETECTIONMODE_NORMAL = 0,        ///< 单张图片人脸检测模式
-
-    MG_FPP_DETECTIONMODE_TRACKING,          ///< 视频人脸跟踪模式
-
-    MG_FPP_DETECTIONMODE_TRACKING_SMOOTH,    ///< 特殊的视频人脸跟踪模式。
-                                            ///< 此模式下人脸检测与跟踪会更平均的使用 CPU 计算资源。
-    MG_FPP_DETECTIONMODE_TRACKING_FAST,     ///< 牺牲了人脸关键点的贴合度，提升了人脸跟踪的速度
-    MG_FPP_DETECTIONMODE_TRACKING_ROBUST    ///< 提高了人脸关键点的贴合度，降低了人脸跟踪的速度
-} MG_FPP_DETECTIONMODE;						///< 检测人脸时只跟踪单张人脸
+    MG_FPP_DETECTIONMODE_NORMAL = 0,             ///< 单张图片人脸检测模式
+    MG_FPP_DETECTIONMODE_TRACKING = 1,           ///< 视频人脸跟踪模式
+    MG_FPP_DETECTIONMODE_TRACKING_FAST = 3,      ///< 牺牲了人脸关键点的贴合度，提升了人脸跟踪的速度
+    MG_FPP_DETECTIONMODE_TRACKING_ROBUST =4,     ///< 提高了人脸关键点的贴合度，降低了人脸跟踪的速度
+    MG_FPP_DETECTIONMODE_DETECT_RECT = 5,        ///< 只检测人脸框，并不检测landmark
+} MG_FPP_DETECTIONMODE;
 
 struct _MG_FPP_API;
 /**
@@ -82,7 +80,7 @@ typedef struct {
     MG_RECTANGLE roi;                       ///< 一个矩形框，表示只对图像中 roi 所表示的区域做人脸检测。
                                             ///< 在特定场景下，此方法可以提高检测速度。
                                             ///< 如果人脸在 roi 中被检测到，且移动到了 roi 之外的区域，依然可以被跟踪。
-    MG_BOOL one_face_tracking;
+    MG_BOOL one_face_tracking;              ///< 此参数已废弃
 } MG_FPP_APICONFIG;
 
 /**
@@ -143,27 +141,61 @@ typedef struct {
     /**
      * @brief 获取算法版本信息
      *
-     * @return 返回一个字符串，表示算法版本号及相关信息
+     * @return 返回一个字符串，表示 SDK buidl时的jenkins号
+     */
+    const char* (*GetJenkinsNumber)();
+    
+    /**
+     * @brief 获取算法版本信息
+     *
+     * @return 返回一个字符串，表示算法版本号
      */
     const char* (*GetApiVersion)();
 
     /**
      * @brief 查看算法授权的过期时间
      *
-     * @warning 此接口已经废弃，可以用 GetAlgorithmInfo 函数代替。
-     * 在初次使用 SDK 时，需要先调用 CreateApiHandle 方法才能正确返回过期时间。
-     *
      * @param[in] env               Android jni 的环境变量，仅在 Android SDK 中使用
      * @param[in] jobj              Android 调用的上下文，仅在 Android SDK 中使用
      *
      * @return 成功则返回 MG_RETCODE_OK
      */
-    MG_UINT64 (*GetApiExpiration)(
-#if MGAPI_BUILD_ON_ANDROID
-        JNIEnv* env,
-        jobject jobj
-#endif
-    );
+    MG_UINT64 (*GetApiExpiration)();
+    
+    
+    /**
+     获取SDK限制的包名
+
+     @return SDK限制的包名
+     */
+    const char * (*GetSDKBundleId)();
+    
+    
+    /**
+     * @brief 获取 SDK 的授权类型
+     *
+     * @return 只有联网授权和非联网授权两种类型
+     */
+    MG_SDKAUTHTYPE (*GetSDKAuthType)();
+    
+    
+    /**
+     * @brief 获取SDK包含能力
+     *
+     * 读取模型中相关参数，返回当前SDK的所使用的算法的相关信息。
+     *
+     * @param[in] model_data 算法模型的二进制数据
+     * @param[in] model_length 算法模型的字节长度
+     *
+     * @param[out] ability_info 算法能力
+     *
+     * @return 成功则返回 MG_RETCODE_OK
+     */
+    MG_RETCODE (*GetAbility)(
+                             const MG_BYTE* model_data,
+                             MG_INT32 model_length,
+                             MG_ABILITY *ability_info);
+    
 
     /**
      * @brief 获取当前算法的配置信息
@@ -193,7 +225,8 @@ typedef struct {
     MG_RETCODE (*SetDetectConfig) (
         MG_FPP_APIHANDLE api_handle,
         const MG_FPP_APICONFIG *config);
-
+    
+    
     /**
      * @brief 检测图像中的人脸
      * 
@@ -249,6 +282,28 @@ typedef struct {
         MG_BOOL is_smooth,
         MG_INT32 nr,
         MG_POINT _OUT *points);
+    
+    /**
+     * @brief 获取人脸关键点信息
+     *
+     * 可以通过参数控制，获取不同个数的关键点，也可以获取平滑过的关键点。
+     *
+     * @param[in] api_handle 算法句柄
+     * @param[in] idx 人脸编号（人脸以0~face_nr-1编号）
+     * @param[in] is_smooth 是否需要进行平滑处理。选择平滑处理可以让前后帧关键点相对比较稳定。
+     * @param[in] nr 获取的关键点个数，目前只有3种数值是合理的，分别是81点、101点和106点。
+     *
+     * @param[out] points 获取的人脸关键点
+     *
+     * @return 成功则返回 MG_RETCODE_OK
+     */
+    MG_RETCODE (*GetRect) (
+           MG_FPP_APIHANDLE api_handle,
+           MG_INT32 idx,
+           MG_BOOL is_smooth,
+           MG_DETECT_RECT _OUT *rect);
+    
+    
 
     /**
      * @brief 计算一张人脸的属性
@@ -317,31 +372,6 @@ typedef struct {
     MG_RETCODE (*ReleaseImageHandle) (
         MG_FPP_IMAGEHANDLE image_handle);
 
-    /**
-     * @brief 获取 SDK 的授权类型
-     *
-     * @warning 此接口已经废弃，可以用 GetAlgorithmInfo 函数代替。
-     *
-     * @return 只有联网授权和非联网授权两种类型
-     */
-    MG_SDKAUTHTYPE (*GetSDKAuthType)();
-
-    /**
-     * @brief 获取算法相关信息
-     * 
-     * 读取模型中相关参数，返回当前SDK的所使用的算法的相关信息。
-     *
-     * @param[in] model_data 算法模型的二进制数据
-     * @param[in] model_length 算法模型的字节长度
-     *
-     * @param[out] algorithm_info 算法相关信息
-     *
-     * @return 成功则返回 MG_RETCODE_OK
-     */
-    MG_RETCODE (*GetAlgorithmInfo)(
-        const MG_BYTE* model_data,
-        MG_INT32 model_length,
-        MG_ALGORITHMINFO *algorithm_info);
 
     /**
      * @brief 抽取人脸特征
@@ -404,6 +434,83 @@ typedef struct {
         const void* feature_data2,
         MG_INT32 feature_length,
         MG_DOUBLE _OUT *score_ptr);
+    
+    
+    /**
+     * @brief 清除当前track模式下的缓存信息
+     *
+     * @param[in] api_handle 算法句柄
+     *
+     * @return 成功则返回 MG_RETCODE_OK
+     */
+    MG_RETCODE (*ResetTrack) (MG_FPP_APIHANDLE api_handle);
+    
+
+    /**
+     * @brief 获取人脸检测置信度过滤阈值
+     *
+     * @param[in]  api_handle 算法句柄
+     * @param[out] filter 成功则设置此值为人脸检测置信度过滤的阈值
+     *
+     * @return 成功则返回 MG_RETCODE_OK
+     */
+    MG_RETCODE (*GetFaceConfidenceFilter)(MG_FPP_APIHANDLE api_handle, MG_SINGLE *filter);
+    
+    
+    /**
+     * @brief 设置人脸检测置信度过滤阈值
+     *
+     * @param[in] api_handle 算法句柄
+     * @param[in] filter 要设置的人脸检测置信度过滤阈值
+     *
+     * @return 成功则返回 MG_RETCODE_OK
+     */
+    MG_RETCODE (*SetFaceConfidenceFilter)(MG_FPP_APIHANDLE api_handle, MG_SINGLE filter);
+    
+    /**
+     * @breif 释放算法资源
+     *
+     * 算法在计算时需要占用一些内存资源，必须在所有算法的句柄（handle）被释放后再调用
+     * @return 成功则返回 MG_RETCODE_OK
+     */
+    MG_RETCODE (*ShutDown)();
+    
+    /**
+     * @brief 获取SDK信息
+     *
+     * 此方法已经废弃
+     * 获取 SDK 过期时间，请使用 GetApiExpiration
+     * 获取 SDK 支持的能力，请使用 GetAbility
+     * 判断 SDK 是否为联网授权版本，请使用 GetSDKAuthType
+     *
+     */
+    MG_RETCODE (*GetAlgorithmInfo)(
+        const MG_BYTE* model_data,
+        MG_INT32 model_length,
+        MG_ALGORITHMINFO *algorithm_info);
+    MG_RETCODE (*GetAlgorithmInf)(
+                                   const MG_BYTE* model_data,
+                                   MG_INT32 model_length,
+                                   MG_ALGORITHMINFO *algorithm_info);
+    
+//    /**
+//     * @brief 获取人脸框信息
+//     *
+//     * 可以通过参数控制，获取平滑过的关键点。
+//     *
+//     * @param[in] api_handle 算法句柄
+//     * @param[in] idx 人脸编号（人脸以0~face_nr-1编号）
+//     * @param[in] is_smooth 是否需要进行平滑处理。选择平滑处理可以让前后帧关键点相对比较稳定。
+//     *
+//     * @param[out] points 获取的人脸框
+//     *
+//     * @return 成功则返回 MG_RETCODE_OK
+//     */
+//    MG_RETCODE (*GetRect) (
+//                           MG_FPP_APIHANDLE api_handle,
+//                           MG_INT32 idx,
+//                           MG_BOOL is_smooth,
+//                           MG_POINT _OUT *rect);
 
 } MG_FACEPP_API_FUNCTIONS_TYPE;
 

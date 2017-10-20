@@ -37,6 +37,9 @@ public class NativeFaceppAPI {
 
     public static native float[] nativeAgeGender(long handle, int index);
 
+    public static native float[] nativeRect(long handle, int index);
+
+
     public static native long[] nativeGetAlgorithmInfo(byte[] mode);
 
     public static native int nativeExtractFeature(long handle, int index);

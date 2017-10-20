@@ -35,8 +35,8 @@ import static android.os.Build.VERSION_CODES.M;
 
 public class FaceppActionActivity extends Activity implements OnClickListener {
 
-	private int min_face_size = 200;
-	private int detection_interval = 100;
+	private int min_face_size = 40;  // 200
+	private int detection_interval = 30; // 100
 	private String resolution = "640*480";
 	private ArrayList<HashMap<String, Integer>> cameraSize;
 	private RelativeLayout mListRel;
@@ -59,7 +59,7 @@ public class FaceppActionActivity extends Activity implements OnClickListener {
 	private RelativeLayout[] imageItem_Rels;
 	private RelativeLayout[] textItem_Rels;
 	private TextView[] editItemTexts;
-	private String[] editValues = {min_face_size + "", resolution, detection_interval + "", "NO", "Tracking"};
+	private String[] editValues = {min_face_size + "", resolution, detection_interval + "", "NO", "Fast"};
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {

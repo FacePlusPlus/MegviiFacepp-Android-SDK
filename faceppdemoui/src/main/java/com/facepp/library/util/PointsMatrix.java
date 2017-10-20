@@ -1,5 +1,6 @@
 package com.facepp.library.util;
 
+import android.graphics.Rect;
 import android.opengl.GLES20;
 import android.util.Log;
 
@@ -78,6 +79,16 @@ public class PointsMatrix {
 	// }
 	private boolean isFaceCompare;
 
+	// 人脸矩形
+	public Rect rect;
+	public boolean isShowFaceRect = true;
+
+	public ArrayList<FloatBuffer> faceRects;
+	private ShortBuffer faceRectListBuffer;
+
+	private final short drawFaceRectOrder[] = {0, 1, 1, 2, 2, 3, 3, 0};
+
+
 	public PointsMatrix(boolean isFaceCompare) {
 		// FloatBuffer fb_0 = floatBufferUtil(squareCoords);
 		// FloatBuffer fb_1 = floatBufferUtil(squareCoords_1);
@@ -110,6 +121,12 @@ public class PointsMatrix {
 			cubeListBuffer[i].put(cubeOrder);
 			cubeListBuffer[i].position(0);
 		}
+
+		ByteBuffer faceRectLDB = ByteBuffer.allocateDirect(drawFaceRectOrder.length * 2);
+		faceRectLDB.order(ByteOrder.nativeOrder());
+		faceRectListBuffer = faceRectLDB.asShortBuffer();
+		faceRectListBuffer.put(drawFaceRectOrder);
+		faceRectListBuffer.position(0);
 
 		// prepare shaders and OpenGL program
 		int vertexShader = loadShader(GLES20.GL_VERTEX_SHADER, vertexShaderCode);
@@ -199,7 +216,24 @@ public class PointsMatrix {
 			}
 		}
 
-		// Disable vertex array
+
+		synchronized (this){
+			if (faceRects != null && isShowFaceRect){
+				GLES20.glLineWidth(4.0f);
+				GLES20.glUniform4f(mColorHandle, 1.0f, 0.0f, 0.0f, 1.0f);
+
+				for(int i = 0; i < faceRects.size(); i++){
+					FloatBuffer buffer = faceRects.get(i);
+					GLES20.glVertexAttribPointer(mPositionHandle, COORDS_PER_VERTEX, GLES20.GL_FLOAT, false, 0, buffer);
+					GLES20.glDrawElements(GLES20.GL_LINES, drawFaceRectOrder.length, GLES20.GL_UNSIGNED_SHORT, faceRectListBuffer);
+
+				}
+			}
+		}
+
+
+
+			// Disable vertex array
 		GLES20.glDisableVertexAttribArray(mPositionHandle);
 	}
 

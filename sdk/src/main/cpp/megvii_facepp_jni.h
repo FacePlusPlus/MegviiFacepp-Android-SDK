@@ -2,6 +2,10 @@
 
 #ifndef _Included_com_megvii_fppapidemo_Api
 #define _Included_com_megvii_fppapidemo_Api
+
+
+
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -40,6 +44,8 @@ JNIEXPORT jfloatArray JNICALL Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nat
         JNIEnv *, jobject, jlong, jint);
 JNIEXPORT jfloatArray JNICALL Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeAgeGender(
         JNIEnv *, jobject, jlong, jint);
+JNIEXPORT jfloatArray JNICALL Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeRect(JNIEnv *, jclass, jlong,
+        jint);
 
 JNIEXPORT jlongArray JNICALL Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeGetAlgorithmInfo(
         JNIEnv *, jobject, jbyteArray);
@@ -72,31 +78,31 @@ JNIEXPORT jint JNICALL Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeGetS
 
 JNIEXPORT jint JNICALL
 Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeResetTrack(JNIEnv *env, jclass type,
-                                                                jlong handle) ;
+                                                                jlong handle);
 
 JNIEXPORT jfloat JNICALL
 Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeGetFaceConfidenceFilter(JNIEnv *env,
                                                                              jclass type,
-                                                                             jlong handle) ;
+                                                                             jlong handle);
 
 
 JNIEXPORT jint JNICALL
 Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeSetFaceConfidenceFilter(JNIEnv *env,
                                                                              jclass type,
                                                                              jlong handle,
-                                                                             jfloat filter) ;
+                                                                             jfloat filter);
 
 JNIEXPORT jstring JNICALL
 Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeGetJenkinsNumber(JNIEnv *env, jclass type
-                                                                      ) ;
+);
 
 JNIEXPORT jstring JNICALL
 Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeGetSDKBundleId(JNIEnv *env, jclass type
-                                                                    ) ;
+);
 
 JNIEXPORT jint JNICALL
 Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeShutDown(JNIEnv *env, jclass type
-                                                              ) ;
+);
 
 JNIEXPORT jlong JNICALL
 Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeGetAbility(JNIEnv *env, jclass type,

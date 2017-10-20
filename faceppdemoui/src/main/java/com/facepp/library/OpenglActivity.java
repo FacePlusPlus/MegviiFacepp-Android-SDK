@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.PointF;
+import android.graphics.Rect;
+import android.graphics.RectF;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.hardware.Camera.Parameters;
@@ -193,7 +195,8 @@ public class OpenglActivity extends Activity
      * 用于测试一些api
      */
     private void newMethodCall(){
-        Log.d("xie", "newMethodCall: "+facepp.GetFaceConfidenceFilter()+facepp.getSDKBundleId());
+        Log.d("xie", "newMethodCall: "+facepp.GetFaceConfidenceFilter()+facepp.getSDKBundleId()+facepp.getJenkinsNumber());
+
         imgIcon.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -278,11 +281,11 @@ public class OpenglActivity extends Activity
                 faceppConfig.one_face_tracking = 0;
             String[] array = getResources().getStringArray(R.array.trackig_mode_array);
             if (trackModel.equals(array[0]))
-                faceppConfig.detectionMode = Facepp.FaceppConfig.DETECTION_MODE_TRACKING;
+                faceppConfig.detectionMode = Facepp.FaceppConfig.DETECTION_MODE_TRACKING_FAST;
             else if (trackModel.equals(array[1]))
                 faceppConfig.detectionMode = Facepp.FaceppConfig.DETECTION_MODE_TRACKING_ROBUST;
             else if (trackModel.equals(array[2]))
-                faceppConfig.detectionMode = Facepp.FaceppConfig.DETECTION_MODE_TRACKING_FAST;
+                faceppConfig.detectionMode = Facepp.FaceppConfig.DETECTION_MODE_TRACKING_RECT;
 
             facepp.setFaceppConfig(faceppConfig);
 
@@ -351,9 +354,11 @@ public class OpenglActivity extends Activity
                 if (faces != null) {
                     long actionMaticsTime = System.currentTimeMillis();
                     ArrayList<ArrayList> pointsOpengl = new ArrayList<ArrayList>();
+                    ArrayList<FloatBuffer> rectsOpengl = new ArrayList<FloatBuffer>();
+
                     confidence = 0.0f;
 
-                    if (faces.length >= 0) {
+                    if (faces.length > 0) {
                         for (int c = 0; c < faces.length; c++) {
                             if (is106Points)
                                 facepp.getLandmark(faces[c], Facepp.FPP_GET_LANDMARK106);
@@ -380,6 +385,15 @@ public class OpenglActivity extends Activity
                             yaw = faces[c].yaw;
                             roll = faces[c].roll;
                             confidence = faces[c].confidence;
+
+                            if (mPointsMatrix.isShowFaceRect){
+                                facepp.getRect(faces[c]);
+                            }
+
+                            Log.e("xie","rect org"+face.rect.left+" "+face.rect.bottom+" "+face.rect.top+" "+face.rect.right);
+                            FloatBuffer buffer = calRectPostion(faces[c].rect, mICamera.cameraWidth, mICamera.cameraHeight);
+                            rectsOpengl.add(buffer);
+
 
                             if (orientation == 1 || orientation == 2) {
                                 width = mICamera.cameraHeight;
@@ -484,6 +498,8 @@ public class OpenglActivity extends Activity
                         pitch = 0.0f;
                         yaw = 0.0f;
                         roll = 0.0f;
+                        mPointsMatrix.rect = null;
+
                     }
 
                     synchronized (mPointsMatrix) {
@@ -493,6 +509,8 @@ public class OpenglActivity extends Activity
                         else
                             mPointsMatrix.bottomVertexBuffer = null;
                         mPointsMatrix.points = pointsOpengl;
+                        mPointsMatrix.faceRects = rectsOpengl;
+
                     }
 
                     final long matrixTime = System.currentTimeMillis() - actionMaticsTime;
@@ -619,6 +637,54 @@ public class OpenglActivity extends Activity
         }
         mSurface.updateTexImage();// 更新image，会调用onFrameAvailable方法
     }
+
+    private RectF calRect(Rect rect, float width, float height){
+        float top = 1 - (rect.top * 1.0f / height) * 2;
+        float left = (rect.left  * 1.0f/ width) * 2 - 1;
+        float right = (rect.right * 1.0f / width) * 2 - 1;
+        float bottom = 1 - (rect.bottom  * 1.0f/ height) * 2;
+
+
+        RectF rectf = new RectF();
+        rectf.top = top;
+        rectf.left = left;
+        rectf.right = right;
+        rectf.bottom = bottom;
+
+        Log.d("ceshi", "calRect: " + rectf);
+        return rectf;
+    }
+
+    private FloatBuffer calRectPostion(Rect rect, float width, float height){
+        float top = 1 - (rect.top * 1.0f / height) * 2;
+        float left = (rect.left  * 1.0f/ width) * 2 - 1;
+        float right = (rect.right * 1.0f / width) * 2 - 1;
+        float bottom = 1 - (rect.bottom  * 1.0f/ height) * 2;
+
+        // 左上角
+        float x1 = -top;
+        float y1 = left;
+
+        // 右下角
+        float x2 = -bottom;
+        float y2 = right;
+
+        if (isBackCamera){
+            y1 = -y1;
+            y2 = -y2;
+        }
+
+        float[] tempFace = {
+                x1, y2,0.0f,
+                x1, y1, 0.0f,
+                x2, y1, 0.0f,
+                x2, y2,0.0f,
+        };
+
+        FloatBuffer buffer =  mCameraMatrix.floatBufferUtil(tempFace);
+        return buffer;
+    }
+
 
     Handler timeHandle = new Handler() {
         @Override

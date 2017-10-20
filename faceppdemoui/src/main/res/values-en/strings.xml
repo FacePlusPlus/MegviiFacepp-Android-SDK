@@ -39,9 +39,9 @@
     <string name="one_face_trackig_true">YES</string>
     <string name="one_face_trackig_false">NO</string>
     <string-array name="trackig_mode_array">
-        <item>Normal</item>
-        <item>Robust</item>
         <item>Fast</item>
+        <item>Robust</item>
+        <item>Tracking_Rect</item>
     </string-array>
     <string name="modif_name">modif name</string>
     <string name="modif_name_fail">name is null</string>

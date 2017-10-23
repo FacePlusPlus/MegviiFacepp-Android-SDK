@@ -53,7 +53,7 @@ public class OpenglActivity extends Activity
         implements PreviewCallback, Renderer, SurfaceTexture.OnFrameAvailableListener {
 
     private boolean isStartRecorder, is3DPose, isDebug, isROIDetect, is106Points, isBackCamera, isFaceProperty,
-            isOneFaceTrackig, isFaceCompare;
+            isOneFaceTrackig, isFaceCompare,isShowFaceRect;
     private String trackModel;
     private boolean isTiming = true; // 是否是定时去刷新界面;
     private int printTime = 31;
@@ -284,8 +284,11 @@ public class OpenglActivity extends Activity
                 faceppConfig.detectionMode = Facepp.FaceppConfig.DETECTION_MODE_TRACKING_FAST;
             else if (trackModel.equals(array[1]))
                 faceppConfig.detectionMode = Facepp.FaceppConfig.DETECTION_MODE_TRACKING_ROBUST;
-            else if (trackModel.equals(array[2]))
+            else if (trackModel.equals(array[2])){
                 faceppConfig.detectionMode = Facepp.FaceppConfig.DETECTION_MODE_TRACKING_RECT;
+               isShowFaceRect=true;
+            }
+
 
             facepp.setFaceppConfig(faceppConfig);
 
@@ -388,12 +391,9 @@ public class OpenglActivity extends Activity
 
                             if (mPointsMatrix.isShowFaceRect){
                                 facepp.getRect(faces[c]);
+                                FloatBuffer buffer = calRectPostion(faces[c].rect, mICamera.cameraWidth, mICamera.cameraHeight);
+                                rectsOpengl.add(buffer);
                             }
-
-                            Log.e("xie","rect org"+face.rect.left+" "+face.rect.bottom+" "+face.rect.top+" "+face.rect.right);
-                            FloatBuffer buffer = calRectPostion(faces[c].rect, mICamera.cameraWidth, mICamera.cameraHeight);
-                            rectsOpengl.add(buffer);
-
 
                             if (orientation == 1 || orientation == 2) {
                                 width = mICamera.cameraHeight;
@@ -582,6 +582,7 @@ public class OpenglActivity extends Activity
         mSurface.setOnFrameAvailableListener(this);// 设置照相机有数据时进入
         mCameraMatrix = new CameraMatrix(mTextureID);
         mPointsMatrix = new PointsMatrix(isFaceCompare);
+        mPointsMatrix.isShowFaceRect=isShowFaceRect;
         mICamera.startPreview(mSurface);// 设置预览容器
         mICamera.actionDetect(this);
         if (isTiming) {

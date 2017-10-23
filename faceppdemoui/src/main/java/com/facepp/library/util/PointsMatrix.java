@@ -79,9 +79,10 @@ public class PointsMatrix {
 	// }
 	private boolean isFaceCompare;
 
+	public boolean isShowFaceRect;
+
 	// 人脸矩形
 	public Rect rect;
-	public boolean isShowFaceRect = true;
 
 	public ArrayList<FloatBuffer> faceRects;
 	private ShortBuffer faceRectListBuffer;
@@ -179,7 +180,7 @@ public class PointsMatrix {
 
 		GLES20.glUniform4fv(mColorHandle, 1, color, 0);
 
-		if (!isFaceCompare){
+		if (!isFaceCompare&&!isShowFaceRect){    //这里在绘制判断，需要调用api判断
 			synchronized (this) {
 				for (int i = 0; i < points.size(); i++) {
 					ArrayList<FloatBuffer> triangleVBList = points.get(i);
@@ -218,7 +219,7 @@ public class PointsMatrix {
 
 
 		synchronized (this){
-			if (faceRects != null && isShowFaceRect){
+			if (faceRects != null && faceRects.size()>0){
 				GLES20.glLineWidth(4.0f);
 				GLES20.glUniform4f(mColorHandle, 1.0f, 0.0f, 0.0f, 1.0f);
 

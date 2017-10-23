@@ -324,6 +324,7 @@ public class OpenglActivity extends Activity
     long time_AgeGender_end = 0;
     String AttriButeStr = "";
     int rotation = Angle;
+    int preRotation=rotation;
 
     @Override
     public void onPreviewFrame(final byte[] imgData, final Camera camera) {
@@ -349,6 +350,12 @@ public class OpenglActivity extends Activity
                 else if (orientation == 3)
                     rotation = 360 - Angle;
 
+                //快速旋转两张人脸
+                if (preRotation!=rotation){
+                    facepp.resetTrack();
+                }
+                preRotation=rotation;
+
                 setConfig(rotation);
 
                 final Facepp.Face[] faces = facepp.detect(imgData, width, height, Facepp.IMAGEMODE_NV21);
@@ -360,7 +367,7 @@ public class OpenglActivity extends Activity
                     ArrayList<FloatBuffer> rectsOpengl = new ArrayList<FloatBuffer>();
 
                     confidence = 0.0f;
-
+                    Log.e("xie", "facelen "+faces.length );
                     if (faces.length > 0) {
                         for (int c = 0; c < faces.length; c++) {
                             if (is106Points)

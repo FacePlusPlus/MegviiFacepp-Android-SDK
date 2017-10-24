@@ -367,7 +367,6 @@ public class OpenglActivity extends Activity
                     ArrayList<FloatBuffer> rectsOpengl = new ArrayList<FloatBuffer>();
 
                     confidence = 0.0f;
-                    Log.e("xie", "facelen "+faces.length );
                     if (faces.length > 0) {
                         for (int c = 0; c < faces.length; c++) {
                             if (is106Points)

@@ -263,8 +263,8 @@ public class FaceppActionActivity extends Activity implements OnClickListener {
 		} else if (ID == R.id.activity_rootRel) {
 			ConUtil.isGoneKeyBoard(FaceppActionActivity.this);
 		} else if (ID == R.id.landmark_imageitem_0) {
-			isStartRecorder = !isStartRecorder;
-			onclickImageItem(0, isStartRecorder);
+//			isStartRecorder = !isStartRecorder;
+//			onclickImageItem(0, isStartRecorder);
 		} else if (ID == R.id.landmark_imageitem_1) {
 			is3DPose = !is3DPose;
 			onclickImageItem(1, is3DPose);
@@ -282,23 +282,23 @@ public class FaceppActionActivity extends Activity implements OnClickListener {
 			onclickImageItem(5, isBackCamera);
 			getCameraSizeList();
 		} else if (ID == R.id.landmark_imageitem_6) {
-			if (!Facepp.getAbility(ConUtil.getFileContent(this, R
-					.raw.megviifacepp_0_5_0_model)).contains(Facepp.Ability.AGEGENDER)) {
-				ConUtil.showToast(this, getResources().getString(R.string.detector));
-				return;
-			}
-			isFaceProperty = !isFaceProperty;
-			onclickImageItem(6, isFaceProperty);
+//			if (!Facepp.getAbility(ConUtil.getFileContent(this, R
+//					.raw.megviifacepp_0_5_0_model)).contains(Facepp.Ability.AGEGENDER)) {
+//				ConUtil.showToast(this, getResources().getString(R.string.detector));
+//				return;
+//			}
+//			isFaceProperty = !isFaceProperty;
+//			onclickImageItem(6, isFaceProperty);
 		}else if (ID == R.id.landmark_imageitem_7){
-			isFaceCompare = !isFaceCompare;
-			if (isFaceCompare){
-				isFaceProperty = false;
-				onclickImageItem(6, isFaceProperty);
-
-				isDebug = false;
-				onclickImageItem(2, isDebug);
-			}
-			onclickImageItem(7, isFaceCompare);
+//			isFaceCompare = !isFaceCompare;
+//			if (isFaceCompare){
+//				isFaceProperty = false;
+//				onclickImageItem(6, isFaceProperty);
+//
+//				isDebug = false;
+//				onclickImageItem(2, isDebug);
+//			}
+//			onclickImageItem(7, isFaceCompare);
 		}
 		else if (ID == R.id.landmark_enterBtn) {
 			min_face_size = (int) Long.parseLong(editItemTexts[0].getText().toString());

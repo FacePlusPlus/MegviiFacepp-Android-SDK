@@ -13,11 +13,13 @@ import android.graphics.Rect;
 import android.graphics.YuvImage;
 import android.hardware.Camera;
 import android.media.ExifInterface;
+import android.os.Build;
 import android.os.Environment;
 import android.os.PowerManager;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.view.Gravity;
+import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
@@ -72,6 +74,27 @@ public class ConUtil {
 			return false;
 
 		return true;
+	}
+
+
+	public static void toggleHideyBar(Activity activity) {
+		int uiOptions = activity.getWindow().getDecorView().getSystemUiVisibility();
+		int newUiOptions = uiOptions;
+
+
+		if (Build.VERSION.SDK_INT >= 14) {
+			newUiOptions ^= View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
+		}
+
+		if (Build.VERSION.SDK_INT >= 16) {
+			newUiOptions ^= View.SYSTEM_UI_FLAG_FULLSCREEN;
+		}
+
+		if (Build.VERSION.SDK_INT >= 19) {
+			newUiOptions ^= View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+		}
+
+		activity.getWindow().getDecorView().setSystemUiVisibility(newUiOptions);
 	}
 
 	/**

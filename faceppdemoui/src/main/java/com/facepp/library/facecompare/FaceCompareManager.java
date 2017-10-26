@@ -1,10 +1,19 @@
 package com.facepp.library.facecompare;
 
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Rect;
 import android.util.Log;
+import android.widget.Toast;
 
+import com.facepp.library.FeatureInfoSettingActivity;
+import com.facepp.library.OpenglActivity;
+import com.facepp.library.bean.FaceActionInfo;
 import com.facepp.library.bean.FeatureInfo;
+import com.facepp.library.util.CalculateUtil;
 import com.facepp.library.util.ConUtil;
+import com.facepp.library.util.ICamera;
 import com.megvii.facepp.sdk.Facepp;
 
 import java.io.File;
@@ -35,9 +44,9 @@ public class FaceCompareManager {
     private List<FeatureInfo> mFeatureData;
     private static FaceCompareManager mInstance;
 
-    public static FaceCompareManager instance(){
-        if (mInstance == null){
-            synchronized (FaceCompareManager.class){
+    public static FaceCompareManager instance() {
+        if (mInstance == null) {
+            synchronized (FaceCompareManager.class) {
                 if (mInstance == null) {
                     mInstance = new FaceCompareManager();
                 }
@@ -47,17 +56,17 @@ public class FaceCompareManager {
         return mInstance;
     }
 
-    private FaceCompareManager(){
+    private FaceCompareManager() {
         mFeatureData = new ArrayList<>();
     }
 
-    public boolean addFeature(Context ctx, FeatureInfo info){
-        if (info.feature == null){
+    public boolean addFeature(Context ctx, FeatureInfo info) {
+        if (info.feature == null) {
             return false;
         }
 
 
-        synchronized (this){
+        synchronized (this) {
             int num = new Random().nextInt() % 10000;
             info.title = "user_" + Math.abs(num);
             mFeatureData.add(info);
@@ -65,29 +74,27 @@ public class FaceCompareManager {
             FeatureInfo[] arr = new FeatureInfo[mFeatureData.size()];
             arr = mFeatureData.toArray(arr);
 
-            if (!serialization(buildFeatureFilePath(ctx), arr))
-            {
+            if (!serialization(buildFeatureFilePath(ctx), arr)) {
                 mFeatureData.remove(info);
                 return false;
             }
-
             return true;
         }
 
     }
 
-    public List<FeatureInfo> getFeatureData(){
+    public List<FeatureInfo> getFeatureData() {
         return mFeatureData;
     }
 
 
-    public FeatureInfo compare(Facepp facepp, final byte[] target){
-        synchronized (this){
-            for(FeatureInfo featureInfo : mFeatureData){
-                if (featureInfo.isSelected){
+    public FeatureInfo compare(Facepp facepp, final byte[] target) {
+        synchronized (this) {
+            for (FeatureInfo featureInfo : mFeatureData) {
+                if (featureInfo.isSelected) {
                     double like = facepp.faceCompare(featureInfo.feature, target);
                     Log.d(TAG, "title: " + featureInfo.title + ", compare: " + like);
-                    if (like >= BEST_LIKE_VALUE){
+                    if (like >= BEST_LIKE_VALUE) {
                         return featureInfo;
                     }
                 }
@@ -99,9 +106,9 @@ public class FaceCompareManager {
     }
 
 
-    public void loadFeature(Context ctx){
+    public void loadFeature(Context ctx) {
         FeatureInfo[] featureInfos = inserialization(buildFeatureFilePath(ctx));
-        if (featureInfos != null){
+        if (featureInfos != null) {
             synchronized (this) {
                 mFeatureData = Arrays.asList(featureInfos);
                 mFeatureData = new ArrayList<>(mFeatureData);
@@ -109,14 +116,14 @@ public class FaceCompareManager {
         }
     }
 
-    public void refresh(Context ctx){
+    public void refresh(Context ctx) {
         FeatureInfo[] arr = new FeatureInfo[mFeatureData.size()];
         arr = mFeatureData.toArray(arr);
         serialization(buildFeatureFilePath(ctx), arr);
     }
 
 
-    private static String buildFeatureFilePath(Context ctx){
+    private static String buildFeatureFilePath(Context ctx) {
         String path = ConUtil.getDiskCachePath(ctx);
         String fileName = path + FACE_FEATURE_INFO_FILE;
 
@@ -127,7 +134,7 @@ public class FaceCompareManager {
     private static boolean serialization(String path, FeatureInfo[] list) {
         File file = new File(path);
 
-        if (file.exists()){
+        if (file.exists()) {
             file.deleteOnExit();
         }
 
@@ -143,7 +150,7 @@ public class FaceCompareManager {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
-        }finally {
+        } finally {
             if (objOutString != null) try {
                 objOutString.close();
             } catch (IOException e) {
@@ -162,12 +169,12 @@ public class FaceCompareManager {
     }
 
     // 反序列化
-    private static FeatureInfo[] inserialization(String path){
+    private static FeatureInfo[] inserialization(String path) {
         File file = new File(path);
         InputStream inStream = null;
         ObjectInputStream objInStream = null;
 
-        if (!file.exists()){
+        if (!file.exists()) {
             return null;
         }
 
@@ -182,7 +189,7 @@ public class FaceCompareManager {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
-        }finally {
+        } finally {
             try {
                 if (objInStream != null)
                     objInStream.close();
@@ -199,5 +206,75 @@ public class FaceCompareManager {
     }
 
 
+    public void startActivity(OpenglActivity activity, Facepp.Face[] faces, ICamera mICamera, byte[] carmeraImgData, boolean isBackCamera, FaceActionInfo faceActionInfo) {
+        ArrayList<FeatureInfo> featureInfos=new ArrayList<>();
+        for (int i = 0; i < faces.length; i++) {
+            Facepp.Face face = faces[i];
+            FeatureInfo info = new FeatureInfo();
+            info.feature = face.feature;
 
+
+            Rect rect = face.rect;
+            Bitmap bitmap = mICamera.getBitMapWithRect(carmeraImgData, mICamera.mCamera, !isBackCamera, rect);
+
+
+            if (bitmap != null) {
+                String filePath = ConUtil.saveBitmap(activity, bitmap);
+                info.imgFilePath = filePath;
+            } else {
+                Toast.makeText(activity, "图片处理错误", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            FaceCompareManager.instance().addFeature(activity, info);
+            featureInfos.add(info);
+        }
+        Intent intent = new Intent(activity, FeatureInfoSettingActivity.class);
+        intent.putExtra("FaceAction", faceActionInfo);
+        intent.putExtra("currentInfos", featureInfos);
+        activity.startActivity(intent);
+    }
+
+    public boolean removeFeatures(Context ctx,ArrayList<FeatureInfo> currentInfos) {
+        if (currentInfos == null) {
+            return false;
+        }
+
+        synchronized (this) {
+
+            mFeatureData.remove(currentInfos);
+
+            FeatureInfo[] arr = new FeatureInfo[mFeatureData.size()];
+            arr = mFeatureData.toArray(arr);
+
+            if (!serialization(buildFeatureFilePath(ctx), arr)) {
+                mFeatureData.addAll(currentInfos);
+                return false;
+            }
+            return true;
+        }
+    }
+
+    public boolean removeFeaturesByPath(Context ctx,ArrayList<FeatureInfo> currentInfos) {
+        if (currentInfos == null) {
+            return false;
+        }
+
+        synchronized (this) {
+            for (int i=0;i<currentInfos.size();i++){
+                for (int j=0;j<mFeatureData.size();j++){
+                    if (mFeatureData.get(j).imgFilePath.equals(currentInfos.get(i).imgFilePath)){
+                        mFeatureData.remove(j);
+                    }
+                }
+            }
+            FeatureInfo[] arr = new FeatureInfo[mFeatureData.size()];
+            arr = mFeatureData.toArray(arr);
+
+            if (!serialization(buildFeatureFilePath(ctx), arr)) {
+                mFeatureData.addAll(currentInfos);
+                return false;
+            }
+            return true;
+        }
+    }
 }

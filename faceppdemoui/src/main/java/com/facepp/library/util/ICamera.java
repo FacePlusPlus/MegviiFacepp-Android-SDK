@@ -77,6 +77,10 @@ public class ICamera {
 		}
 	}
 
+	public boolean isBackCamera(){
+		return cameraId==1?false:true;
+	}
+
 	// 通过屏幕参数、相机预览尺寸计算布局参数
 	public RelativeLayout.LayoutParams getLayoutParam() {
 		float scale = cameraWidth * 1.0f / cameraHeight;
@@ -224,6 +228,65 @@ public class ICamera {
 		}
 		tmpBitmap = Bitmap.createBitmap(tmpBitmap, 0, 0, tmpBitmap.getWidth(),
 				tmpBitmap.getHeight(), matrix, true);
+		tmpBitmap = tmpBitmap.copy(Bitmap.Config.ARGB_8888, true);
+
+		int hight = tmpBitmap.getHeight() > tmpBitmap.getWidth() ? tmpBitmap
+				.getHeight() : tmpBitmap.getWidth();
+
+		float scale = hight / 800.0f;
+
+		if (scale > 1) {
+			tmpBitmap = Bitmap.createScaledBitmap(tmpBitmap,
+					(int) (tmpBitmap.getWidth() / scale),
+					(int) (tmpBitmap.getHeight() / scale), false);
+		}
+		return tmpBitmap;
+	}
+
+
+
+	public Bitmap getBitMapWithRect(byte[] data, Camera camera, boolean mIsFrontalCamera,Rect rect) {
+		int width = camera.getParameters().getPreviewSize().width;
+		int height = camera.getParameters().getPreviewSize().height;
+		YuvImage yuvImage = new YuvImage(data, camera.getParameters()
+				.getPreviewFormat(), width, height, null);
+		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+		yuvImage.compressToJpeg(new Rect(0, 0, width, height), 80,
+				byteArrayOutputStream);
+
+		byte[] jpegData = byteArrayOutputStream.toByteArray();
+		// 获取照相后的bitmap
+		Bitmap tmpBitmap = BitmapFactory.decodeByteArray(jpegData, 0,
+				jpegData.length);
+
+//		Log.e("xie", "getbitmap width"+tmpBitmap.getWidth()+"rect="+rect );
+		if (rect.top<0){
+			rect.top=0;
+		}
+		if (rect.left<0){
+			rect.left=0;
+		}
+		int widthRect=rect.right-rect.left;
+		if(rect.right-rect.left>tmpBitmap.getWidth()){
+			widthRect=tmpBitmap.getWidth();
+		}
+		int heightRect=rect.bottom-rect.top;
+		if(rect.bottom-rect.top>tmpBitmap.getHeight()){
+			heightRect=tmpBitmap.getHeight();
+		}
+		tmpBitmap = Bitmap.createBitmap(tmpBitmap, rect.left, rect.top, widthRect,
+				heightRect);
+
+		Matrix matrix = new Matrix();
+		matrix.reset();
+		if (mIsFrontalCamera) {
+			matrix.setRotate(-90);
+		} else {
+			matrix.setRotate(90);
+		}
+		tmpBitmap = Bitmap.createBitmap(tmpBitmap, 0, 0, tmpBitmap.getWidth(),
+				tmpBitmap.getHeight(), matrix, true);
+//		Log.e("xie", "getbitmap temp"+tmpBitmap.getWidth()+"asdhe "+tmpBitmap.getHeight() );
 		tmpBitmap = tmpBitmap.copy(Bitmap.Config.ARGB_8888, true);
 
 		int hight = tmpBitmap.getHeight() > tmpBitmap.getWidth() ? tmpBitmap

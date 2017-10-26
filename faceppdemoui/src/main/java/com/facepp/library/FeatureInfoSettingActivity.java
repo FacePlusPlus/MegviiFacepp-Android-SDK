@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -15,6 +16,7 @@ import com.facepp.library.bean.FeatureInfo;
 import com.facepp.library.facecompare.FaceCompareManager;
 import com.facepp.library.util.DialogUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class FeatureInfoSettingActivity extends Activity implements View.OnClickListener, AdapterView.OnItemClickListener {
@@ -24,6 +26,7 @@ public class FeatureInfoSettingActivity extends Activity implements View.OnClick
     private FeatureInfoAdapter mAdapter;
     private FaceActionInfo mFaceActionInfo;
     private DialogUtil mDialog;
+    private ArrayList<FeatureInfo> currentInfos;
 
 //    private ArrayList<Boolean> mSelectPos = new ArrayList<>();
     private ModifFeatureInfo[] mItemSelectStatusArr;
@@ -38,7 +41,7 @@ public class FeatureInfoSettingActivity extends Activity implements View.OnClick
 
     private void init(){
         mFaceActionInfo = (FaceActionInfo) getIntent().getSerializableExtra("FaceAction");
-
+        currentInfos= (ArrayList<FeatureInfo>) getIntent().getSerializableExtra("currentInfos");
         mListView = (ListView) findViewById(R.id.featureinfo_layout_listview);
         mCancleText = (TextView) findViewById(R.id.featureinfo_layout_cancle);
         mSureText = (TextView) findViewById(R.id.featureinfo_layout_sure);
@@ -77,6 +80,7 @@ public class FeatureInfoSettingActivity extends Activity implements View.OnClick
     public void onClick(View v) {
         int ID = v.getId();
         if (ID == R.id.title_layout_returnRel){
+            boolean success=  FaceCompareManager.instance().removeFeaturesByPath(FeatureInfoSettingActivity.this,currentInfos);
             startActivity(new Intent(this, OpenglActivity.class).putExtra("FaceAction", mFaceActionInfo));
             finish();
         }else if (ID == R.id.featureinfo_layout_cancle){
@@ -88,16 +92,28 @@ public class FeatureInfoSettingActivity extends Activity implements View.OnClick
         }else if (ID == R.id.featureinfo_layout_sure){
             // 只有操作【确定】时，才生效
             List<FeatureInfo> dataList = FaceCompareManager.instance().getFeatureData();
+            List<FeatureInfo> deleted=new ArrayList<>();
             for(int i = 0; i < mItemSelectStatusArr.length; i++){
-                dataList.get(i).isSelected = mItemSelectStatusArr[i].isSelected;
-                dataList.get(i).title = mItemSelectStatusArr[i].name;
+                if (mItemSelectStatusArr[i].isSelected){
+                    dataList.get(i).isSelected = mItemSelectStatusArr[i].isSelected;
+                    dataList.get(i).title = mItemSelectStatusArr[i].name;
+                }else{
+                    deleted.add(dataList.get(i));
+                }
             }
-
+            dataList.removeAll(deleted);
             FaceCompareManager.instance().refresh(this);
             startActivity(new Intent(this, OpenglActivity.class).putExtra("FaceAction", mFaceActionInfo));
             finish();
         }
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        boolean success=  FaceCompareManager.instance().removeFeaturesByPath(FeatureInfoSettingActivity.this,currentInfos);
+        startActivity(new Intent(this, OpenglActivity.class).putExtra("FaceAction", mFaceActionInfo));
+        finish();
     }
 
     @Override

@@ -7,6 +7,7 @@ import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.SurfaceTexture;
+import android.graphics.drawable.GradientDrawable;
 import android.hardware.Camera;
 import android.hardware.Camera.Parameters;
 import android.hardware.Camera.PreviewCallback;
@@ -26,6 +27,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.facepp.library.bean.FaceActionInfo;
 import com.facepp.library.bean.FeatureInfo;
@@ -98,6 +100,7 @@ public class OpenglActivity extends Activity
         }, 2000);
 
         FaceCompareManager.instance().loadFeature(this);
+        ConUtil.toggleHideyBar(this);
 
         DisplayMetrics outMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(outMetrics);
@@ -162,22 +165,16 @@ public class OpenglActivity extends Activity
         btnAddFeature.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 // 保存feature数据
-                FeatureInfo info = new FeatureInfo();
-                synchronized (OpenglActivity.this) {
-                    info.feature = newestFeature;
-                    Bitmap bitmap = mICamera.getBitMap(carmeraImgData, !isBackCamera);
-                    if (bitmap != null) {
-                        String filePath = ConUtil.saveBitmap(OpenglActivity.this, bitmap);
-                        info.imgFilePath = filePath;
-                    }
-
+                if (compareFaces==null||compareFaces.length<=0||carmeraImgData==null){
+                    Toast.makeText(OpenglActivity.this,"当前未检测到人脸",Toast.LENGTH_SHORT).show();
+                    return;
                 }
-                FaceCompareManager.instance().addFeature(OpenglActivity.this, info);
 
-                Intent intent = new Intent(OpenglActivity.this, FeatureInfoSettingActivity.class);
-                intent.putExtra("FaceAction", faceActionInfo);
-                startActivity(intent);
+//                Log.e("xie","xie rect"+compareFaces[0].rect.top+"bottom"+compareFaces[0].rect.bottom+newestFeature);
+
+                FaceCompareManager.instance().startActivity(OpenglActivity.this,compareFaces,mICamera,carmeraImgData,isBackCamera,faceActionInfo);
             }
         });
 
@@ -322,6 +319,8 @@ public class OpenglActivity extends Activity
     int rotation = Angle;
     int preRotation=rotation;
 
+    Facepp.Face[]  compareFaces;
+
     @Override
     public void onPreviewFrame(final byte[] imgData, final Camera camera) {
         if (isSuccess)
@@ -354,7 +353,7 @@ public class OpenglActivity extends Activity
 
                 setConfig(rotation);
 
-                final Facepp.Face[] faces = facepp.detect(imgData, width, height, Facepp.IMAGEMODE_NV21);
+               final Facepp.Face[]  faces = facepp.detect(imgData, width, height, Facepp.IMAGEMODE_NV21);
                 final long algorithmTime = System.currentTimeMillis() - faceDetectTime_action;
 
                 if (faces != null) {
@@ -449,10 +448,17 @@ public class OpenglActivity extends Activity
                             // 添加人脸比对
                             if (isFaceCompare) {
                                 long actionFeatureTime = System.currentTimeMillis();
+
                                 if (facepp.getExtractFeature(face)) {
+                                    Log.i("xie","xie  face rect"+face.rect+face.feature);
                                     synchronized (OpenglActivity.this) {
                                         newestFeature = face.feature;
                                         carmeraImgData = imgData;
+
+                                    }
+
+                                    if (c==faces.length-1){
+                                        compareFaces=faces;
                                     }
 
                                     final FeatureInfo featureInfo = FaceCompareManager.instance().compare(facepp, face.feature);
@@ -501,7 +507,7 @@ public class OpenglActivity extends Activity
                         yaw = 0.0f;
                         roll = 0.0f;
                         mPointsMatrix.rect = null;
-
+                        compareFaces=null;
                     }
 
                     synchronized (mPointsMatrix) {

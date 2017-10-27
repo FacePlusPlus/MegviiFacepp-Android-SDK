@@ -32,6 +32,7 @@ import android.widget.Toast;
 import com.facepp.library.bean.FaceActionInfo;
 import com.facepp.library.bean.FeatureInfo;
 import com.facepp.library.facecompare.FaceCompareManager;
+import com.facepp.library.mediacodec.MediaHelper;
 import com.facepp.library.util.CameraMatrix;
 import com.facepp.library.util.ConUtil;
 import com.facepp.library.util.DialogUtil;
@@ -85,6 +86,8 @@ public class OpenglActivity extends Activity
     private FaceActionInfo faceActionInfo;
     private ImageView imgIcon;
 
+    private MediaHelper mMediaHelper;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -92,12 +95,12 @@ public class OpenglActivity extends Activity
         setContentView(R.layout.activity_opengl);
 
         init();
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                startRecorder();
-            }
-        }, 2000);
+//        new Handler().postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                startRecorder();
+//            }
+//        }, 2000);
 
         FaceCompareManager.instance().loadFeature(this);
         ConUtil.toggleHideyBar(this);
@@ -290,7 +293,7 @@ public class OpenglActivity extends Activity
         } else {
             mDialogUtil.showDialog(getResources().getString(R.string.camera_error));
         }
-
+        mMediaHelper=new MediaHelper(mICamera.cameraWidth,mICamera.cameraHeight,true,mGlSurfaceView);
 //        newMethodCall();
     }
 
@@ -301,6 +304,8 @@ public class OpenglActivity extends Activity
             facepp.setFaceppConfig(faceppConfig);
         }
     }
+
+
 
     /**
      * 画绿色框
@@ -561,6 +566,7 @@ public class OpenglActivity extends Activity
 
     @Override
     protected void onDestroy() {
+        mMediaHelper.stopRecording();
         super.onDestroy();
         facepp.release();
     }
@@ -585,7 +591,11 @@ public class OpenglActivity extends Activity
 
     private void surfaceInit(){
         mTextureID = OpenGLUtil.createTextureID();
+
         mSurface = new SurfaceTexture(mTextureID);
+        if (isStartRecorder){
+            mMediaHelper.startRecording(mTextureID);
+        }
         // 这个接口就干了这么一件事，当有数据上来后会进到onFrameAvailable方法
         mSurface.setOnFrameAvailableListener(this);// 设置照相机有数据时进入
         mCameraMatrix = new CameraMatrix(mTextureID);
@@ -599,7 +609,7 @@ public class OpenglActivity extends Activity
         if (isROIDetect)
             drawShowRect();
     }
-
+    private boolean flip = true;
     @Override
     public void onSurfaceChanged(GL10 gl, int width, int height) {
         // 设置画面的大小
@@ -612,6 +622,7 @@ public class OpenglActivity extends Activity
         // in the onDrawFrame() method
         Matrix.frustumM(mProjMatrix, 0, -ratio, ratio, -1, 1, 3, 7);
         // Matrix.perspectiveM(mProjMatrix, 0, 0.382f, ratio, 3, 700);
+
     }
 
     private final float[] mMVPMatrix = new float[16];
@@ -645,6 +656,16 @@ public class OpenglActivity extends Activity
             });
         }
         mSurface.updateTexImage();// 更新image，会调用onFrameAvailable方法
+        if (isStartRecorder){
+            flip = !flip;
+            if (flip) {	// ~30fps
+                synchronized (this) {
+//                    mMediaHelper.frameAvailable(mtx);
+                    mMediaHelper.frameAvailable(mtx);
+                }
+            }
+        }
+
     }
 
     private RectF calRect(Rect rect, float width, float height){

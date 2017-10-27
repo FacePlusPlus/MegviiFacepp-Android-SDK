@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -21,6 +22,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.facepp.library.bean.FaceActionInfo;
 import com.facepp.library.util.ConUtil;
@@ -199,9 +201,9 @@ public class FaceppActionActivity extends Activity implements OnClickListener {
         if (requestCode == EXTERNAL_STORAGE_REQ_CAMERA_CODE)
             getCameraSizeList();
         if ((requestCode == EXTERNAL_STORAGE_REQ_AUDIO_CODE) && ContextCompat.checkSelfPermission(this,
-                Manifest.permission.RECORD_AUDIO)
+                Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 == PackageManager.PERMISSION_GRANTED)
-            audioRecord();
+            startRecord();
     }
 
 
@@ -267,7 +269,13 @@ public class FaceppActionActivity extends Activity implements OnClickListener {
         } else if (ID == R.id.activity_rootRel) {
             ConUtil.isGoneKeyBoard(FaceppActionActivity.this);
         } else if (ID == R.id.landmark_imageitem_0) {
-            startRecordWithPerm();
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                startRecordWithPerm();
+            }else{
+                Toast.makeText(FaceppActionActivity.this,"不支持4.3以下录制",Toast.LENGTH_SHORT).show();
+            }
+
         } else if (ID == R.id.landmark_imageitem_1) {
             is3DPose = !is3DPose;
             onclickImageItem(1, is3DPose);
@@ -367,7 +375,7 @@ public class FaceppActionActivity extends Activity implements OnClickListener {
 
     public static final int EXTERNAL_STORAGE_REQ_AUDIO_CODE = 11;
 
-    private void audioRecord() {
+    private void startRecord() {
         isStartRecorder = !isStartRecorder;
         onclickImageItem(0, isStartRecorder);
     }
@@ -376,16 +384,16 @@ public class FaceppActionActivity extends Activity implements OnClickListener {
     private void startRecordWithPerm() {
         if (android.os.Build.VERSION.SDK_INT >= M) {
             if (ContextCompat.checkSelfPermission(this,
-                    Manifest.permission.RECORD_AUDIO)
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE)
                     != PackageManager.PERMISSION_GRANTED) {
                 //进行权限请求
                 ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.RECORD_AUDIO},
+                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
                         EXTERNAL_STORAGE_REQ_AUDIO_CODE);
             } else
-                audioRecord();
+                startRecord();
         } else
-            audioRecord();
+            startRecord();
     }
 
 

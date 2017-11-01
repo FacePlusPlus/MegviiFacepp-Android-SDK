@@ -39,7 +39,7 @@ public class FaceCompareManager {
     public static final String TAG = "FaceCompareManager";
 
     private final static String FACE_FEATURE_INFO_FILE = "/feature.info";
-    private final static double BEST_LIKE_VALUE = 70.0;
+    private final static double BEST_LIKE_VALUE = 73.0;
 
     private List<FeatureInfo> mFeatureData;
     private static FaceCompareManager mInstance;
@@ -88,21 +88,22 @@ public class FaceCompareManager {
     }
 
 
-    public FeatureInfo compare(Facepp facepp, final byte[] target) {
-        synchronized (this) {
+    public synchronized FeatureInfo compare(Facepp facepp, final byte[] target) {
+            double likeMax =0;
+            FeatureInfo infoBest=null;
             for (FeatureInfo featureInfo : mFeatureData) {
                 if (featureInfo.isSelected) {
                     double like = facepp.faceCompare(featureInfo.feature, target);
                     Log.d(TAG, "title: " + featureInfo.title + ", compare: " + like);
-                    if (like >= BEST_LIKE_VALUE) {
-                        return featureInfo;
+                    if (like>BEST_LIKE_VALUE&&like>likeMax){
+                        likeMax=like;
+                        infoBest=featureInfo;
                     }
+
                 }
 
             }
-        }
-
-        return null;
+            return infoBest;
     }
 
 

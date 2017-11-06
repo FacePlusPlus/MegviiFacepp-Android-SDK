@@ -72,12 +72,13 @@ public class FaceppActionActivity extends Activity implements OnClickListener {
         init();
         initData();
         onClickListener();
-        mListView.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                requestCameraPerm();
-            }
-        }, 500);
+        requestCameraPerm();
+//        mListView.postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                requestCameraPerm();
+//            }
+//        }, 500);
 
         String jsonInfo = String.format("{" + "\"minFaceSize\":%d,"
                         + "\"rotation\":%d,"
@@ -251,9 +252,13 @@ public class FaceppActionActivity extends Activity implements OnClickListener {
             finish();
         } else if (ID == R.id.landmark_edititem_0) {
             mDialogUtil.showEditText(editItemTexts[0], 0);
-        } else if (ID == R.id.landmark_edititem_1) {
+        } else if (ID == R.id.landmark_edititem_1) {//分辨率
             ConUtil.isGoneKeyBoard(FaceppActionActivity.this);
-            isShowListView();
+            if (mListAdapter.getCount()==0){
+                Toast.makeText(FaceppActionActivity.this,"请获取相机权限后重试",Toast.LENGTH_SHORT).show();
+            }else{
+                isShowListView();
+            }
         } else if (ID == R.id.landmark_edititem_2) {
             mDialogUtil.showEditText(editItemTexts[2], 1);
         } else if (ID == R.id.landmark_edititem_3) {

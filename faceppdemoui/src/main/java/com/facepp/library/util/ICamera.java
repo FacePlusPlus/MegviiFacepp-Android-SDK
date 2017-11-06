@@ -263,17 +263,25 @@ public class ICamera {
 		if (rect.top<0){
 			rect.top=0;
 		}
+		if (rect.top>tmpBitmap.getHeight()){
+			rect.top=tmpBitmap.getHeight();
+		}
 		if (rect.left<0){
 			rect.left=0;
 		}
+		if (rect.left>tmpBitmap.getWidth()){
+			rect.left=tmpBitmap.getWidth();
+		}
 		int widthRect=rect.right-rect.left;
-		if(rect.right-rect.left>tmpBitmap.getWidth()){
-			widthRect=tmpBitmap.getWidth();
+		if(rect.right>tmpBitmap.getWidth()){
+			widthRect=tmpBitmap.getWidth()-rect.left;
+
 		}
 		int heightRect=rect.bottom-rect.top;
-		if(rect.bottom-rect.top>tmpBitmap.getHeight()){
-			heightRect=tmpBitmap.getHeight();
+		if(rect.bottom>tmpBitmap.getHeight()){
+			heightRect=tmpBitmap.getHeight()-rect.top;
 		}
+//		Log.i("xie","xie rect"+rect+"wid"+widthRect+"height"+heightRect);
 		tmpBitmap = Bitmap.createBitmap(tmpBitmap, rect.left, rect.top, widthRect,
 				heightRect);
 

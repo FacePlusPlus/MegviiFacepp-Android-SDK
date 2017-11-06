@@ -465,14 +465,16 @@ public class OpenglActivity extends Activity
         if (isSuccess)
             return;
         isSuccess = true;
+
         mHandler.post(new Runnable() {
             @Override
             public void run() {
+                Log.i("xie","faces"+faces);
                 if (faces != null) {
 
 
                     confidence = 0.0f;
-                    if (faces.length >=0) {
+                    if (faces.length >0) {
 
 
                         //compare ui
@@ -596,6 +598,8 @@ public class OpenglActivity extends Activity
                                 AttriButetext.setText("");
                         }
                     });
+                }else {
+                    compareFaces = null;
                 }
                 isSuccess = false;
                 if (!isTiming) {

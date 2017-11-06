@@ -14,6 +14,7 @@ import com.facepp.library.adapter.FeatureInfoAdapter;
 import com.facepp.library.bean.FaceActionInfo;
 import com.facepp.library.bean.FeatureInfo;
 import com.facepp.library.facecompare.FaceCompareManager;
+import com.facepp.library.util.ConUtil;
 import com.facepp.library.util.DialogUtil;
 
 import java.util.ArrayList;
@@ -35,7 +36,7 @@ public class FeatureInfoSettingActivity extends Activity implements View.OnClick
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_feature_info_setting);
-
+        ConUtil.toggleHideyBar(this);
         init();
     }
 

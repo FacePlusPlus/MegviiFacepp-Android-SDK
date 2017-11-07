@@ -143,6 +143,9 @@ public class ICamera {
 			for (Camera.Size tmpSize : allSupportedSize) {
 				if (tmpSize.width > tmpSize.height) {
 					HashMap<String, Integer> map = new HashMap<String, Integer>();
+					if (tmpSize.width==1872){
+						continue;
+					}
 					map.put("width", tmpSize.width);
 					map.put("height", tmpSize.height);
 					size.add(map);

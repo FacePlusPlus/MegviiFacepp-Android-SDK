@@ -207,6 +207,15 @@ public class FaceppActionActivity extends Activity implements OnClickListener {
             startRecord();
     }
 
+    //oppo vivo 第二次权限进入适配
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        getCameraSizeList();
+
+
+    }
 
     private void getCameraSizeList() {
         new Thread(new Runnable() {
@@ -373,7 +382,7 @@ public class FaceppActionActivity extends Activity implements OnClickListener {
             faceActionInfo.trackModel = editItemTexts[4].getText().toString().trim();
             faceActionInfo.isFaceCompare = isFaceCompare;
 
-            startActivity(new Intent(FaceppActionActivity.this, OpenglActivity.class).putExtra("FaceAction", faceActionInfo));
+            startActivityForResult(new Intent(FaceppActionActivity.this, OpenglActivity.class).putExtra("FaceAction", faceActionInfo),101);
         }
     }
 

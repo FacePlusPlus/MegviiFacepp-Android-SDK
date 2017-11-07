@@ -238,7 +238,7 @@ public class Facepp {
      * @param[in, out] face 人脸信息
      */
     public boolean getExtractFeature(Face face) {
-        if (abilities == null || !abilities.contains(Ability.SMALLFEATEXT))
+        if (abilities == null || !abilities.contains(Ability.SMALLFEATEXT)||FaceppHandle==0)
             return false;
         int featureLength = NativeFaceppAPI.nativeExtractFeature(FaceppHandle, face.index);
         face.feature = NativeFaceppAPI.nativeGetFeatureData(FaceppHandle, featureLength);

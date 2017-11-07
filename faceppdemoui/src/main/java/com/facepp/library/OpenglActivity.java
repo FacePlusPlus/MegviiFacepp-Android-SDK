@@ -58,7 +58,6 @@ public class OpenglActivity extends Activity
     private boolean isStartRecorder, is3DPose, isDebug, isROIDetect, is106Points, isBackCamera, isFaceProperty,
             isOneFaceTrackig, isFaceCompare, isShowFaceRect;
     private String trackModel;
-    private boolean isTiming = true; // 是否是定时去刷新界面;
     private int printTime = 31;
     private GLSurfaceView mGlSurfaceView;
     private ICamera mICamera;
@@ -331,8 +330,7 @@ public class OpenglActivity extends Activity
     private ArrayList<TextView> tvFeatures = new ArrayList<>();
 
     long matrixTime;
-    private int prefaceCount=0;
-
+    private int prefaceCount = 0;
 
 
     @Override
@@ -353,11 +351,6 @@ public class OpenglActivity extends Activity
         else if (orientation == 3)
             rotation = 360 - Angle;
 
-        //快速旋转两张人脸
-        if (preRotation != rotation) {
-            facepp.resetTrack();
-        }
-        preRotation = rotation;
 
         setConfig(rotation);
 
@@ -461,7 +454,6 @@ public class OpenglActivity extends Activity
 
         }
 
-        //部分耗时操作放到子线程，或者控制频率
         if (isSuccess)
             return;
         isSuccess = true;
@@ -469,12 +461,20 @@ public class OpenglActivity extends Activity
         mHandler.post(new Runnable() {
             @Override
             public void run() {
-                Log.i("xie","faces"+faces);
+                //khaoa
+//                if (preRotation != rotation) {
+//                    long time=System.currentTimeMillis();
+//                    facepp.resetTrack();
+//
+//                    Log.i("resettrack","resettrack"+(System.currentTimeMillis()-time));
+//                }
+//                preRotation = rotation;
+
+
                 if (faces != null) {
 
-
                     confidence = 0.0f;
-                    if (faces.length >0) {
+                    if (faces.length > 0) {
 
 
                         //compare ui
@@ -482,20 +482,20 @@ public class OpenglActivity extends Activity
                             @Override
                             public void run() {
                                 if (tvFeatures.size() < faces.length) {
-                                    int tvFeaturesSize=tvFeatures.size();
+                                    int tvFeaturesSize = tvFeatures.size();
                                     for (int i = 0; i < faces.length - tvFeaturesSize; i++) {
                                         TextView textView = new TextView(OpenglActivity.this);
                                         textView.setTextColor(0xff1a1d20);
                                         tvFeatures.add(textView);
                                     }
                                 }
-                                for (int i=prefaceCount;i< faces.length;i++){
+                                for (int i = prefaceCount; i < faces.length; i++) {
                                     ((RelativeLayout) mGlSurfaceView.getParent()).addView(tvFeatures.get(i));
                                 }
-                                for (int i=faces.length;i<tvFeatures.size();i++){
+                                for (int i = faces.length; i < tvFeatures.size(); i++) {
                                     ((RelativeLayout) mGlSurfaceView.getParent()).removeView(tvFeatures.get(i));
                                 }
-                                prefaceCount=faces.length;
+                                prefaceCount = faces.length;
                             }
                         });
 
@@ -520,7 +520,6 @@ public class OpenglActivity extends Activity
                                 if (c == 0) {
                                     featureTime = System.currentTimeMillis();
                                 }
-
                                 if (facepp.getExtractFeature(face)) {
                                     synchronized (OpenglActivity.this) {
                                         newestFeature = face.feature;
@@ -532,7 +531,9 @@ public class OpenglActivity extends Activity
                                         compareFaces = faces;
                                     }
 
+//
                                     final FeatureInfo featureInfo = FaceCompareManager.instance().compare(facepp, face.feature);
+
                                     final int index = c;
                                     runOnUiThread(new Runnable() {
                                         @Override
@@ -590,7 +591,7 @@ public class OpenglActivity extends Activity
                         public void run() {
                             String logStr = "\ncameraWidth: " + mICamera.cameraWidth + "\ncameraHeight: "
                                     + mICamera.cameraHeight + "\nalgorithmTime: " + algorithmTime + "ms"
-                                    + "\nmatrixTime: " + matrixTime + "\nconfidence:" + confidence ;
+                                    + "\nmatrixTime: " + matrixTime + "\nconfidence:" + confidence;
                             debugInfoText.setText(logStr);
                             if (faces.length > 0 && isFaceProperty && AttriButeStr != null && AttriButeStr.length() > 0)
                                 AttriButetext.setText(AttriButeStr + "\nAgeGenderTime:" + time_AgeGender_end);
@@ -598,13 +599,11 @@ public class OpenglActivity extends Activity
                                 AttriButetext.setText("");
                         }
                     });
-                }else {
+                } else {
                     compareFaces = null;
                 }
                 isSuccess = false;
-                if (!isTiming) {
-                    timeHandle.sendEmptyMessage(1);
-                }
+
             }
         });
     }
@@ -619,7 +618,7 @@ public class OpenglActivity extends Activity
         mICamera.closeCamera();
         mCamera = null;
 
-        timeHandle.removeMessages(0);
+
 
         finish();
     }
@@ -628,6 +627,7 @@ public class OpenglActivity extends Activity
     protected void onDestroy() {
         mMediaHelper.stopRecording();
         super.onDestroy();
+        mHandlerThread.quit();
         facepp.release();
     }
 
@@ -640,6 +640,7 @@ public class OpenglActivity extends Activity
     public void onFrameAvailable(SurfaceTexture surfaceTexture) {
         // TODO Auto-generated method stub
 //		Log.d("ceshi", "onFrameAvailable");
+        mGlSurfaceView.requestRender();
     }
 
     @Override
@@ -663,9 +664,6 @@ public class OpenglActivity extends Activity
         mPointsMatrix.isShowFaceRect = isShowFaceRect;
         mICamera.startPreview(mSurface);// 设置预览容器
         mICamera.actionDetect(this);
-        if (isTiming) {
-            timeHandle.sendEmptyMessageDelayed(0, printTime);
-        }
         if (isROIDetect)
             drawShowRect();
     }
@@ -694,6 +692,7 @@ public class OpenglActivity extends Activity
 
     @Override
     public void onDrawFrame(GL10 gl) {
+
         final long actionTime = System.currentTimeMillis();
 //		Log.w("ceshi", "onDrawFrame===");
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);// 清除屏幕和深度缓存
@@ -778,19 +777,5 @@ public class OpenglActivity extends Activity
     }
 
 
-    Handler timeHandle = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case 0:
-                    mGlSurfaceView.requestRender();// 发送去绘制照相机不断去回调
-                    timeHandle.sendEmptyMessageDelayed(0, printTime);
-                    break;
-                case 1:
-                    mGlSurfaceView.requestRender();// 发送去绘制照相机不断去回调
-                    break;
-            }
-        }
-    };
 
 }

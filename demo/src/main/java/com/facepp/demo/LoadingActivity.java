@@ -4,7 +4,9 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.net.Uri;
 import android.os.Bundle;
+import android.text.Html;
 import android.util.DisplayMetrics;
 import android.view.KeyEvent;
 import android.view.View;
@@ -66,12 +68,7 @@ public class LoadingActivity extends Activity {
     private void initData() {
         WarrantyText.setText(getResources().getString(R.string.auth_progress));
         againWarrantyBtn.setText(getResources().getString(R.string.auth_again));
-        if (Util.API_KEY == null || Util.API_SECRET == null) {
-            if (!ConUtil.isReadKey(this)) {
-                DialogUtil mDialogUtil = new DialogUtil(this);
-                mDialogUtil.showDialog(getResources().getString(R.string.key_secret));
-            }
-        }
+        
     }
 
     private void network() {
@@ -102,7 +99,16 @@ public class LoadingActivity extends Activity {
 
                     @Override
                     public void onFailed(int i, byte[] bytes) {
-                        authState(false,i);
+                        if (Util.API_KEY == null || Util.API_SECRET == null) {
+                            if (!ConUtil.isReadKey(LoadingActivity.this)) {
+                                authState(false,1001);
+                            }else{
+                                authState(false,1001);
+                            }
+                        }else{
+                            authState(false,i);
+                        }
+
                     }
                 });
     }
@@ -144,13 +150,27 @@ public class LoadingActivity extends Activity {
             againWarrantyBtn.setVisibility(View.VISIBLE);
             //更详细的错误码请以官网的文档为主https://console.faceplusplus.com.cn/documents/8458445
             if (code==403){
-                WarrantyText.setText(getResources().getString(R.string.auth_bundle));
+                WarrantyText.setText(Html.fromHtml("<u>"+getResources().getString(R.string.auth_bundle)+"</u>"));
+                WarrantyText.setOnClickListener(onlineClick);
+            }else if (code==1001){
+                WarrantyText.setText(Html.fromHtml("<u>"+getResources().getString(R.string.key_secret)+"</u>"));
+                WarrantyText.setOnClickListener(onlineClick);
             }else {
-                WarrantyText.setText(getResources().getString(R.string.auth_fail));
+                WarrantyText.setText(Html.fromHtml("<u>"+getResources().getString(R.string.auth_fail)+"</u>"));
             }
-
         }
     }
+
+    private View.OnClickListener onlineClick=new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent intent= new Intent();
+            intent.setAction("android.intent.action.VIEW");
+            Uri content_url = Uri.parse("https://console.faceplusplus.com.cn/service/face/intro");
+            intent.setData(content_url);
+            startActivity(intent);
+        }
+    };
 
     @Override
     protected void onPause() {

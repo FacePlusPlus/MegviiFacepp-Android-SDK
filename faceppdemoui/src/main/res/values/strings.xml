@@ -26,9 +26,9 @@
     <string name="title">人脸识别演示</string>
     <string name="auth_progress">正在联网授权中...</string>
     <string name="auth_fail">联网授权失败！请检查网络或找服务商</string>
-    <string name="auth_bundle">检查官网是否绑定applicationId</string>
+    <string name="auth_bundle">请到官网申请并绑定applicationId</string>
     <string name="auth_again">重新联网授权</string>
-    <string name="key_secret">请填写API_KEY和API_SECRET</string>
+    <string name="key_secret">请到官网申请并填写API_KEY和API_SECRET</string>
     <string name="detector">本检测器没有此项功能</string>
     <string name="complete">确认</string>
     <string name="min_value">最小值为</string>

@@ -77,7 +77,7 @@ public class LoadingActivity extends Activity {
     private void network() {
         if (Facepp.getSDKAuthType(ConUtil.getFileContent(this, R.raw
                 .megviifacepp_0_4_7_model)) == 2) {// 非联网授权
-            authState(true);
+            authState(true,0);
             return;
         }
 
@@ -97,12 +97,12 @@ public class LoadingActivity extends Activity {
                 LicenseManager.DURATION_30DAYS, "Landmark", "1", true, new LicenseManager.TakeLicenseCallback() {
                     @Override
                     public void onSuccess() {
-                        authState(true);
+                        authState(true,0);
                     }
 
                     @Override
                     public void onFailed(int i, byte[] bytes) {
-                        authState(false);
+                        authState(false,i);
                     }
                 });
     }
@@ -130,7 +130,7 @@ public class LoadingActivity extends Activity {
     }
 
 
-    private void authState(boolean isSuccess) {
+    private void authState(boolean isSuccess,int code) {
         if (isSuccess) {
 
             Intent intent = new Intent();
@@ -142,7 +142,13 @@ public class LoadingActivity extends Activity {
         } else {
             WarrantyBar.setVisibility(View.GONE);
             againWarrantyBtn.setVisibility(View.VISIBLE);
-            WarrantyText.setText(getResources().getString(R.string.auth_fail));
+            //更详细的错误码请以官网的文档为主https://console.faceplusplus.com.cn/documents/8458445
+            if (code==403){
+                WarrantyText.setText(getResources().getString(R.string.auth_bundle));
+            }else {
+                WarrantyText.setText(getResources().getString(R.string.auth_fail));
+            }
+
         }
     }
 

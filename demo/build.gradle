@@ -5,7 +5,8 @@ android {
     buildToolsVersion "25.0.3"
 
     defaultConfig {
-        applicationId "com.megvii.awesomedemo.facepp"
+//        applicationId "com.megvii.awesomedemo.facepp"
+        applicationId "com.xxx.xxx"
         minSdkVersion 15
         targetSdkVersion 25
         versionCode 1
@@ -34,6 +35,8 @@ dependencies {
     })
     compile 'com.android.support:appcompat-v7:25.3.1'
     testCompile 'junit:junit:4.12'
-    compile(name:'MGLicenseManagerSDK-0.3.0',ext:'aar')
+
     compile project(':faceppdemoui')
+
+    compile(name: 'MGLicenseManagerSDK-0.3.0', ext: 'aar')
 }

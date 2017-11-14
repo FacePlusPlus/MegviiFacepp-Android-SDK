@@ -17,6 +17,7 @@
         android:theme="@android:style/Theme.Holo.NoActionBar.TranslucentDecor">
         <activity
             android:name="com.facepp.library.FaceppActionActivity"
+            android:launchMode="singleTask"
             android:screenOrientation="portrait"></activity>
 
         <activity

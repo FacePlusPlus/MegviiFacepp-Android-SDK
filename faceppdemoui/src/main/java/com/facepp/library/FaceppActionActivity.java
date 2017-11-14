@@ -28,6 +28,7 @@ import com.facepp.library.bean.FaceActionInfo;
 import com.facepp.library.util.ConUtil;
 import com.facepp.library.util.DialogUtil;
 import com.facepp.library.util.ICamera;
+import com.facepp.library.util.Util;
 import com.megvii.facepp.sdk.Facepp;
 
 import java.util.ArrayList;
@@ -225,6 +226,10 @@ public class FaceppActionActivity extends Activity implements OnClickListener {
                 if (isBackCamera)
                     cameraId = 0;
                 cameraSize = ICamera.getCameraPreviewSize(cameraId);
+                RelativeLayout.LayoutParams rlp= (RelativeLayout.LayoutParams) mListView.getLayoutParams();
+                rlp.width= ConUtil.dip2px(FaceppActionActivity.this,200);
+                rlp.height=ConUtil.dip2px(FaceppActionActivity.this,55)*cameraSize.size();
+                mListView.setLayoutParams(rlp);
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -284,11 +289,14 @@ public class FaceppActionActivity extends Activity implements OnClickListener {
             ConUtil.isGoneKeyBoard(FaceppActionActivity.this);
         } else if (ID == R.id.landmark_imageitem_0) {
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-                startRecordWithPerm();
-            }else{
-                Toast.makeText(FaceppActionActivity.this,"不支持4.3以下录制",Toast.LENGTH_SHORT).show();
-            }
+            Toast.makeText(FaceppActionActivity.this,"开发中",Toast.LENGTH_SHORT).show();
+
+//
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+//                startRecordWithPerm();
+//            }else{
+//                Toast.makeText(FaceppActionActivity.this,"不支持4.3以下录制",Toast.LENGTH_SHORT).show();
+//            }
 
         } else if (ID == R.id.landmark_imageitem_1) {
             is3DPose = !is3DPose;
@@ -315,7 +323,7 @@ public class FaceppActionActivity extends Activity implements OnClickListener {
             getCameraSizeList();
         } else if (ID == R.id.landmark_imageitem_6) {
             if (!Facepp.getAbility(ConUtil.getFileContent(this, R
-                    .raw.megviifacepp_0_5_0_model)).contains(Facepp.Ability.AGEGENDER)) {
+                    .raw.megviifacepp_0_5_2_model)).contains(Facepp.Ability.AGEGENDER)) {
                 ConUtil.showToast(this, getResources().getString(R.string.detector));
                 return;
             }

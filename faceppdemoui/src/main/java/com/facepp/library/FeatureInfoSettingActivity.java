@@ -1,9 +1,11 @@
 package com.facepp.library;
 
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -120,12 +122,21 @@ public class FeatureInfoSettingActivity extends Activity implements View.OnClick
     @Override
     public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
        TextView textView = (TextView) view.findViewById(R.id.feature_item_username);
-        mDialog.showEditText(textView, new DialogUtil.OnEditModifComplateListener() {
+        android.app.AlertDialog dialog=mDialog.showEditText(textView, new DialogUtil.OnEditModifComplateListener() {
             @Override
             public void onModifComplate(String name) {
                 mItemSelectStatusArr[position].name = name;
             }
         });
+        dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                ConUtil.toggleHideyBar(FeatureInfoSettingActivity.this);
+            }
+        });
+
+        ConUtil.toggleHideyBar(FeatureInfoSettingActivity.this);
+
     }
 
     public static class ModifFeatureInfo{

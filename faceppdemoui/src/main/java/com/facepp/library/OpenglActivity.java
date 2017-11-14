@@ -169,6 +169,9 @@ public class OpenglActivity extends Activity
             public void onClick(View v) {
 
                 // 保存feature数据
+                if (mICamera==null||mICamera.mCamera==null){
+                    return;
+                }
                 if (compareFaces == null || compareFaces.length <= 0 || carmeraImgData == null) {
                     Toast.makeText(OpenglActivity.this, "当前未检测到人脸", Toast.LENGTH_SHORT).show();
                     return;
@@ -266,7 +269,7 @@ public class OpenglActivity extends Activity
                 bottom = height - top;
             }
 
-            String errorCode = facepp.init(this, ConUtil.getFileContent(this, R.raw.megviifacepp_0_5_0_model), isOneFaceTrackig ? 1 : 0);
+            String errorCode = facepp.init(this, ConUtil.getFileContent(this, R.raw.megviifacepp_0_5_2_model), isOneFaceTrackig ? 1 : 0);
             Facepp.FaceppConfig faceppConfig = facepp.getFaceppConfig();
             faceppConfig.interval = detection_interval;
             faceppConfig.minFaceSize = min_face_size;
@@ -581,6 +584,15 @@ public class OpenglActivity extends Activity
 
                         }
                     } else {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                for (int i = 0; i < tvFeatures.size(); i++) {
+                                    ((RelativeLayout) mGlSurfaceView.getParent()).removeView(tvFeatures.get(i));
+                                }
+                                prefaceCount=0;
+                            }
+                        });
                         mPointsMatrix.rect = null;
                         compareFaces = null;
                     }
@@ -627,8 +639,13 @@ public class OpenglActivity extends Activity
     protected void onDestroy() {
         mMediaHelper.stopRecording();
         super.onDestroy();
-        mHandlerThread.quit();
-        facepp.release();
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                facepp.release();
+            }
+        });
+
     }
 
     private int mTextureID = -1;

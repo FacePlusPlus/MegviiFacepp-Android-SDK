@@ -73,7 +73,7 @@ public class DialogUtil {
 		}
 	}
 
-	public void showEditText(final TextView text, final OnEditModifComplateListener listener){
+	public AlertDialog showEditText(final TextView text, final OnEditModifComplateListener listener){
 		Builder builder = new Builder(activity);
 		builder.setTitle(R.string.modif_name); // 设置对话框标题
 		builder.setIcon(android.R.drawable.btn_star); // 设置对话框标题前的图标
@@ -119,6 +119,7 @@ public class DialogUtil {
 		AlertDialog dialog = builder.create(); // 创建对话框
 		dialog.setCanceledOnTouchOutside(true); // 设置弹出框失去焦点是否隐藏,即点击屏蔽其它地方是否隐藏
 		dialog.show();
+		return dialog;
 	}
 
 	public void showEditText(final TextView text, final int index) {

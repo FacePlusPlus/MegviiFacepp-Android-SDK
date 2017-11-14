@@ -3,6 +3,7 @@ package com.megvii.facepp.sdk;
 import android.content.Context;
 import android.graphics.PointF;
 import android.graphics.Rect;
+import android.util.Log;
 
 import com.megvii.facepp.sdk.jni.NativeFaceppAPI;
 
@@ -238,9 +239,12 @@ public class Facepp {
      * @param[in, out] face 人脸信息
      */
     public boolean getExtractFeature(Face face) {
-        if (abilities == null || !abilities.contains(Ability.SMALLFEATEXT)||FaceppHandle==0)
+        if (abilities == null || !abilities.contains(Ability.SMALLFEATEXT)||FaceppHandle==0||face==null)
             return false;
         int featureLength = NativeFaceppAPI.nativeExtractFeature(FaceppHandle, face.index);
+        if (featureLength<=0){
+            return false;
+        }
         face.feature = NativeFaceppAPI.nativeGetFeatureData(FaceppHandle, featureLength);
 
         return true;

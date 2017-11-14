@@ -143,12 +143,21 @@ public class ICamera {
 			for (Camera.Size tmpSize : allSupportedSize) {
 				if (tmpSize.width > tmpSize.height) {
 					HashMap<String, Integer> map = new HashMap<String, Integer>();
-					if (tmpSize.width==1872){
-						continue;
-					}
-					map.put("width", tmpSize.width);
-					map.put("height", tmpSize.height);
-					size.add(map);
+                    map.put("width", tmpSize.width);
+                    map.put("height", tmpSize.height);
+                    if (tmpSize.width==640&&tmpSize.height==480){
+                        size.add(map);
+                    }
+                    if (tmpSize.width==960&&tmpSize.height==540){
+                        size.add(map);
+                    }
+                    if (tmpSize.width==1280&&tmpSize.height==720){
+                        size.add(map);
+                    }
+                    if (tmpSize.width==1920&&tmpSize.height==1080){
+                        size.add(map);
+                    }
+
 				}
 			}
 

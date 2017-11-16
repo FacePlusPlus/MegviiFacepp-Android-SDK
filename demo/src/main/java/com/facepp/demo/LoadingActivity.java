@@ -4,8 +4,12 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.net.Uri;
 import android.os.Bundle;
+import android.text.Html;
+import android.text.TextUtils;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
@@ -19,10 +23,9 @@ import com.facepp.library.util.SharedUtil;
 import com.facepp.library.util.Util;
 import com.megvii.awesomedemo.facepp.R;
 import com.megvii.facepp.sdk.Facepp;
-//import com.megvii.licensemanager.sdk.LicenseManager;
+import com.megvii.licensemanager.sdk.LicenseManager;
 
 import java.util.Locale;
-//import com.megvii.licensemanager.sdk.LicenseManager;
 
 public class LoadingActivity extends Activity {
     private TextView WarrantyText;
@@ -67,47 +70,53 @@ public class LoadingActivity extends Activity {
     private void initData() {
         WarrantyText.setText(getResources().getString(R.string.auth_progress));
         againWarrantyBtn.setText(getResources().getString(R.string.auth_again));
-        if (Util.API_KEY == null || Util.API_SECRET == null) {
-            if (!ConUtil.isReadKey(this)) {
-                DialogUtil mDialogUtil = new DialogUtil(this);
-                mDialogUtil.showDialog(getResources().getString(R.string.key_secret));
-            }
-        }
+//        if (Util.API_KEY == null || Util.API_SECRET == null) {
+//            if (!ConUtil.isReadKey(this)) {
+//                DialogUtil mDialogUtil = new DialogUtil(this);
+//                mDialogUtil.showDialog(getResources().getString(R.string.key_secret));
+//            }
+//        }
     }
 
     private void network() {
         int type = Facepp.getSDKAuthType(ConUtil.getFileContent(this, R.raw.megviifacepp_0_5_2_model));
-//		if ( type == 2) {// 非联网授权
-//			authState(true);
-//			return;
-//		}
+		if ( type == 2) {// 非联网授权
+			authState(true,0);
+			return;
+		}
 
-        authState(true);
+		againWarrantyBtn.setVisibility(View.GONE);
+		WarrantyText.setText(getResources().getString(R.string.auth_progress));
+		WarrantyBar.setVisibility(View.VISIBLE);
+		final LicenseManager licenseManager = new LicenseManager(this);
+		licenseManager.setExpirationMillis(Facepp.getApiExpirationMillis(this, ConUtil.getFileContent(this, R.raw
+				.megviifacepp_0_5_2_model)));
 
-//		againWarrantyBtn.setVisibility(View.GONE);
-//		WarrantyText.setText(getResources().getString(R.string.auth_progress));
-//		WarrantyBar.setVisibility(View.VISIBLE);
-//		final LicenseManager licenseManager = new LicenseManager(this);
-//		licenseManager.setExpirationMillis(Facepp.getApiExpirationMillis(this, ConUtil.getFileContent(this, R.raw
-//				.megviifacepp_0_4_7_model)));
-//
-//		String uuid = ConUtil.getUUIDString(LoadingActivity.this);
-//		long apiName = Facepp.getApiName();
-//
-//		licenseManager.setAuthTimeBufferMillis(0);
-//
-//		licenseManager.takeLicenseFromNetwork(uuid, Util.API_KEY, Util.API_SECRET, apiName,
-//				LicenseManager.DURATION_30DAYS, "Landmark", "1", true, new LicenseManager.TakeLicenseCallback() {
-//					@Override
-//					public void onSuccess() {
-//						authState(true);
-//					}
-//
-//					@Override
-//					public void onFailed(int i, byte[] bytes) {
-//						authState(false);
-//					}
-//				});
+		String uuid = ConUtil.getUUIDString(LoadingActivity.this);
+		long apiName = Facepp.getApiName();
+
+		licenseManager.setAuthTimeBufferMillis(0);
+
+		licenseManager.takeLicenseFromNetwork(uuid, Util.API_KEY, Util.API_SECRET, apiName,
+				LicenseManager.DURATION_30DAYS, "Landmark", "1", true, new LicenseManager.TakeLicenseCallback() {
+					@Override
+					public void onSuccess() {
+						authState(true,0);
+					}
+
+					@Override
+					public void onFailed(int i, byte[] bytes) {
+                        if (TextUtils.isEmpty(Util.API_KEY)||TextUtils.isEmpty(Util.API_SECRET)) {
+                            if (!ConUtil.isReadKey(LoadingActivity.this)) {
+                                authState(false,1001);
+                            }else{
+                                authState(false,1001);
+                            }
+                        }else{
+                            authState(false,i);
+                        }
+					}
+				});
     }
 
     private void freshView(){
@@ -133,7 +142,7 @@ public class LoadingActivity extends Activity {
     }
 
 
-    private void authState(boolean isSuccess) {
+    private void authState(boolean isSuccess,int code) {
         if (isSuccess) {
 
             Intent intent = new Intent();
@@ -145,9 +154,28 @@ public class LoadingActivity extends Activity {
         } else {
             WarrantyBar.setVisibility(View.GONE);
             againWarrantyBtn.setVisibility(View.VISIBLE);
-            WarrantyText.setText(getResources().getString(R.string.auth_fail));
+            if (code==403){
+                WarrantyText.setText(Html.fromHtml("<u>"+getResources().getString(R.string.auth_bundle)+"</u>"));
+                WarrantyText.setOnClickListener(onlineClick);
+            }else if (code==1001){
+                WarrantyText.setText(Html.fromHtml("<u>"+getResources().getString(R.string.key_secret)+"</u>"));
+                WarrantyText.setOnClickListener(onlineClick);
+            }else {
+                WarrantyText.setText(Html.fromHtml("<u>"+getResources().getString(R.string.auth_fail)+"</u>"));
+            }
         }
     }
+
+    private View.OnClickListener onlineClick=new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent intent= new Intent();
+            intent.setAction("android.intent.action.VIEW");
+            Uri content_url = Uri.parse("https://console.faceplusplus.com.cn/service/face/intro");
+            intent.setData(content_url);
+            startActivity(intent);
+        }
+    };
 
     @Override
     protected void onPause() {

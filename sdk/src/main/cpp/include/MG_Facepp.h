@@ -284,16 +284,13 @@ typedef struct {
         MG_POINT _OUT *points);
     
     /**
-     * @brief 获取人脸关键点信息
-     *
-     * 可以通过参数控制，获取不同个数的关键点，也可以获取平滑过的关键点。
+     * @brief 获取人脸框信息
      *
      * @param[in] api_handle 算法句柄
-     * @param[in] idx 人脸编号（人脸以0~face_nr-1编号）
+     * @param[in] idx 人脸框编号（人脸以0~face_nr-1编号）
      * @param[in] is_smooth 是否需要进行平滑处理。选择平滑处理可以让前后帧关键点相对比较稳定。
-     * @param[in] nr 获取的关键点个数，目前只有3种数值是合理的，分别是81点、101点和106点。
      *
-     * @param[out] points 获取的人脸关键点
+     * @param[out] rect 获取的人脸框
      *
      * @return 成功则返回 MG_RETCODE_OK
      */
@@ -493,24 +490,6 @@ typedef struct {
                                    MG_INT32 model_length,
                                    MG_ALGORITHMINFO *algorithm_info);
     
-//    /**
-//     * @brief 获取人脸框信息
-//     *
-//     * 可以通过参数控制，获取平滑过的关键点。
-//     *
-//     * @param[in] api_handle 算法句柄
-//     * @param[in] idx 人脸编号（人脸以0~face_nr-1编号）
-//     * @param[in] is_smooth 是否需要进行平滑处理。选择平滑处理可以让前后帧关键点相对比较稳定。
-//     *
-//     * @param[out] points 获取的人脸框
-//     *
-//     * @return 成功则返回 MG_RETCODE_OK
-//     */
-//    MG_RETCODE (*GetRect) (
-//                           MG_FPP_APIHANDLE api_handle,
-//                           MG_INT32 idx,
-//                           MG_BOOL is_smooth,
-//                           MG_POINT _OUT *rect);
 
 } MG_FACEPP_API_FUNCTIONS_TYPE;
 

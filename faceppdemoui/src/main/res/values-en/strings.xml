@@ -28,6 +28,7 @@
     <string name="key_secret">API_KEY or API_SECRET is null</string>
     <string name="auth_progress">Networking authorization...</string>
     <string name="auth_fail">Network authorization failed</string>
+    <string name="auth_bundle">Check the applicationId</string>
     <string name="auth_again">again Networking auth</string>
     <string name="detector">This detector does not have this feature</string>
     <string name="complete">down</string>

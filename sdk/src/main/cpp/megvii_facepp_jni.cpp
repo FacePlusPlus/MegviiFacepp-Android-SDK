@@ -245,6 +245,26 @@ jfloatArray Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeLandMark(JNIEnv
     return retArray;
 }
 
+
+jfloatArray Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeLandMarkOrigin(JNIEnv *env,
+                                                                          jobject, jlong handle,
+                                                                          jint index,
+                                                                          jint point_nr) {
+    ApiHandle *h = reinterpret_cast<ApiHandle *>(handle);
+    jfloatArray retArray = env->NewFloatArray(LANDMARK_ST_NR * 2);
+    MG_POINT buff[LANDMARK_ST_NR];
+    mg_facepp.GetLandmark(h->api, index, true, point_nr, buff);
+    for (int j = 0; j < point_nr; ++j) {
+        float point[2];
+        point[0] = buff[j].x;
+        point[1] = buff[j].y;
+
+        env->SetFloatArrayRegion(retArray, j * 2, 2, point);
+    }
+
+    return retArray;
+}
+
 jfloatArray Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeAttribute(JNIEnv *env,
                                                                            jobject, jlong handle,
                                                                            jint index) {

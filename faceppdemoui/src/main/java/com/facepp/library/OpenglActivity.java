@@ -257,6 +257,14 @@ public class OpenglActivity extends Activity
             }
 
             String errorCode = facepp.init(this, ConUtil.getFileContent(this, R.raw.megviifacepp_0_5_2_model), isOneFaceTrackig ? 1 : 0);
+            //sdk内部处理好也可以不判断
+            if (errorCode!=null){
+                Intent intent=new Intent();
+                intent.putExtra("errorcode",errorCode);
+                setResult(101,intent);
+                finish();
+                return;
+            }
             Facepp.FaceppConfig faceppConfig = facepp.getFaceppConfig();
             faceppConfig.interval = detection_interval;
             faceppConfig.minFaceSize = min_face_size;

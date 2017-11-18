@@ -212,7 +212,10 @@ public class FaceppActionActivity extends Activity implements OnClickListener {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
+        if (resultCode==101){
+            String error=data.getStringExtra("errorcode");
+            ConUtil.showToast(this, "sdk init error, code: "+error);
+        }
         getCameraSizeList();
 
 

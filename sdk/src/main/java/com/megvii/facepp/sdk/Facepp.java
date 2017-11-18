@@ -71,8 +71,11 @@ public class Facepp {
      * @brief 获取人脸配置信息
      */
     public FaceppConfig getFaceppConfig() {
-        int[] configs = NativeFaceppAPI.nativeGetFaceppConfig(FaceppHandle);
         FaceppConfig faceppConfig = new FaceppConfig();
+        if (FaceppHandle==0){
+            return faceppConfig;
+        }
+        int[] configs = NativeFaceppAPI.nativeGetFaceppConfig(FaceppHandle);
         faceppConfig.minFaceSize = configs[0];
         faceppConfig.rotation = configs[1];
         faceppConfig.interval = configs[2];
@@ -92,6 +95,9 @@ public class Facepp {
      * @param[in] faceppConfig 人脸检测器配置信息
      */
     public void setFaceppConfig(FaceppConfig faceppConfig) {
+        if (FaceppHandle==0){
+            return;
+        }
         NativeFaceppAPI.nativeSetFaceppConfig(FaceppHandle, faceppConfig.minFaceSize, faceppConfig.rotation,
                 faceppConfig.interval, faceppConfig.detectionMode, faceppConfig.roi_left, faceppConfig.roi_top,
                 faceppConfig.roi_right, faceppConfig.roi_bottom, faceppConfig.one_face_tracking);
@@ -108,6 +114,9 @@ public class Facepp {
      * @param[in] imageMode 图片数据的格式
      */
     public Face[] detect(byte[] imageData, int width, int height, int imageMode) {
+        if (FaceppHandle==0){
+            return new Face[0];
+        }
         int faceSize = NativeFaceppAPI.nativeDetect(FaceppHandle, imageData, width, height, imageMode);
         Face[] faces = new Face[faceSize];
         for (int i = 0; i < faceSize; i++) {
@@ -128,6 +137,9 @@ public class Facepp {
      * @param[in] pointNum 需要的人脸关键点点数
      */
     public void getLandmark(Face face, int pointNum) {
+        if (FaceppHandle==0){
+            return;
+        }
         float[] points = NativeFaceppAPI.nativeLandMark(FaceppHandle, face.index, pointNum);
         loadFacePointsInfo(face, points, pointNum, 0);
     }
@@ -139,6 +151,9 @@ public class Facepp {
      * @param[in, out] face 人脸信息
      */
     public void getAttribute(Face face) {
+        if (FaceppHandle==0){
+            return;
+        }
         float[] points = NativeFaceppAPI.nativeAttribute(FaceppHandle, face.index);
         loadFaceAttributeInfo(face, points);
     }
@@ -149,7 +164,7 @@ public class Facepp {
      * @param[in, out] face 人脸信息
      */
     public boolean get3DPose(Face face) {
-        if (abilities == null || !abilities.contains(Ability.POSE))
+        if (FaceppHandle==0||abilities == null || !abilities.contains(Ability.POSE))
             return false;
 
         float[] points = NativeFaceppAPI.nativePose3D(FaceppHandle, face.index);
@@ -164,7 +179,7 @@ public class Facepp {
      * @param[in, out] face 人脸信息
      */
     public boolean getEyeStatus(Face face) {
-        if (abilities == null || !abilities.contains(Ability.EYESTATUS))
+        if (FaceppHandle==0||abilities == null || !abilities.contains(Ability.EYESTATUS))
             return false;
         float[] points = NativeFaceppAPI.nativeEyeStatus(FaceppHandle, face.index);
         loadFaceEyeStatusInfo(face, points);
@@ -177,7 +192,7 @@ public class Facepp {
      * @param[in, out] face 人脸信息
      */
     public boolean getMouthStatus(Face face) {
-        if (abilities == null || !abilities.contains(Ability.MOUTHSTATUS))
+        if (FaceppHandle==0||abilities == null || !abilities.contains(Ability.MOUTHSTATUS))
             return false;
         float[] points = NativeFaceppAPI.nativeMouthStatus(FaceppHandle, face.index);
         loadFaceMouthStatusInfo(face, points);
@@ -190,7 +205,7 @@ public class Facepp {
      * @param[in, out] face 人脸信息
      */
     public boolean getMinorityStatus(Face face) {
-        if (abilities == null || !abilities.contains(Ability.MINORITY))
+        if (FaceppHandle==0||abilities == null || !abilities.contains(Ability.MINORITY))
             return false;
         float[] points = NativeFaceppAPI.nativeMinority(FaceppHandle, face.index);
         loadFaceMinorityInfo(face, points);
@@ -203,7 +218,7 @@ public class Facepp {
      * @param[in, out] face 人脸信息
      */
     public boolean getBlurness(Face face) {
-        if (abilities == null || !abilities.contains(Ability.BLURNESS))
+        if (FaceppHandle==0||abilities == null || !abilities.contains(Ability.BLURNESS))
             return false;
         float[] points = NativeFaceppAPI.nativeBlurness(FaceppHandle, face.index);
         loadFaceBlurnessInfo(face, points);
@@ -216,7 +231,7 @@ public class Facepp {
      * @param[in, out] face 人脸信息
      */
     public boolean getAgeGender(Face face) {
-        if (abilities == null || !abilities.contains(Ability.AGEGENDER))
+        if (FaceppHandle==0||abilities == null || !abilities.contains(Ability.AGEGENDER))
             return false;
         float[] points = NativeFaceppAPI.nativeAgeGender(FaceppHandle, face.index);
         loadFaceAgeGenderInfo(face, points);
@@ -224,6 +239,8 @@ public class Facepp {
     }
 
     public void getRect(Face face){
+        if (FaceppHandle==0)
+            return ;
         float[] rectArray = NativeFaceppAPI.nativeRect(FaceppHandle, face.index);
 
         face.rect.left = (int)rectArray[0];
@@ -257,7 +274,7 @@ public class Facepp {
      * @param[in] face2 人脸2信息
      */
     public double faceCompare(Face face1, Face face2) {
-        if (face1 == null || face2 == null || face1.feature == null || face2.feature == null)
+        if (FaceppHandle==0||face1 == null || face2 == null || face1.feature == null || face2.feature == null)
             return -1;
         return NativeFaceppAPI.nativeFaceCompare(FaceppHandle, face1.feature, face2.feature, face1.feature.length / 4);
     }
@@ -269,7 +286,7 @@ public class Facepp {
      * @param[in] feature2 人脸2特征
      */
     public double faceCompare(byte[] feature1, byte[] feature2) {
-        if (feature1 == null || feature2 == null)
+        if (FaceppHandle==0||feature1 == null || feature2 == null)
             return -1;
         return NativeFaceppAPI.nativeFaceCompare(FaceppHandle, feature1, feature2, feature1.length / 4);
     }
@@ -392,6 +409,8 @@ public class Facepp {
      * @brief  切换摄像头调用 出现关键点后调用
      */
     public  int resetTrack() {
+        if (FaceppHandle==0)
+            return 0;
         return NativeFaceppAPI.nativeResetTrack(FaceppHandle);
     }
 

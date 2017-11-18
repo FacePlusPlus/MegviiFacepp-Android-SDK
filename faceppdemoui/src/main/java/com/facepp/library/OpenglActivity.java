@@ -193,20 +193,7 @@ public class OpenglActivity extends Activity
         imgIcon = (ImageView) findViewById(R.id.opengl_layout_icon);
     }
 
-    /**
-     * 用于测试一些api
-     */
-    private void newMethodCall() {
-        Log.d("xie", "newMethodCall: " + facepp.GetFaceConfidenceFilter() + facepp.getSDKBundleId() + facepp.getJenkinsNumber());
 
-        imgIcon.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Log.d("xie", "newMethodCall: " + facepp.resetTrack() + facepp.GetFaceConfidenceFilter() + facepp.getSDKBundleId());
-            }
-        }, 5000);
-
-    }
 
     /**
      * 开始录制

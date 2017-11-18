@@ -61,15 +61,9 @@ public class NativeFaceppAPI {
 
     public static native int nativeResetTrack(long handle);
 
-    public static native float nativeGetFaceConfidenceFilter(long handle);
-
-    public static native int nativeSetFaceConfidenceFilter(long handle,float filter);
 
     public static native String nativeGetJenkinsNumber();
 
-    public static native String nativeGetSDKBundleId();
-
-    public static native long nativeGetAbility(byte[] model);
 
     public static native int nativeShutDown();
 

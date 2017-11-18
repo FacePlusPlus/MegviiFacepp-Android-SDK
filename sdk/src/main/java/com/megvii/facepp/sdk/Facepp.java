@@ -395,22 +395,7 @@ public class Facepp {
         return NativeFaceppAPI.nativeResetTrack(FaceppHandle);
     }
 
-    /**
-     * @return 置信度
-     * @brief  获取置信度
-     */
-    public  float GetFaceConfidenceFilter() {
-        return NativeFaceppAPI.nativeGetFaceConfidenceFilter(FaceppHandle);
-    }
 
-    /**
-     * @return 调用是否成功
-     * @brief  设置置信度
-     * @param[in] confidence 置信度
-     */
-    public  int setFaceConfidenceFilter(float confidence) {
-        return NativeFaceppAPI.nativeSetFaceConfidenceFilter(FaceppHandle,confidence);
-    }
 
     /**
      * @return jenkins nummber
@@ -420,13 +405,7 @@ public class Facepp {
         return NativeFaceppAPI.nativeGetJenkinsNumber();
     }
 
-    /**
-     * @return bundleid
-     * @brief  获取BundleId
-     */
-    public static String getSDKBundleId() {
-        return NativeFaceppAPI.nativeGetSDKBundleId();
-    }
+
 
     /**
      * @return sdk 授权类型
@@ -436,14 +415,6 @@ public class Facepp {
         return NativeFaceppAPI.nativeGetSDKAuthType();
     }
 
-    /**
-     * @return sdk 能力
-     * @brief  新的获取sdk能力
-     * @param[in] model 模型
-     */
-    public static long getAbilityNew(byte[] model) {
-        return NativeFaceppAPI.nativeGetAbility(model);
-    }
 
     /**
      * @return 调用是否成功

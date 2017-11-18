@@ -80,6 +80,9 @@ typedef struct {
     MG_RECTANGLE roi;                       ///< 一个矩形框，表示只对图像中 roi 所表示的区域做人脸检测。
                                             ///< 在特定场景下，此方法可以提高检测速度。
                                             ///< 如果人脸在 roi 中被检测到，且移动到了 roi 之外的区域，依然可以被跟踪。
+    
+    MG_SINGLE face_confidence_filter;       ///< 人脸置信度过滤阈值，低于此值的数据将被过滤掉，默认 0.1
+    
     MG_BOOL one_face_tracking;              ///< 此参数已废弃
 } MG_FPP_APICONFIG;
 
@@ -155,8 +158,7 @@ typedef struct {
     /**
      * @brief 查看算法授权的过期时间
      *
-     * @param[in] env               Android jni 的环境变量，仅在 Android SDK 中使用
-     * @param[in] jobj              Android 调用的上下文，仅在 Android SDK 中使用
+     * 此接口已经废弃，只返回0， 请使用 GetAlgorithmInfo
      *
      * @return 成功则返回 MG_RETCODE_OK
      */
@@ -164,37 +166,13 @@ typedef struct {
     
     
     /**
-     获取SDK限制的包名
-
-     @return SDK限制的包名
-     */
-    const char * (*GetSDKBundleId)();
-    
-    
-    /**
      * @brief 获取 SDK 的授权类型
+     *
+     * 此接口已经废弃，只返回非联网授权， 请使用 GetAlgorithmInfo
      *
      * @return 只有联网授权和非联网授权两种类型
      */
     MG_SDKAUTHTYPE (*GetSDKAuthType)();
-    
-    
-    /**
-     * @brief 获取SDK包含能力
-     *
-     * 读取模型中相关参数，返回当前SDK的所使用的算法的相关信息。
-     *
-     * @param[in] model_data 算法模型的二进制数据
-     * @param[in] model_length 算法模型的字节长度
-     *
-     * @param[out] ability_info 算法能力
-     *
-     * @return 成功则返回 MG_RETCODE_OK
-     */
-    MG_RETCODE (*GetAbility)(
-                             const MG_BYTE* model_data,
-                             MG_INT32 model_length,
-                             MG_ABILITY *ability_info);
     
 
     /**
@@ -409,12 +387,7 @@ typedef struct {
     /**
      * @brief 获取人脸比对的分数
      *
-     * 传入两个特征，比对两个特征后产生对应分数。传入的特征顺序课交换。
-     * 阈值如下：
-     *   - 1e-2: 63.07
-     *   - 1e-3: 73.43
-     *   - 1e-4: 79.79
-     *   - 1e-5: 84.02
+     * 传入两个特征，比对两个特征后产生对应分数。
      *
      * @param[in] api_handle 算法句柄
      * @param[in] feature_data1 参与比对的特征1
@@ -442,27 +415,6 @@ typedef struct {
      */
     MG_RETCODE (*ResetTrack) (MG_FPP_APIHANDLE api_handle);
     
-
-    /**
-     * @brief 获取人脸检测置信度过滤阈值
-     *
-     * @param[in]  api_handle 算法句柄
-     * @param[out] filter 成功则设置此值为人脸检测置信度过滤的阈值
-     *
-     * @return 成功则返回 MG_RETCODE_OK
-     */
-    MG_RETCODE (*GetFaceConfidenceFilter)(MG_FPP_APIHANDLE api_handle, MG_SINGLE *filter);
-    
-    
-    /**
-     * @brief 设置人脸检测置信度过滤阈值
-     *
-     * @param[in] api_handle 算法句柄
-     * @param[in] filter 要设置的人脸检测置信度过滤阈值
-     *
-     * @return 成功则返回 MG_RETCODE_OK
-     */
-    MG_RETCODE (*SetFaceConfidenceFilter)(MG_FPP_APIHANDLE api_handle, MG_SINGLE filter);
     
     /**
      * @breif 释放算法资源
@@ -475,20 +427,16 @@ typedef struct {
     /**
      * @brief 获取SDK信息
      *
-     * 此方法已经废弃
-     * 获取 SDK 过期时间，请使用 GetApiExpiration
-     * 获取 SDK 支持的能力，请使用 GetAbility
-     * 判断 SDK 是否为联网授权版本，请使用 GetSDKAuthType
+     * SDK 授权类型 离线授权 联网授权
+     * SDK 过期时间 联网授权版返回 0，请通过联网授权API获取过期日期  离线授权版未授权，返回过期时间戳 离线授权版已授权，返回-1，表示无过期时间，一直有效
+     * SDK 支持的能力
+     * SDK 限制的报名
      *
      */
     MG_RETCODE (*GetAlgorithmInfo)(
         const MG_BYTE* model_data,
         MG_INT32 model_length,
         MG_ALGORITHMINFO *algorithm_info);
-    MG_RETCODE (*GetAlgorithmInf)(
-                                   const MG_BYTE* model_data,
-                                   MG_INT32 model_length,
-                                   MG_ALGORITHMINFO *algorithm_info);
     
 
 } MG_FACEPP_API_FUNCTIONS_TYPE;

@@ -404,8 +404,11 @@ typedef enum {
  */
 typedef struct {
     MG_SINGLE confidence;   ///< 人脸框置信度，为一个 0 ~ 1 之间的浮点数。
+    
     MG_Orientation orient;  ///< 人脸框方向
+    
     MG_RECTANGLE rect;      ///< 人脸框在图像中的位置，以一个矩形框来刻画。
+    
     float angle;            ///< 人脸框角度
 } MG_DETECT_RECT;
 
@@ -430,16 +433,14 @@ typedef enum {
 } MG_ROTATION;
     
     
-// 已废弃
 typedef struct {
     MG_UINT64 expire_time;                          ///< 一个时间戳，表示过期时间
     
     MG_SDKAUTHTYPE auth_type;                       ///< SDK 的授权类型（联网授权或者非联网授权）
     
     MG_UINT64 ability;                              ///< 提供人脸算法的能力
-    ///< 这是一些属性值的 bit 值的或和，
-    ///< 可以参考以 MG_FPP_ATTR_ 开头的宏定义名。
     
+    const char *bundleid;
 } MG_ALGORITHMINFO;
 
     

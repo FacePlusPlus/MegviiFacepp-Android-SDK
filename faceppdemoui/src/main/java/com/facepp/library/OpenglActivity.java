@@ -632,7 +632,8 @@ public class OpenglActivity extends Activity
 
     @Override
     protected void onDestroy() {
-        mMediaHelper.stopRecording();
+        if (mMediaHelper!=null)
+            mMediaHelper.stopRecording();
         super.onDestroy();
         mHandler.post(new Runnable() {
             @Override

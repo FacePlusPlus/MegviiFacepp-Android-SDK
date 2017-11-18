@@ -1,8 +1,8 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.3"
+    compileSdkVersion CompileSdkVersion
+    buildToolsVersion BuildToolsVersion
 
     defaultConfig {
         minSdkVersion 15
@@ -34,10 +34,10 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compile 'com.android.support:appcompat-v7:25.3.1'
+    compile "com.android.support:appcompat-v7:${SupportLibraryVersion}"
 //    compile(name: 'MGFaceppSDK-0.5.0', ext: 'aar')
     //compile(name:'MGLicenseManagerSDK-0.3.0', ext:'aar')
-    compile 'com.android.support:appcompat-v7:25.1.0'
+    compile "com.android.support:appcompat-v7:${SupportLibraryVersion}"
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     testCompile 'junit:junit:4.12'
 //    compile 'com.github.FacePlusPlus:MegviiLicMgr-Android-SDK:0.3.0'

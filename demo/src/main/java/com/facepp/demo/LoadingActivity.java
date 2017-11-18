@@ -81,7 +81,7 @@ public class LoadingActivity extends Activity {
     private void network() {
         int type = Facepp.getSDKAuthType(ConUtil.getFileContent(this, R.raw.megviifacepp_0_5_2_model));
 		if ( type == 2) {// 非联网授权
-			authState(true,0);
+			authState(true,0,"");
 			return;
 		}
 
@@ -98,22 +98,22 @@ public class LoadingActivity extends Activity {
 		licenseManager.setAuthTimeBufferMillis(0);
 
 		licenseManager.takeLicenseFromNetwork(uuid, Util.API_KEY, Util.API_SECRET, apiName,
-				LicenseManager.DURATION_30DAYS, "Landmark", "1", true, new LicenseManager.TakeLicenseCallback() {
+				LicenseManager.DURATION_30DAYS, "Landmark", "30", true, new LicenseManager.TakeLicenseCallback() {
 					@Override
 					public void onSuccess() {
-						authState(true,0);
+						authState(true,0,"");
 					}
 
 					@Override
 					public void onFailed(int i, byte[] bytes) {
                         if (TextUtils.isEmpty(Util.API_KEY)||TextUtils.isEmpty(Util.API_SECRET)) {
                             if (!ConUtil.isReadKey(LoadingActivity.this)) {
-                                authState(false,1001);
+                                authState(false,1001,"");
                             }else{
-                                authState(false,1001);
+                                authState(false,1001,"");
                             }
                         }else{
-                            authState(false,i);
+                            authState(false,i,new String(bytes));
                         }
 					}
 				});
@@ -142,7 +142,7 @@ public class LoadingActivity extends Activity {
     }
 
 
-    private void authState(boolean isSuccess,int code) {
+    private void authState(boolean isSuccess,int code,String msg) {
         if (isSuccess) {
 
             Intent intent = new Intent();
@@ -154,14 +154,12 @@ public class LoadingActivity extends Activity {
         } else {
             WarrantyBar.setVisibility(View.GONE);
             againWarrantyBtn.setVisibility(View.VISIBLE);
-            if (code==403){
-                WarrantyText.setText(Html.fromHtml("<u>"+getResources().getString(R.string.auth_bundle)+"</u>"));
-                WarrantyText.setOnClickListener(onlineClick);
-            }else if (code==1001){
+            if (code==1001){
                 WarrantyText.setText(Html.fromHtml("<u>"+getResources().getString(R.string.key_secret)+"</u>"));
                 WarrantyText.setOnClickListener(onlineClick);
             }else {
-                WarrantyText.setText(Html.fromHtml("<u>"+getResources().getString(R.string.auth_fail)+"</u>"));
+                WarrantyText.setText(Html.fromHtml("<u>"+"code="+code+"，msg="+msg+"</u>"));
+                WarrantyText.setOnClickListener(onlineClick);
             }
         }
     }
@@ -171,7 +169,7 @@ public class LoadingActivity extends Activity {
         public void onClick(View v) {
             Intent intent= new Intent();
             intent.setAction("android.intent.action.VIEW");
-            Uri content_url = Uri.parse("https://console.faceplusplus.com.cn/service/face/intro");
+            Uri content_url = Uri.parse("https://console.faceplusplus.com.cn/documents/8458445");
             intent.setData(content_url);
             startActivity(intent);
         }

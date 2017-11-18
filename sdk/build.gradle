@@ -3,8 +3,8 @@ apply plugin: 'com.github.dcendents.android-maven'
 
 group = 'com.github.FacePlusPlus'
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    compileSdkVersion CompileSdkVersion
+    buildToolsVersion BuildToolsVersion
     defaultConfig {
         minSdkVersion 14
         targetSdkVersion 25
@@ -38,13 +38,19 @@ android {
         }
     }
 
-    libraryVariants.all { variant ->
-        variant.outputs.each { output ->
-            def outputFile = output.outputFile
-            if (outputFile != null && outputFile.name.endsWith('.aar')) {
-                def fileName = "${archivesBaseName}-${version}.aar"
-                output.outputFile = new File(outputFile.parent, fileName)
-            }
+//    libraryVariants.all { variant ->
+//        variant.outputs.each { output ->
+//            def outputFile = output.outputFile
+//            if (outputFile != null && outputFile.name.endsWith('.aar')) {
+//                def fileName = "${archivesBaseName}-${version}.aar"
+//                output.outputFile = new File(outputFile.parent, fileName)
+//            }
+//        }
+//    }
+
+    android.libraryVariants.all { variant ->
+        variant.outputs.all {
+            outputFileName = "${archivesBaseName}-${version}.aar"
         }
     }
 
@@ -73,6 +79,7 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:25.1.0'
+    compile "com.android.support:appcompat-v7:${SupportLibraryVersion}"
+
 
 }

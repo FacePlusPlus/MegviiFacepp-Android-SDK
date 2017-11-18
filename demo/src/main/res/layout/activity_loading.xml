@@ -25,6 +25,8 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="60dip"
             android:layout_marginTop="10dip"
+            android:paddingLeft="15dp"
+            android:paddingRight="15dp"
             android:text="正在联网授权中..."
             android:textColor="#4FA1B7"
             android:textSize="18sp" />

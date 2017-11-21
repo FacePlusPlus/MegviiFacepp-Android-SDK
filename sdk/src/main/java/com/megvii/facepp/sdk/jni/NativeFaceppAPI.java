@@ -11,11 +11,11 @@ public class NativeFaceppAPI {
 
     public static native long nativeInit(Context context, byte[] model, int maxFaceNumber);
 
-    public static native int[] nativeGetFaceppConfig(long handle);
+    public static native float[] nativeGetFaceppConfig(long handle);
 
-    public static native int nativeSetFaceppConfig(long handle, int minFaceSize, int rotation, int interval,
-                                                   int detectionMode, int roi_left, int roi_top, int roi_right, int
-                                                           roi_bottom, int one_face_tracking);
+    public static native int nativeSetFaceppConfig(long handle, float minFaceSize, float rotation, float interval,
+                                                   float detectionMode, float roi_left, float roi_top, float roi_right, float
+                                                           roi_bottom, float face_confidence_filter, float one_face_tracking);
 
     public static native int nativeDetect(long handle, byte[] imageData, int width, int height, int imageMode);
 

@@ -90,43 +90,51 @@ jlong Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeInit(JNIEnv *env, job
     return reinterpret_cast<jlong>(h);
 }
 
-jintArray Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeGetFaceppConfig(
+//除了confidence其实都是float
+jfloatArray Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeGetFaceppConfig(
         JNIEnv *env, jobject, jlong handle) {
     ApiHandle *h = reinterpret_cast<ApiHandle *>(handle);
 
-    jintArray retArray = env->NewIntArray(9);
+    jfloatArray retArray = env->NewFloatArray(10);
 
     MG_FPP_APICONFIG config;
     mg_facepp.GetDetectConfig(h->api, &config);
 
-    int min_face_size = config.min_face_size;
-    int rotation = config.rotation;
-    int interval = config.interval;
-    int detection_mode = config.detection_mode;
+    float min_face_size = config.min_face_size;
+    float rotation = config.rotation;
+    float interval = config.interval;
+    float detection_mode = config.detection_mode;
 
-    env->SetIntArrayRegion(retArray, 0, 1, &min_face_size);
-    env->SetIntArrayRegion(retArray, 1, 1, &rotation);
-    env->SetIntArrayRegion(retArray, 2, 1, &interval);
-    env->SetIntArrayRegion(retArray, 3, 1, &detection_mode);
+    env->SetFloatArrayRegion(retArray, 0, 1, &min_face_size);
+    env->SetFloatArrayRegion(retArray, 1, 1, &rotation);
+    env->SetFloatArrayRegion(retArray, 2, 1, &interval);
+    env->SetFloatArrayRegion(retArray, 3, 1, &detection_mode);
 
-    env->SetIntArrayRegion(retArray, 4, 1, &(config.roi.left));
-    env->SetIntArrayRegion(retArray, 5, 1, &(config.roi.top));
-    env->SetIntArrayRegion(retArray, 6, 1, &(config.roi.right));
-    env->SetIntArrayRegion(retArray, 7, 1, &(config.roi.bottom));
-    env->SetIntArrayRegion(retArray, 8, 1, &(config.one_face_tracking));
+    float roi_left=config.roi.left;
+    float roi_top=config.roi.top;
+    float roi_right=config.roi.right;
+    float roi_bottom=config.roi.bottom;
+    float oneface_traking=config.one_face_tracking;
+    env->SetFloatArrayRegion(retArray, 4, 1, &(roi_left));
+    env->SetFloatArrayRegion(retArray, 5, 1, &(roi_top));
+    env->SetFloatArrayRegion(retArray, 6, 1, &(roi_right));
+    env->SetFloatArrayRegion(retArray, 7, 1, &(roi_bottom));
+    env->SetFloatArrayRegion(retArray, 8, 1, &(config.face_confidence_filter));
+    env->SetFloatArrayRegion(retArray, 9, 1, &(oneface_traking));
 
     return retArray;
 }
 
 jint Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeSetFaceppConfig(JNIEnv *,
                                                                           jobject, jlong handle,
-                                                                          jint minFaceSize,
-                                                                          jint rotation,
-                                                                          jint interval,
-                                                                          jint detection_mode,
-                                                                          jint left, jint top,
-                                                                          jint right, jint bottom,
-                                                                          jint one_face_tracking) {
+                                                                          jfloat minFaceSize,
+                                                                          jfloat rotation,
+                                                                          jfloat interval,
+                                                                          jfloat detection_mode,
+                                                                          jfloat left, jfloat top,
+                                                                          jfloat right, jfloat bottom,
+                                                                          jfloat face_confidence_filter,
+                                                                          jfloat one_face_tracking) {
     ApiHandle *h = reinterpret_cast<ApiHandle *>(handle);
     h->orientation = rotation;
     MG_FPP_APICONFIG config;
@@ -134,13 +142,15 @@ jint Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeSetFaceppConfig(JNIEnv
     config.min_face_size = minFaceSize;
     config.rotation = rotation;
     config.interval = interval;
-    config.detection_mode = (MG_FPP_DETECTIONMODE) detection_mode;
+    int temp_detect_mode=detection_mode;
+    config.detection_mode = (MG_FPP_DETECTIONMODE) temp_detect_mode;
     MG_RECTANGLE _roi;
     _roi.left = left;
     _roi.top = top;
     _roi.right = right;
     _roi.bottom = bottom;
     config.roi = _roi;
+    config.face_confidence_filter=face_confidence_filter;
     config.one_face_tracking = one_face_tracking;
     int retcode = mg_facepp.SetDetectConfig(h->api, &config);
     return retcode;

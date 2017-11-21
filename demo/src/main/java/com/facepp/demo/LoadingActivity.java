@@ -113,7 +113,11 @@ public class LoadingActivity extends Activity {
                                 authState(false,1001,"");
                             }
                         }else{
-                            authState(false,i,new String(bytes));
+                            String msg="";
+                            if (bytes!=null&&bytes.length>0){
+                                msg=  new String(bytes);
+                            }
+                            authState(false,i,msg);
                         }
 					}
 				});
@@ -121,7 +125,7 @@ public class LoadingActivity extends Activity {
 
     private void freshView(){
         Intent intent = new Intent(this, LoadingActivity.class);
-//        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
         finish();
     }
@@ -147,7 +151,7 @@ public class LoadingActivity extends Activity {
 
             Intent intent = new Intent();
             intent.setClass(this, FaceppActionActivity.class);
-//            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);//If set, and the activity being launched is already running in the current task, then instead of launching a new instance of that activity,all of the other activities on top of it will be closed and this Intent will be delivered to the (now on top) old activity as a new Intent.
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);//If set, and the activity being launched is already running in the current task, then instead of launching a new instance of that activity,all of the other activities on top of it will be closed and this Intent will be delivered to the (now on top) old activity as a new Intent.
             startActivity(intent);
 
             finish();

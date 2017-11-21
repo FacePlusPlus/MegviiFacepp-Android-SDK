@@ -75,16 +75,17 @@ public class Facepp {
         if (FaceppHandle==0){
             return faceppConfig;
         }
-        int[] configs = NativeFaceppAPI.nativeGetFaceppConfig(FaceppHandle);
-        faceppConfig.minFaceSize = configs[0];
-        faceppConfig.rotation = configs[1];
-        faceppConfig.interval = configs[2];
-        faceppConfig.detectionMode = configs[3];
-        faceppConfig.roi_left = configs[4];
-        faceppConfig.roi_top = configs[5];
-        faceppConfig.roi_right = configs[6];
-        faceppConfig.roi_bottom = configs[7];
-        faceppConfig.one_face_tracking = configs[8];
+        float[] configs = NativeFaceppAPI.nativeGetFaceppConfig(FaceppHandle);
+        faceppConfig.minFaceSize = (int) configs[0];
+        faceppConfig.rotation = (int) configs[1];
+        faceppConfig.interval = (int) configs[2];
+        faceppConfig.detectionMode = (int) configs[3];
+        faceppConfig.roi_left = (int) configs[4];
+        faceppConfig.roi_top = (int) configs[5];
+        faceppConfig.roi_right = (int) configs[6];
+        faceppConfig.roi_bottom = (int) configs[7];
+        faceppConfig.face_confidence_filter=configs[8];
+        faceppConfig.one_face_tracking = (int) configs[9];
         return faceppConfig;
     }
 
@@ -100,7 +101,7 @@ public class Facepp {
         }
         NativeFaceppAPI.nativeSetFaceppConfig(FaceppHandle, faceppConfig.minFaceSize, faceppConfig.rotation,
                 faceppConfig.interval, faceppConfig.detectionMode, faceppConfig.roi_left, faceppConfig.roi_top,
-                faceppConfig.roi_right, faceppConfig.roi_bottom, faceppConfig.one_face_tracking);
+                faceppConfig.roi_right, faceppConfig.roi_bottom, faceppConfig.face_confidence_filter,faceppConfig.one_face_tracking);
     }
 
     /**
@@ -662,6 +663,8 @@ public class Facepp {
         public int roi_top;                ///< roi的top坐标
         public int roi_right;              ///< roi的right坐标
         public int roi_bottom;             ///< roi的bottom坐标
+
+        public float face_confidence_filter;
 
         public int one_face_tracking;  ///< 是否只识别一张脸 0表示识别多张脸，1表示只识别1张脸
     }

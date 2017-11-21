@@ -13,12 +13,12 @@ extern "C" {
 JNIEXPORT jlong JNICALL Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeInit(
         JNIEnv *, jobject, jobject, jbyteArray, jint);
 
-JNIEXPORT jintArray JNICALL Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeGetFaceppConfig(
+JNIEXPORT jfloatArray JNICALL Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeGetFaceppConfig(
         JNIEnv *env, jobject, jlong);
 
 JNIEXPORT jint JNICALL Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeSetFaceppConfig(
-        JNIEnv *, jobject, jlong, jint, jint, jint, jint, jint, jint, jint,
-        jint, jint);
+        JNIEnv *, jobject, jlong, jfloat , jfloat, jfloat, jfloat, jfloat, jfloat, jfloat,
+        jfloat, jfloat,jfloat);
 
 JNIEXPORT jint JNICALL Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeDetect(
         JNIEnv *, jobject, jlong, jbyteArray, jint, jint, jint);

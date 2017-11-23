@@ -52,4 +52,48 @@ public class CalculateUtil {
         Log.d("xie", "xie after" + "rotation" + rotation + "xie top" + rect.top + "left" + rect.left + "bottom" + rect.bottom + "right" + rect.right);
         return rect;
     }
+
+    /**
+     *   face的检测rect 转为实际的android 坐标系。
+     */
+    public static Rect calRealSceenRects(Rect rectFace, int caWidth, int caHeight, int glWidth,int glHeight,int rotation ,Boolean isBackCamera) {
+
+        Rect rect = new Rect(rectFace);
+        rect.right=caHeight-rectFace.top;
+        if (isBackCamera){
+            rect.top=rectFace.right;
+        }else{
+            rect.top=caWidth-rectFace.right;
+        }
+
+        rect.left=caHeight-rectFace.bottom;
+        if (isBackCamera){
+            rect.bottom=rectFace.left;
+        }else{
+            rect.bottom=caWidth-rectFace.left;
+        }
+
+        if (isBackCamera){
+            int temp=rect.bottom;
+            rect.bottom=rect.top;
+            rect.top=temp;
+        }
+
+
+
+
+        Log.d("xie", "xie after org" + "rotation" + rotation + "xie top" + rect.top + "left" + rect.left + "bottom" + rect.bottom + "right" + rect.right);
+        //计算实际宽高的高度差  就转化完成android的标准坐标系。
+        float ratioW=glWidth*1.0f/caHeight;
+        float ratioH=glHeight*1.0f/caWidth;
+
+
+        rect.left= (int) (rect.left*ratioW);
+        rect.right=(int) (rect.right*ratioW);
+        rect.top= (int) (rect.top*ratioH);
+        rect.bottom= (int) (rect.bottom*ratioH);
+        Log.d("xie", "xie after last" + "rotation" + rotation + "xie top" + rect.top + "left" + rect.left + "bottom" + rect.bottom + "right" + rect.right);
+        return rect;
+    }
+
 }

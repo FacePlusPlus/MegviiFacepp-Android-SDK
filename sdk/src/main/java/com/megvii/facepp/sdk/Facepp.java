@@ -131,17 +131,30 @@ public class Facepp {
     }
 
     /**
-     * @brief 获取人脸的Landmark
+     * @brief 获取人脸的Landmark会旋转为竖直方向
      * <p>
      * 获取指定人脸的Landmark信息，并改变传入的人脸信息
      * @param[in, out] face 人脸信息
      * @param[in] pointNum 需要的人脸关键点点数
      */
+    @Deprecated
     public void getLandmark(Face face, int pointNum) {
         if (FaceppHandle==0){
             return;
         }
         float[] points = NativeFaceppAPI.nativeLandMark(FaceppHandle, face.index, pointNum);
+        loadFacePointsInfo(face, points, pointNum, 0);
+    }
+
+    /**
+     * @brief 获取人脸的Landmark原始数据
+     * <p>
+     * 获取指定人脸的Landmark信息，并改变传入的人脸信息
+     * @param[in, out] face 人脸信息
+     * @param[in] pointNum 需要的人脸关键点点数
+     */
+    public void getLandmarkOrigin(Face face, int pointNum) {
+        float[] points = NativeFaceppAPI.nativeLandMarkOrigin(FaceppHandle, face.index, pointNum);
         loadFacePointsInfo(face, points, pointNum, 0);
     }
 

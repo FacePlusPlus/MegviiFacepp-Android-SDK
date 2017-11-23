@@ -3,6 +3,7 @@ package com.facepp.library;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.RectF;
@@ -33,6 +34,7 @@ import com.facepp.library.bean.FaceActionInfo;
 import com.facepp.library.bean.FeatureInfo;
 import com.facepp.library.facecompare.FaceCompareManager;
 import com.facepp.library.mediacodec.MediaHelper;
+import com.facepp.library.util.CalculateUtil;
 import com.facepp.library.util.CameraMatrix;
 import com.facepp.library.util.ConUtil;
 import com.facepp.library.util.DialogUtil;
@@ -257,6 +259,7 @@ public class OpenglActivity extends Activity
             }
 
             String errorCode = facepp.init(this, ConUtil.getFileContent(this, R.raw.megviifacepp_0_5_2_model), isOneFaceTrackig ? 1 : 0);
+
             //sdk内部其他api已经处理好，可以不判断
             if (errorCode!=null){
                 Intent intent=new Intent();
@@ -265,6 +268,7 @@ public class OpenglActivity extends Activity
                 finish();
                 return;
             }
+
             Facepp.FaceppConfig faceppConfig = facepp.getFaceppConfig();
             faceppConfig.interval = detection_interval;
             faceppConfig.minFaceSize = min_face_size;
@@ -362,9 +366,9 @@ public class OpenglActivity extends Activity
                 for (int c = 0; c < faces.length; c++) {
 
                     if (is106Points)
-                        facepp.getLandmark(faces[c], Facepp.FPP_GET_LANDMARK106);
+                        facepp.getLandmarkOrigin(faces[c], Facepp.FPP_GET_LANDMARK106);
                     else
-                        facepp.getLandmark(faces[c], Facepp.FPP_GET_LANDMARK81);
+                        facepp.getLandmarkOrigin(faces[c], Facepp.FPP_GET_LANDMARK81);
 
                     if (is3DPose) {
                         facepp.get3DPose(faces[c]);
@@ -376,52 +380,20 @@ public class OpenglActivity extends Activity
                     roll = faces[c].roll;
                     confidence = faces[c].confidence;
 
-                    if (orientation == 1 || orientation == 2) {
-                        width = mICamera.cameraHeight;
-                        height = mICamera.cameraWidth;
-                    }
 
-                    final PointF point19 = face.points[19];
-                    final PointF point26 = face.points[26];
-                    final PointF point37 = face.points[37];
-                    final PointF point38 = face.points[38];
-
+                    //0.4.7之前（包括）jni把所有角度的点算到竖直的坐标，所以外面画点需要再调整回来，才能与其他角度适配
+                    //目前getLandmarkOrigin会获得原始的坐标，所以只需要横屏适配好其他的角度就不用适配了，因为texture和preview的角度关系是固定的
                     ArrayList<FloatBuffer> triangleVBList = new ArrayList<FloatBuffer>();
                     for (int i = 0; i < faces[c].points.length; i++) {
-                        float x = (faces[c].points[i].x / height) * 2 - 1;
+                        float x = (faces[c].points[i].x / width) * 2 - 1;
                         if (isBackCamera)
                             x = -x;
-                        float y = 1 - (faces[c].points[i].y / width) * 2;
-                        float[] pointf = new float[]{x, y, 0.0f};
-                        if (orientation == 1)
-                            pointf = new float[]{-y, x, 0.0f};
-                        if (orientation == 2)
-                            pointf = new float[]{y, -x, 0.0f};
-                        if (orientation == 3)
-                            pointf = new float[]{-x, -y, 0.0f};
-
+                        float y = (faces[c].points[i].y / height) * 2-1;
+                        float[] pointf = new float[]{y, x, 0.0f};
                         FloatBuffer fb = mCameraMatrix.floatBufferUtil(pointf);
                         triangleVBList.add(fb);
-
-                        if (is106Points) {
-                            if (i == 37) {
-                                point37.x = pointf[0];
-                                point37.y = pointf[1];
-                            } else if (i == 38) {
-                                point38.x = pointf[0];
-                                point38.y = pointf[1];
-                            }
-                        } else {
-                            if (i == 19) {
-                                point19.x = pointf[0];
-                                point19.y = pointf[1];
-                            } else if (i == 26) {
-                                point26.x = pointf[0];
-                                point26.y = pointf[1];
-                            }
-                        }
-
                     }
+
 
                     pointsOpengl.add(triangleVBList);
 
@@ -542,25 +514,43 @@ public class OpenglActivity extends Activity
                                                 featureTargetText.setText(featureInfo.title);
                                                 RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) featureTargetText.getLayoutParams();
 
-                                                int imageW = mGlSurfaceView.getWidth();
-                                                int imageH = mGlSurfaceView.getHeight();
-                                                float left1, left2, top;
-                                                if (is106Points) {
-                                                    left1 = ((imageW / 2) * (1 - face.points[37].x) / imageW) * screenWidth;
-                                                    left2 = ((imageW / 2) * (1 - face.points[38].x) / imageW) * screenWidth;
-                                                    top = ((imageH / 2) * (1 - face.points[37].y) / imageH) * screenHeight - ((screenHeight - imageH) / 2) - 100;
-                                                } else {
-                                                    left1 = ((imageW / 2) * (1 - face.points[19].x) / imageW) * screenWidth;
-                                                    left2 = ((imageW / 2) * (1 - face.points[26].x) / imageW) * screenWidth;
-                                                    top = ((imageH / 2) * (1 - face.points[19].y) / imageH) * screenHeight - ((screenHeight - imageH) / 2) - 100;
-                                                }
-
                                                 int txtWidth = featureTargetText.getWidth();
                                                 int txtHeight = featureTargetText.getHeight();
 
-                                                params.leftMargin = (int) ((left1 + left2) / 2) - txtWidth / 2;
-                                                params.topMargin = (int) (top) - txtHeight / 2;
+
+//                                                Rect screenRect = CalculateUtil.calRealSceenRects(face.rect, mICamera.cameraWidth, mICamera.cameraHeight, mGlSurfaceView.getWidth(), mGlSurfaceView.getHeight(), rotation, isBackCamera);
+//                                                params.leftMargin = screenRect.left + (Math.abs(screenRect.bottom-screenRect.top) - txtWidth) / 2;
+//                                                params.topMargin = screenRect.top - txtHeight;
+
+                                                Log.i("xie", "xie point x"+face.points[34].x+"y"+face.points[34].y);
+                                                PointF noseP = null;
+                                                PointF eyebrowP = null;
+                                                if (is106Points){
+                                                    noseP=face.points[46];
+                                                    eyebrowP=face.points[37];
+                                                }else{
+                                                    noseP=face.points[34];
+                                                    eyebrowP=face.points[19];
+                                                }
+                                                boolean isVertical;
+                                                if (orientation==0||orientation==3){
+                                                    isVertical=true;
+                                                }else{
+                                                    isVertical=false;
+                                                }
+                                                //在横竖下计算的方式不一样
+                                                int tops= (int) (((mICamera.cameraWidth-(isVertical?eyebrowP.x:noseP.x)))*(mGlSurfaceView.getHeight()*1.0f/mICamera.cameraWidth));
+                                                int lefts= (int) ((mICamera.cameraHeight-(isVertical?noseP.y:eyebrowP.y))*(mGlSurfaceView.getWidth()*1.0f/mICamera.cameraHeight));
+                                                if (isBackCamera){
+                                                    tops=mGlSurfaceView.getHeight()-tops;
+                                                }
+                                                tops=tops-txtHeight/2;
+                                                lefts=lefts-txtWidth/2;
+//
+                                                params.leftMargin = lefts;
+                                                params.topMargin = tops;
                                                 featureTargetText.setLayoutParams(params);
+                                                Log.e("xie","xie feature");
                                             } else {
 
                                                 featureTargetText.setVisibility(View.INVISIBLE);

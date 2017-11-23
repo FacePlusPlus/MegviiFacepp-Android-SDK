@@ -131,7 +131,7 @@ public class Facepp {
     }
 
     /**
-     * @brief 获取人脸的Landmark会旋转为竖直方向
+     * @brief 获取人脸的Landmark会旋转为竖直方向,jni会旋转,需要原始数据使用getLandmarkRaw
      * <p>
      * 获取指定人脸的Landmark信息，并改变传入的人脸信息
      * @param[in, out] face 人脸信息
@@ -153,8 +153,8 @@ public class Facepp {
      * @param[in, out] face 人脸信息
      * @param[in] pointNum 需要的人脸关键点点数
      */
-    public void getLandmarkOrigin(Face face, int pointNum) {
-        float[] points = NativeFaceppAPI.nativeLandMarkOrigin(FaceppHandle, face.index, pointNum);
+    public void getLandmarkRaw(Face face, int pointNum) {
+        float[] points = NativeFaceppAPI.nativeLandMarkRaw(FaceppHandle, face.index, pointNum);
         loadFacePointsInfo(face, points, pointNum, 0);
     }
 

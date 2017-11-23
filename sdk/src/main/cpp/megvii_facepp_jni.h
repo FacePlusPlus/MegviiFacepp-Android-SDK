@@ -30,7 +30,7 @@ JNIEXPORT jfloatArray JNICALL Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nat
         JNIEnv *, jobject, jlong, jint, jint);
 
 JNIEXPORT jfloatArray JNICALL
-Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeLandMarkOrigin(JNIEnv *, jobject,
+Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeLandMarkRaw(JNIEnv *, jobject,
                                                                     jlong, jint,
                                                                     jint) ;
 

@@ -366,9 +366,9 @@ public class OpenglActivity extends Activity
                 for (int c = 0; c < faces.length; c++) {
 
                     if (is106Points)
-                        facepp.getLandmarkOrigin(faces[c], Facepp.FPP_GET_LANDMARK106);
+                        facepp.getLandmarkRaw(faces[c], Facepp.FPP_GET_LANDMARK106);
                     else
-                        facepp.getLandmarkOrigin(faces[c], Facepp.FPP_GET_LANDMARK81);
+                        facepp.getLandmarkRaw(faces[c], Facepp.FPP_GET_LANDMARK81);
 
                     if (is3DPose) {
                         facepp.get3DPose(faces[c]);
@@ -431,16 +431,6 @@ public class OpenglActivity extends Activity
         mHandler.post(new Runnable() {
             @Override
             public void run() {
-                //khaoa
-//                if (preRotation != rotation) {
-//                    long time=System.currentTimeMillis();
-//                    facepp.resetTrack();
-//
-//                    Log.i("resettrack","resettrack"+(System.currentTimeMillis()-time));
-//                }
-//                preRotation = rotation;
-
-
                 if (faces != null) {
 
                     confidence = 0.0f;
@@ -480,13 +470,11 @@ public class OpenglActivity extends Activity
                                 if (face.female > face.male)
                                     gender = "woman";
                                 AttriButeStr = "\nage: " + (int) Math.max(face.age, 1) + "\ngender: " + gender;
-
                             }
 
 
                             // 添加人脸比对
                             if (isFaceCompare) {
-
                                 if (c == 0) {
                                     featureTime = System.currentTimeMillis();
                                 }
@@ -501,7 +489,6 @@ public class OpenglActivity extends Activity
                                         compareFaces = faces;
                                     }
 
-//
                                     final FeatureInfo featureInfo = FaceCompareManager.instance().compare(facepp, face.feature);
 
                                     final int index = c;
@@ -518,11 +505,6 @@ public class OpenglActivity extends Activity
                                                 int txtHeight = featureTargetText.getHeight();
 
 
-//                                                Rect screenRect = CalculateUtil.calRealSceenRects(face.rect, mICamera.cameraWidth, mICamera.cameraHeight, mGlSurfaceView.getWidth(), mGlSurfaceView.getHeight(), rotation, isBackCamera);
-//                                                params.leftMargin = screenRect.left + (Math.abs(screenRect.bottom-screenRect.top) - txtWidth) / 2;
-//                                                params.topMargin = screenRect.top - txtHeight;
-
-                                                Log.i("xie", "xie point x"+face.points[34].x+"y"+face.points[34].y);
                                                 PointF noseP = null;
                                                 PointF eyebrowP = null;
                                                 if (is106Points){
@@ -538,7 +520,6 @@ public class OpenglActivity extends Activity
                                                 }else{
                                                     isVertical=false;
                                                 }
-                                                //在横竖下计算的方式不一样
                                                 int tops= (int) (((mICamera.cameraWidth-(isVertical?eyebrowP.x:noseP.x)))*(mGlSurfaceView.getHeight()*1.0f/mICamera.cameraWidth));
                                                 int lefts= (int) ((mICamera.cameraHeight-(isVertical?noseP.y:eyebrowP.y))*(mGlSurfaceView.getWidth()*1.0f/mICamera.cameraHeight));
                                                 if (isBackCamera){
@@ -546,11 +527,10 @@ public class OpenglActivity extends Activity
                                                 }
                                                 tops=tops-txtHeight/2;
                                                 lefts=lefts-txtWidth/2;
-//
                                                 params.leftMargin = lefts;
                                                 params.topMargin = tops;
                                                 featureTargetText.setLayoutParams(params);
-                                                Log.e("xie","xie feature");
+
                                             } else {
 
                                                 featureTargetText.setVisibility(View.INVISIBLE);

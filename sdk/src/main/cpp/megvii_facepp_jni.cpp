@@ -256,7 +256,7 @@ jfloatArray Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeLandMark(JNIEnv
 }
 
 
-jfloatArray Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeLandMarkOrigin(JNIEnv *env,
+jfloatArray Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeLandMarkRaw(JNIEnv *env,
                                                                           jobject, jlong handle,
                                                                           jint index,
                                                                           jint point_nr) {

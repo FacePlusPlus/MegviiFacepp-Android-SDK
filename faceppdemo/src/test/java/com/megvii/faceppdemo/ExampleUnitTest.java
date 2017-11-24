@@ -1,4 +1,4 @@
-package com.megvii.faceppdemoui;
+package com.megvii.faceppdemo;
 
 import org.junit.Test;
 

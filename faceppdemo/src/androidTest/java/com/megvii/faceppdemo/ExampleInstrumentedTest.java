@@ -1,4 +1,4 @@
-package com.megvii.faceppdemoui;
+package com.megvii.faceppdemo;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("com.megvii.faceppdemoui.test", appContext.getPackageName());
+        assertEquals("com.megvii.faceppdemo", appContext.getPackageName());
     }
 }

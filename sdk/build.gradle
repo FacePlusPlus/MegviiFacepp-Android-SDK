@@ -38,34 +38,33 @@ android {
         }
     }
 
-    libraryVariants.all { variant ->
-        variant.outputs.each { output ->
-            def outputFile = output.outputFile
-            if (outputFile != null && outputFile.name.endsWith('.aar')) {
-                def fileName = "${archivesBaseName}-${version}.aar"
-                output.outputFile = new File(outputFile.parent, fileName)
-            }
-        }
-    }
-
-//    android.libraryVariants.all { variant ->
-//        variant.outputs.all {
-//            outputFileName = "${archivesBaseName}-${version}.aar"
-//        }
-//    }
 
 }
 
+build.mustRunAfter clean
 
 task buildAAR(dependsOn: build) {
     doLast {
         delete '../release'
 
         copy {
-            from "build/outputs/aar/${archivesBaseName}-${version}.aar"
+            from "build/outputs/aar/MGFaceppSDK-release.aar"
             //include "*"
             into "../release"
+            rename{
+                String fileName->
+                    "${archivesBaseName}-${version}.aar"
+            }
         }
+
+        delete "../faceppdemo/libs/${archivesBaseName}-${version}.aar"
+
+        copy {
+            from "../release/${archivesBaseName}-${version}.aar"
+            //include "*"
+            into "../faceppdemo/libs"
+        }
+
 
         println "build arr successful"
     }

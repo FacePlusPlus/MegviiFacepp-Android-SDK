@@ -1,5 +1,19 @@
 apply plugin: 'com.android.application'
 
+def gitCommitShortHash = 'git log -1 --pretty=%h'.execute([], project.rootDir).text.trim()
+def gitCommitDate = 'git log -1 --pretty=%ci'.execute([], project.rootDir).text.trim().split()[0]
+def gitShortShaDate = gitCommitShortHash + "_" + gitCommitDate
+
+// Auto-incrementing commit count based on counting commits to HEAD (Build #543)
+def gitCommitCount = Integer.parseInt('git rev-list HEAD --count'.execute([], project.rootDir).text.trim())
+
+// I want to use git tags as my version names (1.2.2)
+def gitCurrentTag = 'git describe --tags --abbrev=0'.execute([], project.rootDir).text.trim()
+
+def releaseTime() {
+    return new Date().format("yyyy-MM-dd", TimeZone.getTimeZone("UTC"))
+}
+
 android {
     compileSdkVersion CompileSdkVersion
     buildToolsVersion BuildToolsVersion
@@ -12,6 +26,7 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
 
     }
     buildTypes {
@@ -40,6 +55,31 @@ android {
     }
 
 //    sourceSets { main { res.srcDirs = ['src/main/res', 'src/main/res/raw'] } }
+}
+
+task buildAPK(dependsOn: build) {
+    doLast {
+        copy {
+            from "build/outputs/apk/faceppdemo-debug.apk"
+            //include "*"
+            into "../release"
+            rename{
+                String fileName->
+                    "MGfaceppdemo_${gitCommitShortHash}_${releaseTime()}.apk"
+            }
+        }
+        copy {
+            from "build/outputs/apk/debug/faceppdemo-debug.apk"
+            //include "*"
+            into "../release"
+            rename{
+                String fileName->
+                    "MGfaceppdemo_${gitCommitShortHash}_${releaseTime()}.apk"
+            }
+        }
+        println "build apk successful"
+    }
+
 }
 
 dependencies {

@@ -277,7 +277,7 @@ public class OpenglActivity extends Activity
             else if (trackModel.equals(array[1]))
                 faceppConfig.detectionMode = Facepp.FaceppConfig.DETECTION_MODE_TRACKING_ROBUST;
             else if (trackModel.equals(array[2])) {
-                faceppConfig.detectionMode = Facepp.FaceppConfig.DETECTION_MODE_TRACKING_RECT;
+                faceppConfig.detectionMode = Facepp.FaceppConfig.MG_FPP_DETECTIONMODE_TRACK_RECT;
                 isShowFaceRect = true;
             }
 

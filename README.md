@@ -20,13 +20,13 @@ FaceppSDK包含demo、sdk、docs三部分，[demo和sdk可以查看github](https
 
 * demo部分：里面包含一个示例工程，实现了人脸检测的功能，有完整的源代码。
 * sdk部分：里面包含了一套jni的封装，可以实现aar和c的两种集成方式。
-* 库文件：人脸检测的实现库，路径以及目录如下sdk/src/main/jniLibs
-├── armeabi-v7a
-│   ├── libmegface-new .so
-│   ├── libMegviiFacepp-0.5.2 .so
-├── arm64-v8a
-│   ├── libmegface-new .so
-│   ├── libMegviiFacepp-0.5.2 .so
+* 库文件：人脸检测的实现库，路径以及目录如下sdk/src/main/jniLibs    
+├── armeabi-v7a    
+│   ├── libmegface-new .so   
+│   ├── libMegviiFacepp-0.5.2 .so   
+├── arm64-v8a   
+│   ├── libmegface-new .so   
+│   ├── libMegviiFacepp-0.5.2 .so   
 * 模型文件：人脸检测的训练模型，模型目前分在线授权和离线授权两种，路径/faceppdemo/src/main/res/raw/megviifacepp_0_5_2_model
 > 试⽤版SDK有使用时间和使用次数的限制，如需正式版请通过[Face++官网](https://www.faceplusplus.com.cn)联系商务合作。
 

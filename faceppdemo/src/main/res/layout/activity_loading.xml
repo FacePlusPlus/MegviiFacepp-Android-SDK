@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/loading_layout_rootRel"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#ffffffff">
+
+    <LinearLayout
+        android:id="@+id/loading_layout_barLinear"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="visible">
+
+        <ProgressBar
+            android:id="@+id/loading_layout_WarrantyBar"
+            android:layout_width="30dip"
+            android:layout_height="30dip" />
+
+        <TextView
+            android:id="@+id/loading_layout_WarrantyText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="60dip"
+            android:layout_marginTop="10dip"
+            android:paddingLeft="15dp"
+            android:paddingRight="15dp"
+            android:text="正在联网授权中..."
+            android:textColor="#4FA1B7"
+            android:textSize="18sp" />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/loading_layout_againWarrantyBtn"
+        android:layout_width="match_parent"
+        android:layout_height="50dip"
+        android:layout_below="@+id/loading_layout_barLinear"
+        android:layout_centerHorizontal="true"
+        android:layout_marginLeft="45dip"
+        android:layout_marginRight="45dip"
+        android:layout_marginTop="120dip"
+        android:background="@drawable/bg_button0_select"
+        android:text="重新联网授权"
+        android:textColor="#ffffffff"
+        android:textSize="16sp"
+        android:visibility="gone" />
+
+    <include
+        layout="@layout/power_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="35dip"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:visibility="visible" />
+
+</RelativeLayout>

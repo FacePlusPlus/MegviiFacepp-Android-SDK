@@ -3,6 +3,7 @@ package com.megvii.facepp.sdk;
 import android.content.Context;
 import android.graphics.PointF;
 import android.graphics.Rect;
+import android.util.Log;
 
 import com.megvii.facepp.sdk.jni.NativeFaceppAPI;
 
@@ -37,13 +38,24 @@ public class Facepp {
      * @param[in] context 环境变量
      * @param[in] model 模型数据
      */
-    public String init(Context context, byte[] model) {
+    public String init(Context context, byte[] model){
+        return init(context, model, 0);
+    }
+
+    /**
+     * @return 成功则返回 null, 失败返回错误原因
+     * @brief 初始化人脸检测器
+     * @param[in] context 环境变量
+     * @param[in] model 模型数据
+     * @param[in] maxFaceNumber 跟踪人脸数量
+     */
+    public String init(Context context, byte[] model, int maxFaceNumber) {
         if (context == null || model == null)
             return getErrorType(MG_RETCODE_INVALID_ARGUMENT);
 
         getAbility(model);
 
-        long handle = NativeFaceppAPI.nativeInit(context, model);
+        long handle = NativeFaceppAPI.nativeInit(context, model, maxFaceNumber);
         String errorType = getErrorType((int) handle);
         if (errorType == null) {
             FaceppHandle = handle;
@@ -59,17 +71,21 @@ public class Facepp {
      * @brief 获取人脸配置信息
      */
     public FaceppConfig getFaceppConfig() {
-        int[] configs = NativeFaceppAPI.nativeGetFaceppConfig(FaceppHandle);
         FaceppConfig faceppConfig = new FaceppConfig();
-        faceppConfig.minFaceSize = configs[0];
-        faceppConfig.rotation = configs[1];
-        faceppConfig.interval = configs[2];
-        faceppConfig.detectionMode = configs[3];
-        faceppConfig.roi_left = configs[4];
-        faceppConfig.roi_top = configs[5];
-        faceppConfig.roi_right = configs[6];
-        faceppConfig.roi_bottom = configs[7];
-        faceppConfig.one_face_tracking = configs[8];
+        if (FaceppHandle==0){
+            return faceppConfig;
+        }
+        float[] configs = NativeFaceppAPI.nativeGetFaceppConfig(FaceppHandle);
+        faceppConfig.minFaceSize = (int) configs[0];
+        faceppConfig.rotation = (int) configs[1];
+        faceppConfig.interval = (int) configs[2];
+        faceppConfig.detectionMode = (int) configs[3];
+        faceppConfig.roi_left = (int) configs[4];
+        faceppConfig.roi_top = (int) configs[5];
+        faceppConfig.roi_right = (int) configs[6];
+        faceppConfig.roi_bottom = (int) configs[7];
+        faceppConfig.face_confidence_filter=configs[8];
+        faceppConfig.one_face_tracking = (int) configs[9];
         return faceppConfig;
     }
 
@@ -80,9 +96,12 @@ public class Facepp {
      * @param[in] faceppConfig 人脸检测器配置信息
      */
     public void setFaceppConfig(FaceppConfig faceppConfig) {
+        if (FaceppHandle==0){
+            return;
+        }
         NativeFaceppAPI.nativeSetFaceppConfig(FaceppHandle, faceppConfig.minFaceSize, faceppConfig.rotation,
                 faceppConfig.interval, faceppConfig.detectionMode, faceppConfig.roi_left, faceppConfig.roi_top,
-                faceppConfig.roi_right, faceppConfig.roi_bottom, faceppConfig.one_face_tracking);
+                faceppConfig.roi_right, faceppConfig.roi_bottom, faceppConfig.face_confidence_filter,faceppConfig.one_face_tracking);
     }
 
     /**
@@ -96,6 +115,9 @@ public class Facepp {
      * @param[in] imageMode 图片数据的格式
      */
     public Face[] detect(byte[] imageData, int width, int height, int imageMode) {
+        if (FaceppHandle==0){
+            return new Face[0];
+        }
         int faceSize = NativeFaceppAPI.nativeDetect(FaceppHandle, imageData, width, height, imageMode);
         Face[] faces = new Face[faceSize];
         for (int i = 0; i < faceSize; i++) {
@@ -109,14 +131,30 @@ public class Facepp {
     }
 
     /**
-     * @brief 获取人脸的Landmark
+     * @brief 获取人脸的Landmark会旋转为竖直方向,jni会旋转,需要原始数据使用getLandmarkRaw
      * <p>
      * 获取指定人脸的Landmark信息，并改变传入的人脸信息
      * @param[in, out] face 人脸信息
      * @param[in] pointNum 需要的人脸关键点点数
      */
+    @Deprecated
     public void getLandmark(Face face, int pointNum) {
+        if (FaceppHandle==0){
+            return;
+        }
         float[] points = NativeFaceppAPI.nativeLandMark(FaceppHandle, face.index, pointNum);
+        loadFacePointsInfo(face, points, pointNum, 0);
+    }
+
+    /**
+     * @brief 获取人脸的Landmark原始数据
+     * <p>
+     * 获取指定人脸的Landmark信息，并改变传入的人脸信息
+     * @param[in, out] face 人脸信息
+     * @param[in] pointNum 需要的人脸关键点点数
+     */
+    public void getLandmarkRaw(Face face, int pointNum) {
+        float[] points = NativeFaceppAPI.nativeLandMarkRaw(FaceppHandle, face.index, pointNum);
         loadFacePointsInfo(face, points, pointNum, 0);
     }
 
@@ -127,6 +165,9 @@ public class Facepp {
      * @param[in, out] face 人脸信息
      */
     public void getAttribute(Face face) {
+        if (FaceppHandle==0){
+            return;
+        }
         float[] points = NativeFaceppAPI.nativeAttribute(FaceppHandle, face.index);
         loadFaceAttributeInfo(face, points);
     }
@@ -137,7 +178,7 @@ public class Facepp {
      * @param[in, out] face 人脸信息
      */
     public boolean get3DPose(Face face) {
-        if (abilities == null || !abilities.contains(Ability.POSE))
+        if (FaceppHandle==0||abilities == null || !abilities.contains(Ability.POSE))
             return false;
 
         float[] points = NativeFaceppAPI.nativePose3D(FaceppHandle, face.index);
@@ -152,7 +193,7 @@ public class Facepp {
      * @param[in, out] face 人脸信息
      */
     public boolean getEyeStatus(Face face) {
-        if (abilities == null || !abilities.contains(Ability.EYESTATUS))
+        if (FaceppHandle==0||abilities == null || !abilities.contains(Ability.EYESTATUS))
             return false;
         float[] points = NativeFaceppAPI.nativeEyeStatus(FaceppHandle, face.index);
         loadFaceEyeStatusInfo(face, points);
@@ -165,7 +206,7 @@ public class Facepp {
      * @param[in, out] face 人脸信息
      */
     public boolean getMouthStatus(Face face) {
-        if (abilities == null || !abilities.contains(Ability.MOUTHSTATUS))
+        if (FaceppHandle==0||abilities == null || !abilities.contains(Ability.MOUTHSTATUS))
             return false;
         float[] points = NativeFaceppAPI.nativeMouthStatus(FaceppHandle, face.index);
         loadFaceMouthStatusInfo(face, points);
@@ -178,7 +219,7 @@ public class Facepp {
      * @param[in, out] face 人脸信息
      */
     public boolean getMinorityStatus(Face face) {
-        if (abilities == null || !abilities.contains(Ability.MINORITY))
+        if (FaceppHandle==0||abilities == null || !abilities.contains(Ability.MINORITY))
             return false;
         float[] points = NativeFaceppAPI.nativeMinority(FaceppHandle, face.index);
         loadFaceMinorityInfo(face, points);
@@ -191,7 +232,7 @@ public class Facepp {
      * @param[in, out] face 人脸信息
      */
     public boolean getBlurness(Face face) {
-        if (abilities == null || !abilities.contains(Ability.BLURNESS))
+        if (FaceppHandle==0||abilities == null || !abilities.contains(Ability.BLURNESS))
             return false;
         float[] points = NativeFaceppAPI.nativeBlurness(FaceppHandle, face.index);
         loadFaceBlurnessInfo(face, points);
@@ -204,12 +245,24 @@ public class Facepp {
      * @param[in, out] face 人脸信息
      */
     public boolean getAgeGender(Face face) {
-        if (abilities == null || !abilities.contains(Ability.AGEGENDER))
+        if (FaceppHandle==0||abilities == null || !abilities.contains(Ability.AGEGENDER))
             return false;
         float[] points = NativeFaceppAPI.nativeAgeGender(FaceppHandle, face.index);
         loadFaceAgeGenderInfo(face, points);
         return true;
     }
+
+    public void getRect(Face face){
+        if (FaceppHandle==0)
+            return ;
+        float[] rectArray = NativeFaceppAPI.nativeRect(FaceppHandle, face.index);
+
+        face.rect.left = (int)rectArray[0];
+        face.rect.top = (int)rectArray[1];
+        face.rect.right = (int)rectArray[2];
+        face.rect.bottom = (int)rectArray[3];
+    }
+
 
     /**
      * @return 调用是否成功
@@ -217,9 +270,12 @@ public class Facepp {
      * @param[in, out] face 人脸信息
      */
     public boolean getExtractFeature(Face face) {
-        if (abilities == null || !abilities.contains(Ability.SMALLFEATEXT))
+        if (abilities == null || !abilities.contains(Ability.SMALLFEATEXT)||FaceppHandle==0||face==null)
             return false;
         int featureLength = NativeFaceppAPI.nativeExtractFeature(FaceppHandle, face.index);
+        if (featureLength<=0){
+            return false;
+        }
         face.feature = NativeFaceppAPI.nativeGetFeatureData(FaceppHandle, featureLength);
 
         return true;
@@ -232,7 +288,7 @@ public class Facepp {
      * @param[in] face2 人脸2信息
      */
     public double faceCompare(Face face1, Face face2) {
-        if (face1 == null || face2 == null || face1.feature == null || face2.feature == null)
+        if (FaceppHandle==0||face1 == null || face2 == null || face1.feature == null || face2.feature == null)
             return -1;
         return NativeFaceppAPI.nativeFaceCompare(FaceppHandle, face1.feature, face2.feature, face1.feature.length / 4);
     }
@@ -244,7 +300,7 @@ public class Facepp {
      * @param[in] feature2 人脸2特征
      */
     public double faceCompare(byte[] feature1, byte[] feature2) {
-        if (feature1 == null || feature2 == null)
+        if (FaceppHandle==0||feature1 == null || feature2 == null)
             return -1;
         return NativeFaceppAPI.nativeFaceCompare(FaceppHandle, feature1, feature2, feature1.length / 4);
     }
@@ -361,6 +417,48 @@ public class Facepp {
     public static int getSDKAuthType() {
         return NativeFaceppAPI.nativeGetSDKAuthType();
     }
+
+    /**
+     * @return 调用是否成功
+     * @brief  切换摄像头调用 出现关键点后调用
+     */
+    public  int resetTrack() {
+        if (FaceppHandle==0)
+            return 0;
+        return NativeFaceppAPI.nativeResetTrack(FaceppHandle);
+    }
+
+
+
+    /**
+     * @return jenkins nummber
+     * @brief  获取打包版本
+     */
+    public static String getJenkinsNumber() {
+        return NativeFaceppAPI.nativeGetJenkinsNumber();
+    }
+
+
+
+    /**
+     * @return sdk 授权类型
+     * @brief  新的sdk授权类型
+     */
+    public static int getSDKAuthTypeNew() {
+        return NativeFaceppAPI.nativeGetSDKAuthType();
+    }
+
+
+    /**
+     * @return 调用是否成功
+     * @brief  清理资源，release后调用
+     */
+    public static int shutDown() {
+        return NativeFaceppAPI.nativeShutDown();
+    }
+
+
+
 
     private void loadFaceBaseInfo(Face face, float[] faceBaseInfo) {
         face.trackID = (int) faceBaseInfo[0];
@@ -540,16 +638,21 @@ public class Facepp {
         public byte[] feature;             ///<feature_data 人脸特征数据，务必保证其内存大小不低于 feature_length
     }
 
+
     public static class FaceppConfig {
         public final static int DETECTION_MODE_NORMAL = 0;                 ///< 单张图片人脸检测模式
 
-        public final static int DETECTION_MODE_TRACKING = 1;               ///< 视频人脸跟踪模式
-
-        public final static int DETECTION_MODE_TRACKING_SMOOTH = 2;        ///< 特殊的视频人脸跟踪模式。
+        public final static int DETECTION_MODE_TRACKING = 1;         ///< 视频人脸跟踪模式
 
         public final static int DETECTION_MODE_TRACKING_FAST = 3;          ///< 牺牲了人脸关键点的贴合度，提升了人脸跟踪的速度                                                   ///< 此模式下人脸检测与跟踪会更平均的使用 CPU 计算资源。
 
         public final static int DETECTION_MODE_TRACKING_ROBUST = 4;        ///< 提高了人脸关键点的贴合度，降低了人脸跟踪的速度
+
+        public final static int DETECTION_MODE_TRACKING_RECT = 5;                   ///< 只检测人脸框，并不检测landmark
+
+
+
+
 
         public int minFaceSize;              ///< 最小检测人脸的尺寸（人脸尺寸一般是指人脸脸颊的宽度）。
         ///< 数值越大检测用的耗时越少。
@@ -573,6 +676,8 @@ public class Facepp {
         public int roi_top;                ///< roi的top坐标
         public int roi_right;              ///< roi的right坐标
         public int roi_bottom;             ///< roi的bottom坐标
+
+        public float face_confidence_filter;
 
         public int one_face_tracking;  ///< 是否只识别一张脸 0表示识别多张脸，1表示只识别1张脸
     }

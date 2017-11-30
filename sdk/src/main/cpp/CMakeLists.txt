@@ -3,12 +3,12 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_VERBOSE_MAKEFILE on)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-set(MEGVII_FACEPP_VERSION "0.4.7")
+set(MEGVII_FACEPP_VERSION "0.5.2")
 
 include_directories(${CMAKE_SOURCE_DIR}/include)
 message (${CMAKE_SOURCE_DIR})
 set(jnilibs "${CMAKE_SOURCE_DIR}/../jniLibs")
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${jnilibs}/${ANDROID_ABI})
+#set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${jnilibs}/${ANDROID_ABI})
 
 add_library(MegviiFacepp-jni-${MEGVII_FACEPP_VERSION}
              SHARED

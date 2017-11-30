@@ -14,12 +14,13 @@
 #define _OUT
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"{
 #endif
 
 #define MG_FPP_GET_LANDMARK106 106      ///< 计算 106 个关键点
 #define MG_FPP_GET_LANDMARK101 101      ///< 计算 101 个关键点
 #define MG_FPP_GET_LANDMARK81 81        ///< 计算 81 个关键点
+#define MG_FPP_GET_LANDMARK84 84        ///< 计算 84 个关键点
 
 #define MG_FPP_ATTR_POSE3D 0x01             ///< 3dpose 的标识位
 #define MG_FPP_ATTR_EYESTATUS 0x02          ///< 眼睛状态的标识位
@@ -38,27 +39,24 @@ extern "C" {
  * 支持对单张图片做人脸检测，也支持对视频流做人脸检测。
  */
 typedef enum {
-    MG_FPP_DETECTIONMODE_NORMAL = 0,        ///< 单张图片人脸检测模式
-
-    MG_FPP_DETECTIONMODE_TRACKING,          ///< 视频人脸跟踪模式
-
-    MG_FPP_DETECTIONMODE_TRACKING_SMOOTH,    ///< 特殊的视频人脸跟踪模式。
-    ///< 此模式下人脸检测与跟踪会更平均的使用 CPU 计算资源。
-            MG_FPP_DETECTIONMODE_TRACKING_FAST,     ///< 牺牲了人脸关键点的贴合度，提升了人脸跟踪的速度
-    MG_FPP_DETECTIONMODE_TRACKING_ROBUST    ///< 提高了人脸关键点的贴合度，降低了人脸跟踪的速度
-} MG_FPP_DETECTIONMODE;                        ///< 检测人脸时只跟踪单张人脸
+    MG_FPP_DETECTIONMODE_NORMAL = 0,             ///< 单张图片人脸检测模式
+    MG_FPP_DETECTIONMODE_TRACKING = 1,           ///< 视频人脸跟踪模式
+    MG_FPP_DETECTIONMODE_TRACKING_FAST = 3,      ///< 牺牲了人脸关键点的贴合度，提升了人脸跟踪的速度
+    MG_FPP_DETECTIONMODE_TRACKING_ROBUST =4,     ///< 提高了人脸关键点的贴合度，降低了人脸跟踪的速度
+    MG_FPP_DETECTIONMODE_DETECT_RECT = 5,        ///< 只检测人脸框，并不检测landmark
+} MG_FPP_DETECTIONMODE;
 
 struct _MG_FPP_API;
 /**
  * @brief 人脸算法句柄
  */
-typedef struct _MG_FPP_API *MG_FPP_APIHANDLE;
+typedef struct _MG_FPP_API* MG_FPP_APIHANDLE;
 
 struct _MG_FPP_IMAGE;
 /**
  * @brief 人脸算法使用的图像句柄
  */
-typedef struct _MG_FPP_IMAGE *MG_FPP_IMAGEHANDLE;
+typedef struct _MG_FPP_IMAGE* MG_FPP_IMAGEHANDLE;
 
 /**
  * @brief 人脸检测算法配置类型 
@@ -67,22 +65,25 @@ typedef struct _MG_FPP_IMAGE *MG_FPP_IMAGEHANDLE;
  */
 typedef struct {
     MG_UINT32 min_face_size;                ///< 最小检测人脸的尺寸（人脸尺寸一般是指人脸脸颊的宽度）。
-    ///< 数值越大检测用的耗时越少。
+                                            ///< 数值越大检测用的耗时越少。
 
     MG_UINT32 rotation;                     ///< 输入图像的重力方向，必须是 90 的倍数。
-    ///< 表示输入图像顺时针旋转 rotation 度之后为正常的重力方向。
-    ///< 推荐使用的数值：0, 90, 180, 270, 360
+                                            ///< 表示输入图像顺时针旋转 rotation 度之后为正常的重力方向。
+                                            ///< 推荐使用的数值：0, 90, 180, 270, 360
 
     MG_UINT32 interval;                     ///< 在 MG_FPP_DETECTIONMODE_TRACKING 模式下才有效。
-    ///< 表示每隔多少帧进行一次全图的人脸检测。
-    ///< 其余时间只对原有人脸进行跟踪。
+                                            ///< 表示每隔多少帧进行一次全图的人脸检测。
+                                            ///< 其余时间只对原有人脸进行跟踪。
 
     MG_FPP_DETECTIONMODE detection_mode;    ///< 人脸检测模式，可见 MG_FPP_DETECTIONMODE 类型。
 
     MG_RECTANGLE roi;                       ///< 一个矩形框，表示只对图像中 roi 所表示的区域做人脸检测。
-    ///< 在特定场景下，此方法可以提高检测速度。
-    ///< 如果人脸在 roi 中被检测到，且移动到了 roi 之外的区域，依然可以被跟踪。
-    MG_BOOL one_face_tracking;
+                                            ///< 在特定场景下，此方法可以提高检测速度。
+                                            ///< 如果人脸在 roi 中被检测到，且移动到了 roi 之外的区域，依然可以被跟踪。
+
+    MG_SINGLE face_confidence_filter;       ///< 人脸置信度过滤阈值，低于此值的数据将被过滤掉，默认 0.1
+    
+    MG_BOOL one_face_tracking;              ///< 此参数已废弃
 } MG_FPP_APICONFIG;
 
 /**
@@ -107,14 +108,26 @@ typedef struct {
      *
      * @return 成功则返回 MG_RETCODE_OK
      */
-    MG_RETCODE (*CreateApiHandle)(
+    MG_RETCODE (*CreateApiHandle) (
 #if MGAPI_BUILD_ON_ANDROID
-            JNIEnv *env,
-            jobject jobj,
+        JNIEnv* env,
+        jobject jobj,
 #endif
-            const MG_BYTE *model_data,
-            MG_INT32 model_length,
-            MG_FPP_APIHANDLE _OUT *api_handle_ptr);
+        const MG_BYTE *model_data,
+        MG_INT32 model_length,
+        MG_FPP_APIHANDLE _OUT *api_handle_ptr);
+    
+    
+    MG_RETCODE (*CreateApiHandleWithMaxFaceCount) (
+#if MGAPI_BUILD_ON_ANDROID
+       JNIEnv* env,
+       jobject jobj,
+#endif
+       const MG_BYTE *model_data,
+       MG_INT32 model_length,
+       MG_INT32 maxFaceCount,
+       MG_FPP_APIHANDLE _OUT *api_handle_ptr);
+    
 
     /**
      * @brief 释放人脸算法句柄（handle）
@@ -125,33 +138,42 @@ typedef struct {
      *
      * @return 成功则返回 MG_RETCODE_OK
      */
-    MG_RETCODE (*ReleaseApiHandle)(
-            MG_FPP_APIHANDLE api_handle);
+    MG_RETCODE (*ReleaseApiHandle) (
+        MG_FPP_APIHANDLE api_handle);
 
     /**
      * @brief 获取算法版本信息
      *
-     * @return 返回一个字符串，表示算法版本号及相关信息
+     * @return 返回一个字符串，表示 SDK buidl时的jenkins号
      */
-    const char *(*GetApiVersion)();
+    const char* (*GetJenkinsNumber)();
+    
+    /**
+     * @brief 获取算法版本信息
+     *
+     * @return 返回一个字符串，表示算法版本号
+     */
+    const char* (*GetApiVersion)();
 
     /**
      * @brief 查看算法授权的过期时间
      *
-     * @warning 此接口已经废弃，可以用 GetAlgorithmInfo 函数代替。
-     * 在初次使用 SDK 时，需要先调用 CreateApiHandle 方法才能正确返回过期时间。
-     *
-     * @param[in] env               Android jni 的环境变量，仅在 Android SDK 中使用
-     * @param[in] jobj              Android 调用的上下文，仅在 Android SDK 中使用
+     * 此接口已经废弃，只返回0， 请使用 GetAlgorithmInfo
      *
      * @return 成功则返回 MG_RETCODE_OK
      */
-    MG_UINT64 (*GetApiExpiration)(
-#if MGAPI_BUILD_ON_ANDROID
-            JNIEnv *env,
-            jobject jobj
-#endif
-    );
+    MG_UINT64 (*GetApiExpiration)();
+    
+    
+    /**
+     * @brief 获取 SDK 的授权类型
+     *
+     * 此接口已经废弃，只返回非联网授权， 请使用 GetAlgorithmInfo
+     *
+     * @return 只有联网授权和非联网授权两种类型
+     */
+    MG_SDKAUTHTYPE (*GetSDKAuthType)();
+    
 
     /**
      * @brief 获取当前算法的配置信息
@@ -164,9 +186,9 @@ typedef struct {
      *
      * @return 成功则返回 MG_RETCODE_OK
      */
-    MG_RETCODE (*GetDetectConfig)(
-            MG_FPP_APIHANDLE api_handle,
-            MG_FPP_APICONFIG _OUT *config);
+    MG_RETCODE (*GetDetectConfig) (
+        MG_FPP_APIHANDLE api_handle,
+        MG_FPP_APICONFIG _OUT *config);
 
     /**
      * @brief 设置算法配置信息
@@ -178,10 +200,11 @@ typedef struct {
      *
      * @return 成功则返回 MG_RETCODE_OK
      */
-    MG_RETCODE (*SetDetectConfig)(
-            MG_FPP_APIHANDLE api_handle,
-            const MG_FPP_APICONFIG *config);
-
+    MG_RETCODE (*SetDetectConfig) (
+        MG_FPP_APIHANDLE api_handle,
+        const MG_FPP_APICONFIG *config);
+    
+    
     /**
      * @brief 检测图像中的人脸
      * 
@@ -195,10 +218,10 @@ typedef struct {
      *
      * @return 成功则返回 MG_RETCODE_OK
      */
-    MG_RETCODE (*Detect)(
-            MG_FPP_APIHANDLE api_handle,
-            MG_FPP_IMAGEHANDLE image_handle,
-            MG_INT32 _OUT *face_nr);
+    MG_RETCODE (*Detect) (
+        MG_FPP_APIHANDLE api_handle,
+        MG_FPP_IMAGEHANDLE image_handle,
+        MG_INT32 _OUT *face_nr);
 
     /**
      * @brief 获取人脸信息
@@ -211,12 +234,12 @@ typedef struct {
      *
      * @return 成功则返回 MG_RETCODE_OK
      */
-    MG_RETCODE (*GetFaceInfo)(
-            MG_FPP_APIHANDLE api_handle,
-            MG_INT32 idx,
-            MG_FACE _OUT *face);
+    MG_RETCODE (*GetFaceInfo) (
+        MG_FPP_APIHANDLE api_handle,
+        MG_INT32 idx,
+        MG_FACE _OUT *face);
 
-
+    
     /**
      * @brief 获取人脸关键点信息
      *
@@ -231,12 +254,31 @@ typedef struct {
      *
      * @return 成功则返回 MG_RETCODE_OK
      */
-    MG_RETCODE (*GetLandmark)(
-            MG_FPP_APIHANDLE api_handle,
-            MG_INT32 idx,
-            MG_BOOL is_smooth,
-            MG_INT32 nr,
-            MG_POINT _OUT *points);
+    MG_RETCODE (*GetLandmark) (
+        MG_FPP_APIHANDLE api_handle,
+        MG_INT32 idx,
+        MG_BOOL is_smooth,
+        MG_INT32 nr,
+        MG_POINT _OUT *points);
+    
+    /**
+     * @brief 获取人脸框信息
+     *
+     * @param[in] api_handle 算法句柄
+     * @param[in] idx 人脸框编号（人脸以0~face_nr-1编号）
+     * @param[in] is_smooth 是否需要进行平滑处理。选择平滑处理可以让前后帧关键点相对比较稳定。
+     *
+     * @param[out] rect 获取的人脸框
+     *
+     * @return 成功则返回 MG_RETCODE_OK
+     */
+    MG_RETCODE (*GetRect) (
+           MG_FPP_APIHANDLE api_handle,
+           MG_INT32 idx,
+           MG_BOOL is_smooth,
+           MG_DETECT_RECT _OUT *rect);
+    
+    
 
     /**
      * @brief 计算一张人脸的属性
@@ -252,12 +294,12 @@ typedef struct {
      *
      * @return 成功则返回 MG_RETCODE_OK
      */
-    MG_RETCODE (*GetAttribute)(
-            MG_FPP_APIHANDLE api_handle,
-            MG_FPP_IMAGEHANDLE image_handle,
-            MG_INT32 idx,
-            MG_INT32 attribute_mode,
-            MG_FACE _OUT *face);
+    MG_RETCODE (*GetAttribute) (
+        MG_FPP_APIHANDLE api_handle,
+        MG_FPP_IMAGEHANDLE image_handle,
+        MG_INT32 idx,
+        MG_INT32 attribute_mode,
+        MG_FACE _OUT *face);
 
     /**
      * @brief 创建图像句柄（handle）
@@ -272,10 +314,10 @@ typedef struct {
      *
      * @return 成功则返回 MG_RETCODE_OK
      */
-    MG_RETCODE (*CreateImageHandle)(
-            MG_INT32 width,
-            MG_INT32 height,
-            MG_FPP_IMAGEHANDLE _OUT *image_handle_ptr);
+    MG_RETCODE (*CreateImageHandle) (
+        MG_INT32 width,
+        MG_INT32 height,
+        MG_FPP_IMAGEHANDLE _OUT *image_handle_ptr);
 
     /**
      * @brief 设置图像数据
@@ -290,10 +332,10 @@ typedef struct {
      *
      * @return 成功则返回 MG_RETCODE_OK
      */
-    MG_RETCODE (*SetImageData)(
-            MG_FPP_IMAGEHANDLE image_handle,
-            const MG_BYTE *image_data,
-            MG_IMAGEMODE image_mode);
+    MG_RETCODE (*SetImageData) (
+        MG_FPP_IMAGEHANDLE image_handle,
+        const MG_BYTE *image_data,
+        MG_IMAGEMODE image_mode);
 
     /**
      * @brief 释放图像句柄（handle）
@@ -302,34 +344,9 @@ typedef struct {
      *
      * @return 成功则返回 MG_RETCODE_OK
      */
-    MG_RETCODE (*ReleaseImageHandle)(
-            MG_FPP_IMAGEHANDLE image_handle);
+    MG_RETCODE (*ReleaseImageHandle) (
+        MG_FPP_IMAGEHANDLE image_handle);
 
-    /**
-     * @brief 获取 SDK 的授权类型
-     *
-     * @warning 此接口已经废弃，可以用 GetAlgorithmInfo 函数代替。
-     *
-     * @return 只有联网授权和非联网授权两种类型
-     */
-    MG_SDKAUTHTYPE (*GetSDKAuthType)();
-
-    /**
-     * @brief 获取算法相关信息
-     * 
-     * 读取模型中相关参数，返回当前SDK的所使用的算法的相关信息。
-     *
-     * @param[in] model_data 算法模型的二进制数据
-     * @param[in] model_length 算法模型的字节长度
-     *
-     * @param[out] algorithm_info 算法相关信息
-     *
-     * @return 成功则返回 MG_RETCODE_OK
-     */
-    MG_RETCODE (*GetAlgorithmInfo)(
-            const MG_BYTE *model_data,
-            MG_INT32 model_length,
-            MG_ALGORITHMINFO *algorithm_info);
 
     /**
      * @brief 抽取人脸特征
@@ -345,10 +362,10 @@ typedef struct {
      * @return 成功则返回 MG_RETCODE_OK
      */
     MG_RETCODE (*ExtractFeature)(
-            MG_FPP_APIHANDLE api_handle,
-            MG_FPP_IMAGEHANDLE image_handle,
-            MG_INT32 idx,
-            MG_INT32 *_OUT feature_length_ptr);
+        MG_FPP_APIHANDLE api_handle,
+        MG_FPP_IMAGEHANDLE image_handle,
+        MG_INT32 idx,
+        MG_INT32* _OUT feature_length_ptr);
 
     /**
      * @brief 获取人脸特征数据
@@ -363,19 +380,14 @@ typedef struct {
      * @return 成功则返回 MG_RETCODE_OK
      */
     MG_RETCODE (*GetFeatureData)(
-            MG_FPP_APIHANDLE api_handle,
-            void _OUT *feature_data,
-            MG_INT32 feature_length);
+        MG_FPP_APIHANDLE api_handle,
+        void _OUT *feature_data,
+        MG_INT32 feature_length);
 
     /**
      * @brief 获取人脸比对的分数
      *
-     * 传入两个特征，比对两个特征后产生对应分数。传入的特征顺序课交换。
-     * 阈值如下：
-     *   - 1e-2: 63.07
-     *   - 1e-3: 73.43
-     *   - 1e-4: 79.79
-     *   - 1e-5: 84.02
+     * 传入两个特征，比对两个特征后产生对应分数。
      *
      * @param[in] api_handle 算法句柄
      * @param[in] feature_data1 参与比对的特征1
@@ -387,11 +399,45 @@ typedef struct {
      * @return 成功则返回 MG_RETCODE_OK
      */
     MG_RETCODE (*FaceCompare)(
-            MG_FPP_APIHANDLE api_handle,
-            const void *feature_data1,
-            const void *feature_data2,
-            MG_INT32 feature_length,
-            MG_DOUBLE _OUT *score_ptr);
+        MG_FPP_APIHANDLE api_handle,
+        const void* feature_data1,
+        const void* feature_data2,
+        MG_INT32 feature_length,
+        MG_DOUBLE _OUT *score_ptr);
+    
+    
+    /**
+     * @brief 清除当前track模式下的缓存信息
+     *
+     * @param[in] api_handle 算法句柄
+     *
+     * @return 成功则返回 MG_RETCODE_OK
+     */
+    MG_RETCODE (*ResetTrack) (MG_FPP_APIHANDLE api_handle);
+    
+    
+    /**
+     * @breif 释放算法资源
+     *
+     * 算法在计算时需要占用一些内存资源，必须在所有算法的句柄（handle）被释放后再调用
+     * @return 成功则返回 MG_RETCODE_OK
+     */
+    MG_RETCODE (*ShutDown)();
+    
+    /**
+     * @brief 获取SDK信息
+     *
+     * SDK 授权类型 离线授权 联网授权
+     * SDK 过期时间 联网授权版返回 0，请通过联网授权API获取过期日期  离线授权版未授权，返回过期时间戳 离线授权版已授权，返回-1，表示无过期时间，一直有效
+     * SDK 支持的能力
+     * SDK 限制的报名
+     *
+     */
+    MG_RETCODE (*GetAlgorithmInfo)(
+        const MG_BYTE* model_data,
+        MG_INT32 model_length,
+        MG_ALGORITHMINFO *algorithm_info);
+    
 
 } MG_FACEPP_API_FUNCTIONS_TYPE;
 

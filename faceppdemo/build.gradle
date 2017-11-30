@@ -1,0 +1,102 @@
+apply plugin: 'com.android.application'
+
+def gitCommitShortHash = 'git log -1 --pretty=%h'.execute([], project.rootDir).text.trim()
+def gitCommitDate = 'git log -1 --pretty=%ci'.execute([], project.rootDir).text.trim().split()[0]
+def gitShortShaDate = gitCommitShortHash + "_" + gitCommitDate
+
+// Auto-incrementing commit count based on counting commits to HEAD (Build #543)
+def gitCommitCount = Integer.parseInt('git rev-list HEAD --count'.execute([], project.rootDir).text.trim())
+
+// I want to use git tags as my version names (1.2.2)
+def gitCurrentTag = 'git describe --tags --abbrev=0'.execute([], project.rootDir).text.trim()
+
+def releaseTime() {
+    return new Date().format("yyyy-MM-dd", TimeZone.getTimeZone("UTC"))
+}
+
+android {
+    compileSdkVersion CompileSdkVersion
+    buildToolsVersion BuildToolsVersion
+
+    defaultConfig {
+        applicationId "com.xxx.xxx"
+//        applicationId "com.megvii.awesomedemo.facepp"
+        minSdkVersion 15
+        targetSdkVersion 25
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    android {
+        lintOptions {
+            abortOnError false
+        }
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+
+
+
+    repositories {
+        flatDir {
+            dirs 'libs'
+        }
+    }
+
+//    sourceSets { main { res.srcDirs = ['src/main/res', 'src/main/res/raw'] } }
+}
+
+task buildAPK(dependsOn: build) {
+    doLast {
+        copy {
+            from "build/outputs/apk/faceppdemo-debug.apk"
+            //include "*"
+            into "../release"
+            rename{
+                String fileName->
+                    "MGfaceppdemo_${gitCommitShortHash}_${releaseTime()}.apk"
+            }
+        }
+        copy {
+            from "build/outputs/apk/debug/faceppdemo-debug.apk"
+            //include "*"
+            into "../release"
+            rename{
+                String fileName->
+                    "MGfaceppdemo_${gitCommitShortHash}_${releaseTime()}.apk"
+            }
+        }
+        println "build apk successful"
+    }
+
+}
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+    compile "com.android.support:appcompat-v7:${SupportLibraryVersion}"
+//    compile(name: 'MGFaceppSDK-0.5.0', ext: 'aar')
+    //compile(name:'MGLicenseManagerSDK-0.3.0', ext:'aar')
+    compile "com.android.support:appcompat-v7:${SupportLibraryVersion}"
+    compile 'com.android.support.constraint:constraint-layout:1.0.2'
+    testCompile 'junit:junit:4.12'
+//    compile 'com.github.FacePlusPlus:MegviiLicMgr-Android-SDK:0.3.0'
+//    compile 'com.github.FacePlusPlus:MegviiFacepp-Android-SDK:0.4.7-gitpack'
+    compile(name: 'MGLicenseManagerSDK-0.3.0', ext: 'aar')
+    compile(name: 'MGFaceppSDK-0.5.2', ext: 'aar')
+//    compile project(':sdk')
+}

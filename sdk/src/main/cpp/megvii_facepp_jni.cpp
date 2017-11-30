@@ -8,6 +8,8 @@
 #include <string>
 #include <chrono>
 #include <cmath>
+#include <include/MG_Facepp.h>
+#include <include/MG_Common.h>
 
 #define  LOGE(...)  __android_log_print(ANDROID_LOG_ERROR,"mgf-c",__VA_ARGS__)
 
@@ -64,18 +66,19 @@ struct ApiHandle {
 };
 
 /*
- * Class: com.megvii.fppapidemo.Api.nativeInit(Context, byte[])
+ * Class: com.megvii.fppapidemo.Api.nativeInit(Context, byte[], int)
  */
 jlong Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeInit(JNIEnv *env, jobject,
-                                                                jobject context, jbyteArray model) {
+                                                                jobject context, jbyteArray model,
+                                                                jint max_face_number) {
 
     jbyte *model_data = env->GetByteArrayElements(model, 0);
     long model_len = env->GetArrayLength(model);
 
     ApiHandle *h = new ApiHandle();
-    int retcode = mg_facepp.CreateApiHandle(env, context,
-                                            reinterpret_cast<const MG_BYTE *>(model_data),
-                                            model_len, &h->api);
+    int retcode = mg_facepp.CreateApiHandleWithMaxFaceCount(env, context,
+                                                            reinterpret_cast<const MG_BYTE *>(model_data),
+                                                            model_len, max_face_number, &h->api);
     env->ReleaseByteArrayElements(model, model_data, 0);
     LOGE("nativeInit retcode: %d", retcode);
     if (retcode != 0) {
@@ -87,43 +90,51 @@ jlong Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeInit(JNIEnv *env, job
     return reinterpret_cast<jlong>(h);
 }
 
-jintArray Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeGetFaceppConfig(
+//除了confidence其实都是float
+jfloatArray Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeGetFaceppConfig(
         JNIEnv *env, jobject, jlong handle) {
     ApiHandle *h = reinterpret_cast<ApiHandle *>(handle);
 
-    jintArray retArray = env->NewIntArray(9);
+    jfloatArray retArray = env->NewFloatArray(10);
 
     MG_FPP_APICONFIG config;
     mg_facepp.GetDetectConfig(h->api, &config);
 
-    int min_face_size = config.min_face_size;
-    int rotation = config.rotation;
-    int interval = config.interval;
-    int detection_mode = config.detection_mode;
+    float min_face_size = config.min_face_size;
+    float rotation = config.rotation;
+    float interval = config.interval;
+    float detection_mode = config.detection_mode;
 
-    env->SetIntArrayRegion(retArray, 0, 1, &min_face_size);
-    env->SetIntArrayRegion(retArray, 1, 1, &rotation);
-    env->SetIntArrayRegion(retArray, 2, 1, &interval);
-    env->SetIntArrayRegion(retArray, 3, 1, &detection_mode);
+    env->SetFloatArrayRegion(retArray, 0, 1, &min_face_size);
+    env->SetFloatArrayRegion(retArray, 1, 1, &rotation);
+    env->SetFloatArrayRegion(retArray, 2, 1, &interval);
+    env->SetFloatArrayRegion(retArray, 3, 1, &detection_mode);
 
-    env->SetIntArrayRegion(retArray, 4, 1, &(config.roi.left));
-    env->SetIntArrayRegion(retArray, 5, 1, &(config.roi.top));
-    env->SetIntArrayRegion(retArray, 6, 1, &(config.roi.right));
-    env->SetIntArrayRegion(retArray, 7, 1, &(config.roi.bottom));
-    env->SetIntArrayRegion(retArray, 8, 1, &(config.one_face_tracking));
+    float roi_left=config.roi.left;
+    float roi_top=config.roi.top;
+    float roi_right=config.roi.right;
+    float roi_bottom=config.roi.bottom;
+    float oneface_traking=config.one_face_tracking;
+    env->SetFloatArrayRegion(retArray, 4, 1, &(roi_left));
+    env->SetFloatArrayRegion(retArray, 5, 1, &(roi_top));
+    env->SetFloatArrayRegion(retArray, 6, 1, &(roi_right));
+    env->SetFloatArrayRegion(retArray, 7, 1, &(roi_bottom));
+    env->SetFloatArrayRegion(retArray, 8, 1, &(config.face_confidence_filter));
+    env->SetFloatArrayRegion(retArray, 9, 1, &(oneface_traking));
 
     return retArray;
 }
 
 jint Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeSetFaceppConfig(JNIEnv *,
                                                                           jobject, jlong handle,
-                                                                          jint minFaceSize,
-                                                                          jint rotation,
-                                                                          jint interval,
-                                                                          jint detection_mode,
-                                                                          jint left, jint top,
-                                                                          jint right, jint bottom,
-                                                                          jint one_face_tracking) {
+                                                                          jfloat minFaceSize,
+                                                                          jfloat rotation,
+                                                                          jfloat interval,
+                                                                          jfloat detection_mode,
+                                                                          jfloat left, jfloat top,
+                                                                          jfloat right, jfloat bottom,
+                                                                          jfloat face_confidence_filter,
+                                                                          jfloat one_face_tracking) {
     ApiHandle *h = reinterpret_cast<ApiHandle *>(handle);
     h->orientation = rotation;
     MG_FPP_APICONFIG config;
@@ -131,13 +142,15 @@ jint Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeSetFaceppConfig(JNIEnv
     config.min_face_size = minFaceSize;
     config.rotation = rotation;
     config.interval = interval;
-    config.detection_mode = (MG_FPP_DETECTIONMODE) detection_mode;
+    int temp_detect_mode=detection_mode;
+    config.detection_mode = (MG_FPP_DETECTIONMODE) temp_detect_mode;
     MG_RECTANGLE _roi;
     _roi.left = left;
     _roi.top = top;
     _roi.right = right;
     _roi.bottom = bottom;
     config.roi = _roi;
+    config.face_confidence_filter=face_confidence_filter;
     config.one_face_tracking = one_face_tracking;
     int retcode = mg_facepp.SetDetectConfig(h->api, &config);
     return retcode;
@@ -235,6 +248,26 @@ jfloatArray Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeLandMark(JNIEnv
         point[1] = buff[j].y;
 
         rotate_point_2d(h->w, h->h, point[0], point[1], h->orientation);
+
+        env->SetFloatArrayRegion(retArray, j * 2, 2, point);
+    }
+
+    return retArray;
+}
+
+
+jfloatArray Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeLandMarkRaw(JNIEnv *env,
+                                                                          jobject, jlong handle,
+                                                                          jint index,
+                                                                          jint point_nr) {
+    ApiHandle *h = reinterpret_cast<ApiHandle *>(handle);
+    jfloatArray retArray = env->NewFloatArray(LANDMARK_ST_NR * 2);
+    MG_POINT buff[LANDMARK_ST_NR];
+    mg_facepp.GetLandmark(h->api, index, true, point_nr, buff);
+    for (int j = 0; j < point_nr; ++j) {
+        float point[2];
+        point[0] = buff[j].x;
+        point[1] = buff[j].y;
 
         env->SetFloatArrayRegion(retArray, j * 2, 2, point);
     }
@@ -393,6 +426,33 @@ jfloatArray Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeAgeGender(JNIEn
     return retArray;
 }
 
+jfloatArray Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeRect(
+        JNIEnv *env, jclass type, jlong handle, jint index) {
+    ApiHandle *h = reinterpret_cast<ApiHandle *>(handle);
+    jfloatArray retArray = env->NewFloatArray(6);
+
+    MG_DETECT_RECT mgDetectRect;
+    mg_facepp.GetRect(h->api, index, true, &mgDetectRect);
+
+
+    float left = mgDetectRect.rect.left;
+    float top = mgDetectRect.rect.top;
+    float right = mgDetectRect.rect.right;
+    float bottom = mgDetectRect.rect.bottom;
+    float confidence = mgDetectRect.confidence;
+    float angle = mgDetectRect.angle;
+
+    env->SetFloatArrayRegion(retArray, 0, 1, &left);
+    env->SetFloatArrayRegion(retArray, 1, 1, &top);
+    env->SetFloatArrayRegion(retArray, 2, 1, &right);
+    env->SetFloatArrayRegion(retArray, 3, 1, &bottom);
+    env->SetFloatArrayRegion(retArray, 4, 1, &confidence);
+    env->SetFloatArrayRegion(retArray, 5, 1, &angle);
+
+    return retArray;
+}
+
+
 jlongArray Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeGetAlgorithmInfo(
         JNIEnv *env, jobject, jbyteArray model) {
     jbyte *model_data = env->GetByteArrayElements(model, 0);
@@ -479,7 +539,7 @@ void Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeRelease(JNIEnv *, jobj
 jlong Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeGetApiExpication(JNIEnv *env,
                                                                             jobject, jobject ctx) {
 
-    return (long) mg_facepp.GetApiExpiration(env, ctx);
+    return (long) mg_facepp.GetApiExpiration();
 }
 
 jstring Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeGetVersion(JNIEnv *env,
@@ -497,3 +557,33 @@ jint Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeGetSDKAuthType(JNIEnv 
                                                                          jobject) {
     return (jint) mg_facepp.GetSDKAuthType();
 }
+
+JNIEXPORT jint JNICALL
+Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeResetTrack(JNIEnv *env, jclass type,
+                                                                jlong handle) {
+
+    ApiHandle *h = reinterpret_cast<ApiHandle *>(handle);
+    return mg_facepp.ResetTrack(h->api);
+
+}
+
+
+
+JNIEXPORT jstring JNICALL
+Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeGetJenkinsNumber(JNIEnv *env, jclass type
+) {
+    const char *jkn = mg_facepp.GetJenkinsNumber();
+    return env->NewStringUTF(jkn);
+}
+
+
+
+JNIEXPORT jint JNICALL
+Java_com_megvii_facepp_sdk_jni_NativeFaceppAPI_nativeShutDown(JNIEnv *env, jclass type
+) {
+
+
+    return mg_facepp.ShutDown();
+
+}
+

@@ -3,13 +3,13 @@ apply plugin: 'com.github.dcendents.android-maven'
 
 group = 'com.github.FacePlusPlus'
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    compileSdkVersion CompileSdkVersion
+    buildToolsVersion BuildToolsVersion
     defaultConfig {
         minSdkVersion 14
         targetSdkVersion 25
         versionCode 1
-        versionName "0.4.7"
+        versionName "0.5.2"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         externalNativeBuild {
             cmake {
@@ -38,6 +38,37 @@ android {
         }
     }
 
+
+}
+
+build.mustRunAfter clean
+
+task buildAAR(dependsOn: build) {
+    doLast {
+        delete '../release'
+
+        copy {
+            from "build/outputs/aar/MGFaceppSDK-release.aar"
+            //include "*"
+            into "../release"
+            rename{
+                String fileName->
+                    "${archivesBaseName}-${version}.aar"
+            }
+        }
+
+        delete "../faceppdemo/libs/${archivesBaseName}-${version}.aar"
+
+        copy {
+            from "../release/${archivesBaseName}-${version}.aar"
+            //include "*"
+            into "../faceppdemo/libs"
+        }
+
+
+        println "build arr successful"
+    }
+
 }
 
 
@@ -47,6 +78,7 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:25.1.0'
+    compile "com.android.support:appcompat-v7:${SupportLibraryVersion}"
+
 
 }

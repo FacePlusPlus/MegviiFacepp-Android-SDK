@@ -26,10 +26,7 @@ _date=`date '+%Y%m%d'`
 #copy apk
 cp faceppdemo/build/outputs/apk/faceppdemo-debug.apk release/"MGFaceppDemo_0.5.2_${_date}_${_tag}.apk"
 
-#delete build 本地运行注释掉
-rm -rf build
-rm -rf faceppdemo/build
-rm -rf sdk/build
+
 
 
 

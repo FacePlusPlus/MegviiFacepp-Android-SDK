@@ -94,8 +94,8 @@ public class LoadingActivity extends Activity {
 
 		licenseManager.setAuthTimeBufferMillis(0);
 
-		licenseManager.takeLicenseFromNetwork(uuid, Util.API_KEY, Util.API_SECRET, apiName,
-				LicenseManager.DURATION_30DAYS, "Landmark", "1", true, new LicenseManager.TakeLicenseCallback() {
+		licenseManager.takeLicenseFromNetwork(Util.CN_LICENSE_URL,uuid, Util.API_KEY, Util.API_SECRET, apiName,
+				LicenseManager.DURATION_30DAYS, "Landmark", "1", new LicenseManager.TakeLicenseCallback() {
 					@Override
 					public void onSuccess() {
 						authState(true,0,"");

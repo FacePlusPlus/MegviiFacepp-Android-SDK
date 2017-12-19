@@ -650,6 +650,8 @@ public class Facepp {
 
         public final static int DETECTION_MODE_TRACKING_RECT = 5;                   ///< 只检测人脸框，并不检测landmark
 
+        public final static int MG_FPP_DETECTIONMODE_TRACK_RECT = 6;                   ///< 只检测人脸框，并不检测landmark
+
 
 
 

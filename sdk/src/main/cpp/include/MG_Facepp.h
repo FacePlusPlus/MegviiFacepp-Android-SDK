@@ -43,8 +43,8 @@ typedef enum {
     MG_FPP_DETECTIONMODE_TRACKING = 1,           ///< 视频人脸跟踪模式
     MG_FPP_DETECTIONMODE_TRACKING_FAST = 3,      ///< 牺牲了人脸关键点的贴合度，提升了人脸跟踪的速度
     MG_FPP_DETECTIONMODE_TRACKING_ROBUST =4,     ///< 提高了人脸关键点的贴合度，降低了人脸跟踪的速度
-    MG_FPP_DETECTIONMODE_DETECT_RECT = 5,        ///< 只检测人脸框，并不检测landmark
-    MG_FPP_DETECTIONMODE_TRACK_RECT = 6,         ///< 只检测人脸框，并不检测landmark
+    MG_FPP_DETECTIONMODE_DETECT_RECT = 5,        ///< 只检测人脸框，并不检测landmark，不具备人脸跟踪功能，适用于单张图片
+    MG_FPP_DETECTIONMODE_TRACK_RECT = 6,         ///< 只检测人脸框，并不检测landmark，具备人脸跟踪功能，适用于视频流
 } MG_FPP_DETECTIONMODE;
 
 struct _MG_FPP_API;

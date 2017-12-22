@@ -86,8 +86,9 @@ public class LoadingActivity extends Activity {
 		WarrantyText.setText(getResources().getString(R.string.auth_progress));
 		WarrantyBar.setVisibility(View.VISIBLE);
 		final LicenseManager licenseManager = new LicenseManager(this);
-		licenseManager.setExpirationMillis(Facepp.getApiExpirationMillis(this, ConUtil.getFileContent(this, R.raw
-				.megviifacepp_0_5_2_model)));
+
+//        licenseManager.setExpirationMillis(Facepp.getApiExpirationMillis(this, ConUtil.getFileContent(this, R.raw
+//				.megviifacepp_0_5_2_model)));
 
 		String uuid = ConUtil.getUUIDString(LoadingActivity.this);
 		long apiName = Facepp.getApiName();

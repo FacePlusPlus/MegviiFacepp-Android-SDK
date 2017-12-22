@@ -139,7 +139,7 @@ public class LoadingActivity extends Activity {
         }
         resources.updateConfiguration(config, dm);
         mSharedUtil.saveStringValue("language", language);
-        freshView();
+//        freshView();
     }
 
 

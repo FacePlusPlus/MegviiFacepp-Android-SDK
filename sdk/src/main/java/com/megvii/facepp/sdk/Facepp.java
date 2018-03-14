@@ -32,6 +32,11 @@ public class Facepp {
     private static ArrayList<Ability> abilities;
     private static long[] algorithmInfo;
 
+    public static boolean isLoadSuccess(){
+        return NativeFaceppAPI.isLoadSuccess;
+    }
+
+
     /**
      * @return 成功则返回 null, 失败返回错误原因
      * @brief 初始化人脸检测器
@@ -50,6 +55,10 @@ public class Facepp {
      * @param[in] maxFaceNumber 跟踪人脸数量
      */
     public String init(Context context, byte[] model, int maxFaceNumber) {
+        if (!isLoadSuccess()){
+            return getErrorType(MG_RETCODE_LOAD_ERROR);
+        }
+
         if (context == null || model == null)
             return getErrorType(MG_RETCODE_INVALID_ARGUMENT);
 
@@ -72,6 +81,10 @@ public class Facepp {
      */
     public FaceppConfig getFaceppConfig() {
         FaceppConfig faceppConfig = new FaceppConfig();
+        if (!isLoadSuccess()){
+            return faceppConfig;
+        }
+
         if (FaceppHandle==0){
             return faceppConfig;
         }
@@ -96,6 +109,9 @@ public class Facepp {
      * @param[in] faceppConfig 人脸检测器配置信息
      */
     public void setFaceppConfig(FaceppConfig faceppConfig) {
+        if (!isLoadSuccess()){
+            return;
+        }
         if (FaceppHandle==0){
             return;
         }
@@ -115,6 +131,9 @@ public class Facepp {
      * @param[in] imageMode 图片数据的格式
      */
     public Face[] detect(byte[] imageData, int width, int height, int imageMode) {
+        if (!isLoadSuccess()){
+            return new Face[0];
+        }
         if (FaceppHandle==0){
             return new Face[0];
         }
@@ -139,6 +158,9 @@ public class Facepp {
      */
     @Deprecated
     public void getLandmark(Face face, int pointNum) {
+        if (!isLoadSuccess()){
+            return;
+        }
         if (FaceppHandle==0){
             return;
         }
@@ -154,6 +176,9 @@ public class Facepp {
      * @param[in] pointNum 需要的人脸关键点点数
      */
     public void getLandmarkRaw(Face face, int pointNum) {
+        if (!isLoadSuccess()){
+            return;
+        }
         float[] points = NativeFaceppAPI.nativeLandMarkRaw(FaceppHandle, face.index, pointNum);
         loadFacePointsInfo(face, points, pointNum, 0);
     }
@@ -165,6 +190,10 @@ public class Facepp {
      * @param[in, out] face 人脸信息
      */
     public void getAttribute(Face face) {
+        if (!isLoadSuccess()){
+            return;
+        }
+
         if (FaceppHandle==0){
             return;
         }
@@ -178,6 +207,9 @@ public class Facepp {
      * @param[in, out] face 人脸信息
      */
     public boolean get3DPose(Face face) {
+        if (!isLoadSuccess()){
+            return false;
+        }
         if (FaceppHandle==0||abilities == null || !abilities.contains(Ability.POSE))
             return false;
 
@@ -193,6 +225,9 @@ public class Facepp {
      * @param[in, out] face 人脸信息
      */
     public boolean getEyeStatus(Face face) {
+        if (!isLoadSuccess()){
+            return false;
+        }
         if (FaceppHandle==0||abilities == null || !abilities.contains(Ability.EYESTATUS))
             return false;
         float[] points = NativeFaceppAPI.nativeEyeStatus(FaceppHandle, face.index);
@@ -206,6 +241,9 @@ public class Facepp {
      * @param[in, out] face 人脸信息
      */
     public boolean getMouthStatus(Face face) {
+        if (!isLoadSuccess()){
+            return false;
+        }
         if (FaceppHandle==0||abilities == null || !abilities.contains(Ability.MOUTHSTATUS))
             return false;
         float[] points = NativeFaceppAPI.nativeMouthStatus(FaceppHandle, face.index);
@@ -219,6 +257,9 @@ public class Facepp {
      * @param[in, out] face 人脸信息
      */
     public boolean getMinorityStatus(Face face) {
+        if (!isLoadSuccess()){
+            return false;
+        }
         if (FaceppHandle==0||abilities == null || !abilities.contains(Ability.MINORITY))
             return false;
         float[] points = NativeFaceppAPI.nativeMinority(FaceppHandle, face.index);
@@ -232,6 +273,9 @@ public class Facepp {
      * @param[in, out] face 人脸信息
      */
     public boolean getBlurness(Face face) {
+        if (!isLoadSuccess()){
+            return false;
+        }
         if (FaceppHandle==0||abilities == null || !abilities.contains(Ability.BLURNESS))
             return false;
         float[] points = NativeFaceppAPI.nativeBlurness(FaceppHandle, face.index);
@@ -245,6 +289,9 @@ public class Facepp {
      * @param[in, out] face 人脸信息
      */
     public boolean getAgeGender(Face face) {
+        if (!isLoadSuccess()){
+            return false;
+        }
         if (FaceppHandle==0||abilities == null || !abilities.contains(Ability.AGEGENDER))
             return false;
         float[] points = NativeFaceppAPI.nativeAgeGender(FaceppHandle, face.index);
@@ -253,6 +300,9 @@ public class Facepp {
     }
 
     public void getRect(Face face){
+        if (!isLoadSuccess()){
+            return ;
+        }
         if (FaceppHandle==0)
             return ;
         float[] rectArray = NativeFaceppAPI.nativeRect(FaceppHandle, face.index);
@@ -270,6 +320,9 @@ public class Facepp {
      * @param[in, out] face 人脸信息
      */
     public boolean getExtractFeature(Face face) {
+        if (!isLoadSuccess()){
+            return false;
+        }
         if (abilities == null || !abilities.contains(Ability.SMALLFEATEXT)||FaceppHandle==0||face==null)
             return false;
         int featureLength = NativeFaceppAPI.nativeExtractFeature(FaceppHandle, face.index);
@@ -288,6 +341,9 @@ public class Facepp {
      * @param[in] face2 人脸2信息
      */
     public double faceCompare(Face face1, Face face2) {
+        if (!isLoadSuccess()){
+            return -1;
+        }
         if (FaceppHandle==0||face1 == null || face2 == null || face1.feature == null || face2.feature == null)
             return -1;
         return NativeFaceppAPI.nativeFaceCompare(FaceppHandle, face1.feature, face2.feature, face1.feature.length / 4);
@@ -300,6 +356,12 @@ public class Facepp {
      * @param[in] feature2 人脸2特征
      */
     public double faceCompare(byte[] feature1, byte[] feature2) {
+        if (!isLoadSuccess()){
+            return -1;
+        }
+        if (!isLoadSuccess()){
+            return -1;
+        }
         if (FaceppHandle==0||feature1 == null || feature2 == null)
             return -1;
         return NativeFaceppAPI.nativeFaceCompare(FaceppHandle, feature1, feature2, feature1.length / 4);
@@ -309,6 +371,10 @@ public class Facepp {
      * @brief 释放人脸检测器
      */
     public void release() {
+        if (!isLoadSuccess()){
+            return;
+        }
+
         if (FaceppHandle == 0)
             return;
         NativeFaceppAPI.nativeRelease(FaceppHandle);
@@ -322,6 +388,9 @@ public class Facepp {
      * @param[in] model 模型数据
      */
     public static long getApiExpirationMillis(Context context, byte[] mode) {
+        if (!isLoadSuccess()){
+            return 0;
+        }
         if (getSDKAuthType(mode) == 1)
             return getApiExpirationMillis(context);        /// < 联网授权
         else
@@ -334,6 +403,9 @@ public class Facepp {
      * @param[in] model 模型数据
      */
     private static long getApiExpirationMillis(byte[] mode) {
+        if (!isLoadSuccess()){
+            return 0;
+        }
         if (algorithmInfo == null)
             algorithmInfo = NativeFaceppAPI.nativeGetAlgorithmInfo(mode);
 
@@ -346,6 +418,9 @@ public class Facepp {
      * @param[in] model 模型数据
      */
     public static int getSDKAuthType(byte[] mode) {
+        if (!isLoadSuccess()){
+            return 2;
+        }
         if (algorithmInfo == null)
             algorithmInfo = NativeFaceppAPI.nativeGetAlgorithmInfo(mode);
 
@@ -358,6 +433,9 @@ public class Facepp {
      * @param[in] model 模型数据
      */
     public static ArrayList<Ability> getAbility(byte[] mode) {
+        if (!isLoadSuccess()){
+            return new ArrayList<>();
+        }
         if (abilities != null)
             return abilities;
         abilities = new ArrayList<Ability>();
@@ -387,6 +465,9 @@ public class Facepp {
      * @brief 获取人脸检测器版本号
      */
     public static String getVersion() {
+        if (!isLoadSuccess()){
+            return "";
+        }
         return NativeFaceppAPI.nativeGetVersion();
     }
 
@@ -397,6 +478,9 @@ public class Facepp {
      * API 标识用于联网授权
      */
     public static long getApiName() {
+        if (!isLoadSuccess()){
+            return 0;
+        }
         return NativeFaceppAPI.nativeGetApiName();
     }
 
@@ -406,6 +490,9 @@ public class Facepp {
      * @param[in] context android环境变量
      */
     private static long getApiExpirationMillis(Context context) {
+        if (!isLoadSuccess()){
+            return 0;
+        }
         return NativeFaceppAPI.nativeGetApiExpication(context) * 1000;
     }
 
@@ -415,6 +502,9 @@ public class Facepp {
      * @deprecated
      */
     public static int getSDKAuthType() {
+        if (!isLoadSuccess()){
+            return 2;
+        }
         return NativeFaceppAPI.nativeGetSDKAuthType();
     }
 
@@ -423,6 +513,9 @@ public class Facepp {
      * @brief  切换摄像头调用 出现关键点后调用
      */
     public  int resetTrack() {
+        if (!isLoadSuccess()){
+            return 0;
+        }
         if (FaceppHandle==0)
             return 0;
         return NativeFaceppAPI.nativeResetTrack(FaceppHandle);
@@ -435,6 +528,9 @@ public class Facepp {
      * @brief  获取打包版本
      */
     public static String getJenkinsNumber() {
+        if (!isLoadSuccess()){
+            return "";
+        }
         return NativeFaceppAPI.nativeGetJenkinsNumber();
     }
 
@@ -445,6 +541,9 @@ public class Facepp {
      * @brief  新的sdk授权类型
      */
     public static int getSDKAuthTypeNew() {
+        if (!isLoadSuccess()){
+            return 0;
+        }
         return NativeFaceppAPI.nativeGetSDKAuthType();
     }
 
@@ -454,6 +553,9 @@ public class Facepp {
      * @brief  清理资源，release后调用
      */
     public static int shutDown() {
+        if (!isLoadSuccess()){
+            return 0;
+        }
         return NativeFaceppAPI.nativeShutDown();
     }
 
@@ -574,6 +676,8 @@ public class Facepp {
     private static final int MG_RETCODE_INVALID_BUNDLEID = 102;
     private static final int MG_RETCODE_INVALID_LICENSE = 103;
     private static final int MG_RETCODE_INVALID_MODEL = 104;
+    private static final int MG_RETCODE_LOAD_ERROR=1801;
+
 
     private String getErrorType(int retCode) {
         switch (retCode) {
@@ -595,6 +699,8 @@ public class Facepp {
                 return "MG_RETCODE_INVALID_LICENSE";
             case MG_RETCODE_INVALID_MODEL:
                 return "MG_RETCODE_INVALID_MODEL";
+            case MG_RETCODE_LOAD_ERROR:
+                return "MG_RETCODE_LOAD_ERROR";
         }
 
         return null;

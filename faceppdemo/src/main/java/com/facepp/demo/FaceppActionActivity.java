@@ -227,13 +227,13 @@ public class FaceppActionActivity extends Activity implements OnClickListener {
                 if (isBackCamera)
                     cameraId = 0;
                 cameraSize = ICamera.getCameraPreviewSize(cameraId);
-                RelativeLayout.LayoutParams rlp= (RelativeLayout.LayoutParams) mListView.getLayoutParams();
-                rlp.width= ConUtil.dip2px(FaceppActionActivity.this,200);
-                rlp.height=ConUtil.dip2px(FaceppActionActivity.this,55)*cameraSize.size();
-                mListView.setLayoutParams(rlp);
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        RelativeLayout.LayoutParams rlp= (RelativeLayout.LayoutParams) mListView.getLayoutParams();
+                        rlp.width= ConUtil.dip2px(FaceppActionActivity.this,200);
+                        rlp.height=ConUtil.dip2px(FaceppActionActivity.this,55)*cameraSize.size();
+                        mListView.setLayoutParams(rlp);
                         mListAdapter.notifyDataSetChanged();
                     }
                 });

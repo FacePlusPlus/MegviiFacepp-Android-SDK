@@ -42,7 +42,7 @@
     <string-array name="trackig_mode_array">
         <item>Fast</item>
         <item>Robust</item>
-        <!--<item>Tracking_Rect</item>-->
+        <item>Tracking_Rect</item>
     </string-array>
     <string name="modif_name">modif name</string>
     <string name="modif_name_fail">name is null</string>

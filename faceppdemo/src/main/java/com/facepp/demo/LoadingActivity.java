@@ -86,16 +86,17 @@ public class LoadingActivity extends Activity {
 		WarrantyText.setText(getResources().getString(R.string.auth_progress));
 		WarrantyBar.setVisibility(View.VISIBLE);
 		final LicenseManager licenseManager = new LicenseManager(this);
-		licenseManager.setExpirationMillis(Facepp.getApiExpirationMillis(this, ConUtil.getFileContent(this, R.raw
-				.megviifacepp_0_5_2_model)));
+
+//        licenseManager.setExpirationMillis(Facepp.getApiExpirationMillis(this, ConUtil.getFileContent(this, R.raw
+//				.megviifacepp_0_5_2_model)));
 
 		String uuid = ConUtil.getUUIDString(LoadingActivity.this);
 		long apiName = Facepp.getApiName();
 
 		licenseManager.setAuthTimeBufferMillis(0);
 
-		licenseManager.takeLicenseFromNetwork(uuid, Util.API_KEY, Util.API_SECRET, apiName,
-				LicenseManager.DURATION_30DAYS, "Landmark", "1", true, new LicenseManager.TakeLicenseCallback() {
+		licenseManager.takeLicenseFromNetwork(Util.CN_LICENSE_URL,uuid, Util.API_KEY, Util.API_SECRET, apiName,
+				 "1", new LicenseManager.TakeLicenseCallback() {
 					@Override
 					public void onSuccess() {
 						authState(true,0,"");
@@ -139,7 +140,7 @@ public class LoadingActivity extends Activity {
         }
         resources.updateConfiguration(config, dm);
         mSharedUtil.saveStringValue("language", language);
-        freshView();
+//        freshView();
     }
 
 

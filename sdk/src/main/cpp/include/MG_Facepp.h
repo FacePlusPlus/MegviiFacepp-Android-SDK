@@ -43,7 +43,8 @@ typedef enum {
     MG_FPP_DETECTIONMODE_TRACKING = 1,           ///< 视频人脸跟踪模式
     MG_FPP_DETECTIONMODE_TRACKING_FAST = 3,      ///< 牺牲了人脸关键点的贴合度，提升了人脸跟踪的速度
     MG_FPP_DETECTIONMODE_TRACKING_ROBUST =4,     ///< 提高了人脸关键点的贴合度，降低了人脸跟踪的速度
-    MG_FPP_DETECTIONMODE_DETECT_RECT = 5,        ///< 只检测人脸框，并不检测landmark
+    MG_FPP_DETECTIONMODE_DETECT_RECT = 5,        ///< 只检测人脸框，并不检测landmark，不具备人脸跟踪功能，适用于单张图片
+    MG_FPP_DETECTIONMODE_TRACK_RECT = 6,         ///< 只检测人脸框，并不检测landmark，具备人脸跟踪功能，适用于视频流
 } MG_FPP_DETECTIONMODE;
 
 struct _MG_FPP_API;
@@ -80,7 +81,7 @@ typedef struct {
     MG_RECTANGLE roi;                       ///< 一个矩形框，表示只对图像中 roi 所表示的区域做人脸检测。
                                             ///< 在特定场景下，此方法可以提高检测速度。
                                             ///< 如果人脸在 roi 中被检测到，且移动到了 roi 之外的区域，依然可以被跟踪。
-
+    
     MG_SINGLE face_confidence_filter;       ///< 人脸置信度过滤阈值，低于此值的数据将被过滤掉，默认 0.1
     
     MG_BOOL one_face_tracking;              ///< 此参数已废弃
@@ -278,7 +279,7 @@ typedef struct {
            MG_BOOL is_smooth,
            MG_DETECT_RECT _OUT *rect);
     
-    
+
 
     /**
      * @brief 计算一张人脸的属性

@@ -4,6 +4,15 @@ android {
     compileSdkVersion CompileSdkVersion
     buildToolsVersion BuildToolsVersion
 
+    signingConfigs {
+        release {
+            keyAlias 'facepp'
+            keyPassword 'xfdq1016'
+            storeFile file(project.rootDir.absolutePath + '/facepp.keystore')
+            storePassword 'xfdq1016'
+        }
+    }
+
     defaultConfig {
         applicationId "com.megvii.awesomedemo.facepp"
         minSdkVersion 15
@@ -19,6 +28,7 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
 
@@ -58,7 +68,7 @@ dependencies {
     testCompile 'junit:junit:4.12'
 //    compile 'com.github.FacePlusPlus:MegviiLicMgr-Android-SDK:0.3.0'
 //    compile 'com.github.FacePlusPlus:MegviiFacepp-Android-SDK:0.4.7-gitpack'
-    compile(name: 'MGLicenseManagerSDK-0.3.0', ext: 'aar')
+    compile(name: 'MGLicenseManagerSDK-0.3.1', ext: 'aar')
     compile(name: 'MGFaceppSDK-0.5.2', ext: 'aar')
 //    compile project(':sdk')
 }

@@ -9,6 +9,8 @@ import android.content.Context;
  */
 public class NativeFaceppAPI {
 
+    public static boolean isLoadSuccess=true;
+
     public static native long nativeInit(Context context, byte[] model, int maxFaceNumber);
 
     public static native float[] nativeGetFaceppConfig(long handle);
@@ -73,9 +75,16 @@ public class NativeFaceppAPI {
      * 这里加载的名称要根据 so 不同的版本号进行修改
      */
     static {
-        System.loadLibrary("megface-new");
-        System.loadLibrary("MegviiFacepp-0.5.2");
-        System.loadLibrary("MegviiFacepp-jni-0.5.2");
+
+        try {
+            System.loadLibrary("megface-new");
+            System.loadLibrary("MegviiFacepp-0.5.2");
+            System.loadLibrary("MegviiFacepp-jni-0.5.2");
+        } catch (Exception e) {
+            isLoadSuccess = false;
+        } catch (Error error) {
+            isLoadSuccess = false;
+        }
     }
 
 }

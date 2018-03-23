@@ -53,9 +53,7 @@ public class NativeFaceppAPI {
     public static native double nativeFaceCompare(long handle, byte[] featureData1, byte[] featureData2, int
             featureLength);
 
-    public static native long nativeGetApiExpication(Context context);
-
-    public static native void nativeRelease(long handle);
+    public static native long nativeGetApiExpication();
 
     public static native String nativeGetVersion();
 
@@ -68,6 +66,7 @@ public class NativeFaceppAPI {
 
     public static native String nativeGetJenkinsNumber();
 
+    public static native void nativeRelease(long handle);
 
     public static native int nativeShutDown();
 

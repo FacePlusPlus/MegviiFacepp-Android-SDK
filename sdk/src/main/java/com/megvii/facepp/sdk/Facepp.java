@@ -392,7 +392,7 @@ public class Facepp {
             return 0;
         }
         if (getSDKAuthType(mode) == 1)
-            return getApiExpirationMillis(context);        /// < 联网授权
+            return getApiExpirationMillis();        /// < 联网授权
         else
             return getApiExpirationMillis(mode);           /// < 非联网授权
     }
@@ -489,11 +489,11 @@ public class Facepp {
      * @brief 获取人脸检测器过期时间
      * @param[in] context android环境变量
      */
-    private static long getApiExpirationMillis(Context context) {
+    private static long getApiExpirationMillis() {
         if (!isLoadSuccess()){
             return 0;
         }
-        return NativeFaceppAPI.nativeGetApiExpication(context) * 1000;
+        return NativeFaceppAPI.nativeGetApiExpication() * 1000;
     }
 
     /**

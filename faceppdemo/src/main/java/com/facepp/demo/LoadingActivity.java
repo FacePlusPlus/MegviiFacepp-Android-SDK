@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.text.Html;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
@@ -76,8 +77,17 @@ public class LoadingActivity extends Activity {
     }
 
     private void network() {
-        int type = Facepp.getSDKAuthType(ConUtil.getFileContent(this, R.raw.megviifacepp_0_5_2_model));
-		if ( type == 2) {// 非联网授权
+        byte[] modelData=ConUtil.getFileContent(this, R.raw.megviifacepp_0_5_2_model);
+        int type = Facepp.getSDKAuthType(modelData);
+        String abilitys=Facepp.getAbilitiesString(modelData);
+        String version=Facepp.getVersion();
+        String packNo=Facepp.getJenkinsNumber();
+        Log.d("megvii", "megvii model info abilitys="+abilitys);
+        Log.d("megvii", "megvii model info version="+version);
+        Log.d("megvii", "megvii model info packNo="+packNo);
+        Log.d("megvii", "megvii model info auth="+(type==2?"offline":"online"));
+
+        if ( type == 2) {// 非联网授权
 			authState(true,0,"");
 			return;
 		}

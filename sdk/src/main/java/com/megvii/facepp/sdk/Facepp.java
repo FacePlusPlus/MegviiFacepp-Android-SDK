@@ -30,6 +30,7 @@ public class Facepp {
 
     private long FaceppHandle;
     private static ArrayList<Ability> abilities;
+    private static StringBuffer ablitiesBuffer;
     private static long[] algorithmInfo;
 
     public static boolean isLoadSuccess(){
@@ -439,26 +440,84 @@ public class Facepp {
         if (abilities != null)
             return abilities;
         abilities = new ArrayList<Ability>();
+        ablitiesBuffer=new StringBuffer("abilities=");
         if (algorithmInfo == null)
             algorithmInfo = NativeFaceppAPI.nativeGetAlgorithmInfo(mode);
         long ability = algorithmInfo[2];
-        if ((ability & MG_FPP_ATTR_POSE3D) != 0)
+        if ((ability & MG_FPP_ATTR_POSE3D) != 0) {
             abilities.add(Ability.POSE);
-        if ((ability & MG_FPP_ATTR_EYESTATUS) != 0)
+            ablitiesBuffer.append(" POSE ");
+        }
+        if ((ability & MG_FPP_ATTR_EYESTATUS) != 0) {
             abilities.add(Ability.EYESTATUS);
-        if ((ability & MG_FPP_ATTR_MOUTHSTATUS) != 0)
+            ablitiesBuffer.append(" EYESTATUS ");
+        }
+        if ((ability & MG_FPP_ATTR_MOUTHSTATUS) != 0) {
             abilities.add(Ability.MOUTHSTATUS);
-        if ((ability & MG_FPP_ATTR_MINORITY) != 0)
+            ablitiesBuffer.append(" EYESTATUS ");
+        }
+        if ((ability & MG_FPP_ATTR_MINORITY) != 0){
+            ablitiesBuffer.append(" MINORITY ");
             abilities.add(Ability.MINORITY);
-        if ((ability & MG_FPP_ATTR_BLURNESS) != 0)
+        }
+        if ((ability & MG_FPP_ATTR_BLURNESS) != 0) {
+            ablitiesBuffer.append(" BLURNESS ");
             abilities.add(Ability.BLURNESS);
-        if ((ability & MG_FPP_ATTR_AGE_GENDER) != 0)
+        }
+        if ((ability & MG_FPP_ATTR_AGE_GENDER) != 0) {
             abilities.add(Ability.AGEGENDER);
-        if ((ability & MG_FPP_ATTR_EXTRACT_FEATURE) != 0)
+            ablitiesBuffer.append(" AGEGENDER ");
+
+        }
+        if ((ability & MG_FPP_ATTR_EXTRACT_FEATURE) != 0) {
             abilities.add(Ability.SMALLFEATEXT);
+            ablitiesBuffer.append(" SMALLFEATEXT ");
+        }
+        if ((ability & MG_FPP_ATTR_TRACK_FAST) != 0) {
+            abilities.add(Ability.TRACK_FAST);
+            ablitiesBuffer.append(" TRACK_FAST ");
+        }
+        if ((ability & MG_FPP_ATTR_TRACK_ROBUST) != 0) {
+            abilities.add(Ability.TRACK_ROBUST);
+            ablitiesBuffer.append(" TRACK_ROBUST ");
+        }
+        if ((ability & MG_FPP_ATTR_DETECT_RECT) != 0) {
+            abilities.add(Ability.DETECT_RECT);
+            ablitiesBuffer.append(" DETECT_RECT ");
+        }
+        if ((ability & MG_FPP_ATTR_DETECT) != 0) {
+            abilities.add(Ability.DETECT);
+            ablitiesBuffer.append(" DETECT ");
+
+        }
+        if ((ability & MG_FPP_ATTR_IDCARD_QUALITY) != 0) {
+            abilities.add(Ability.IDCARD_QUALITY);
+            ablitiesBuffer.append(" IDCARD_QUALITY ");
+
+        }
+        if ((ability & MG_FPP_ATTR_TRACK) != 0) {
+            abilities.add(Ability.TRACK);
+            ablitiesBuffer.append(" TRACK ");
+        }
+        if ((ability & MG_FPP_TRACK_SUPER_FAST) != 0) {
+            ablitiesBuffer.append(" SUPER_FAST ");
+            abilities.add(Ability.SUPER_FAST);
+        }
 
         return abilities;
     }
+
+    public static String getAbilitiesString(byte[] model){
+        if (!isLoadSuccess()){
+           return  "";
+        }
+        if (ablitiesBuffer==null){
+            getAbility(model);
+        }
+        return ablitiesBuffer.toString();
+    }
+
+
 
     /**
      * @return 人脸检测器版本号
@@ -666,6 +725,17 @@ public class Facepp {
     private static final long MG_FPP_ATTR_BLURNESS = 0x10;        /// < 人脸模糊度的标识位
     private static final long MG_FPP_ATTR_AGE_GENDER = 0x20;      /// < 年龄性别的标识位
     private static final long MG_FPP_ATTR_EXTRACT_FEATURE = 0x40; /// < 人脸比对的标识位
+    private static final long MG_FPP_ATTR_TRACK_FAST = 0x80;      /// < trackfast的标识位
+    private static final long MG_FPP_ATTR_TRACK_ROBUST = 0x100;   /// < trackrobust的标识位
+    private static final long MG_FPP_ATTR_DETECT_RECT = 0x200;    /// < detect_rect的标识位
+
+    private static final long MG_FPP_ATTR_DETECT = 0x1000;         /// < detect的标识位
+    private static final long MG_FPP_ATTR_IDCARD_QUALITY = 0x2000; /// < quality的标识位
+    private static final long MG_FPP_ATTR_TRACK = 0x4000;          /// < track的标识位
+    private static final long MG_FPP_TRACK_SUPER_FAST  = 0x8000;   /// < track_rect的标识位
+
+
+
 
     private static final int MG_RETCODE_FAILED = -1;
     private static final int MG_RETCODE_OK = 0;
@@ -713,8 +783,18 @@ public class Facepp {
         MINORITY,         ///< 少数民族的能力
         BLURNESS,         ///< 人脸模糊度的能力
         AGEGENDER,        ///< 年龄性别的能力
-        SMALLFEATEXT      ///< 人脸比对的能力
+        SMALLFEATEXT,     ///< 人脸比对的能力
+        TRACK_FAST,       /// < trackfast的标识位
+        TRACK_ROBUST,     /// < trackrobust的标识位
+        DETECT_RECT,      /// < detect_rect的标识位
+        DETECT,           /// < detect的标识位
+        IDCARD_QUALITY,   /// < 身份证质量的标识位
+        TRACK,            /// < track的标识位
+        SUPER_FAST       /// < trackrect的标识位
+
     }
+
+
 
     public static class Face {
         public int trackID;                ///< 人脸的跟踪标记。

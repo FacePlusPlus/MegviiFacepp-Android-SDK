@@ -6,4 +6,8 @@
         <attr name="prefer" format="integer" />
     </declare-styleable>
 
+    <style name="AppTheme" parent="@android:style/Theme.Holo.NoActionBar">
+
+    </style>
+
 </resources>

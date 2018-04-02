@@ -69,6 +69,6 @@ dependencies {
 //    compile 'com.github.FacePlusPlus:MegviiLicMgr-Android-SDK:0.3.0'
 //    compile 'com.github.FacePlusPlus:MegviiFacepp-Android-SDK:0.4.7-gitpack'
     compile(name: 'MGLicenseManagerSDK-0.3.1', ext: 'aar')
-//    compile(name: 'MGFaceppSDK-0.5.2', ext: 'aar')
-    compile project(':sdk')
+    compile(name: 'MGFaceppSDK-0.5.2', ext: 'aar')
+//    compile project(':sdk')
 }
